@@ -1,0 +1,124 @@
+<html>
+
+<head>
+    <title>Subsect Server</title>
+
+    <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+</head>
+
+<!-- API Key wcf528rijzx8byb9  -->
+
+<body>
+
+<h1>Subsect Server</h1>
+
+<div>
+    <input id="peerid" type="text" value="fred" /> <br/>
+    <input id="servbut" type="button" style="margin-top: 20px" value="Start Server" />
+    <textarea id="messout" rows="10" style="width: 100%; margin-top: 20px"></textarea>
+</div>
+
+<script>
+
+var peer = null;
+var shutdown = false;
+
+function peerServerOn() {
+
+	peer = new Peer($('#peerid').val(), {key: 'wcf528rijzx8byb9', debug: 3});
+
+	peer.on('error', function(err) {
+	  messout('ERROR : ' + err.type);
+	});
+
+
+	peer.on('open', function(id) {
+	  messout('My peer ID is: ' + id);
+	});
+
+
+	peer.on('disconnected', function(){
+		messout('Server has disconnected');
+
+		if (! shutdown) {
+			messout('Calling reconnect');
+			peer.reconnect();
+		}
+	});
+	
+	
+	peer.on('connection', function(conn) {
+	  messout('Data connection started');
+
+		conn.on('open', function() {
+		  // Receive messages
+		  conn.on('data', function(rcvdata) {
+		    messout('Received ' + rcvdata);
+				
+			  // Send messages
+			  conn.send({datatype: rcvdata, data: rtnval(rcvdata)});
+		  });
+		});
+	});
+}
+	
+function	rtnval(rqtype){
+		var rtnstr="none"
+	
+	if (rqtype.indexOf("html") == 0){
+		rtnstr = '\<p id="butbuf"\> \
+		\<button id="alertbut"\>Alert\</button\>\
+	\</p\>'
+	} else if (rqtype.indexOf("js") == 0){
+		rtnstr = '$("#alertbut").on("click", function(){\
+		 console.log("press destjs");\
+	 	alert("Button pressed")})'
+	} else if (rqtype.indexOf("css") == 0){
+		rtnstr = '#butbuf{height: 100px; width: 200px; background-color: #b0c4de; text-align: center;}\
+		#alertbut{width:75px; height:30px; margin-top: 35px;}'
+	}
+		
+		return rtnstr
+}
+	
+function messout(mess){
+	
+	var xstr;
+	
+	xstr = $("#messout").val()
+	$("#messout").val(xstr+'\\\n'+mess)
+	$("textarea").scrollTop(99999)
+	
+}
+
+
+	$(document).ready(function(){
+		messout("Server document ready")
+	
+		initall();
+	})
+	
+
+	function initall() {
+	$('#servbut').on("click",function(){
+//		console.log("destbut: pressed")
+		if ($("#servbut").val().indexOf("St") == 0){
+			shutdown = false;
+			peerServerOn();
+			$("#servbut").val("Close Server")
+		} else {
+			shutdown = true;
+			peer.destroy();
+			peer = null;
+			$("#servbut").val("Start Server")
+		}
+	})
+	
+	
+}
+
+</script>
+
+</body>
+</html>
