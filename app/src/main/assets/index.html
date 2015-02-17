@@ -24,9 +24,40 @@
 var peer = null;
 var shutdown = false;
 
+
 function peerServerOn() {
 
-	peer = new Peer($('#peerid').val(), {key: 'wcf528rijzx8byb9', debug: 3});
+	// and override the original config object
+	// Call XirSys ICE servers
+	$.ajax({
+	  type: "POST",
+	  dataType: "json",
+	  url: "https://api.xirsys.com/getIceServers",
+	  data: {
+	    ident: "markkudlac",
+	    secret: "1e2822c6-88b3-4e20-8ecf-5bb64475d424",
+	    domain: "subsect.net",
+	    application: "default",
+	    room: "default",
+	    secure: 1
+	  },
+	  success: function (data, status) {
+			messout("Completed XirSys");
+//	    console.log(data.d);
+
+	    // data.d is where the iceServers object lives
+	    setPeer(data.d);
+	  }
+	});
+}
+
+
+function setPeer(customConfig){
+
+	peer = new Peer($('#peerid').val(),
+		{key: 'wcf528rijzx8byb9',
+		debug: 3,
+		config: customConfig});
 
 	peer.on('error', function(err) {
 	  messout('ERROR : ' + err.type);
@@ -46,8 +77,8 @@ function peerServerOn() {
 			peer.reconnect();
 		}
 	});
-	
-	
+
+
 	peer.on('connection', function(conn) {
 	  messout('Data connection started');
 
@@ -55,13 +86,14 @@ function peerServerOn() {
 		  // Receive messages
 		  conn.on('data', function(rcvdata) {
 		    messout('Received ' + rcvdata);
-				
+
 			  // Send messages
 			  conn.send({datatype: rcvdata, data: rtnval(rcvdata)});
 		  });
 		});
 	});
 }
+
 	
 function	rtnval(rqtype){
 		var rtnstr="none"
