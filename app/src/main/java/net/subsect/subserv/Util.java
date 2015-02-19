@@ -321,7 +321,7 @@ public class Util {
         String ipad = "localhost";
 
      //   if (Prefs.getIPaddress(context)){
-            ipad = Util.getWifiApIpAddress();
+     //       ipad = Util.getWifiApIpAddress();
 
      //   }
 

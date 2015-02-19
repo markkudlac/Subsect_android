@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script type="text/javascript" src="/AdlHtml/js/jquery-1.10.0.min.js"></script>
+	<script type="text/javascript" src="/AdlHtml/js/static.js"></script>
+</head>
+<body>
+
+<div>
+<h1 id="hdtitle"> File Upload to - </h1>
+</div>
+<div style="margin:50px">
+
+<form action="" method="post"
+enctype="multipart/form-data">
+<label for="file">Filename:</label>
+<input type="file" name="file" id="file"><br>
+<input style="margin:50px"type="submit" name="submit" value="Submit">
+</form>
+</div>
+
+<div style="margin:50px">
+</div>
+<script>
+
+$(document).ready(function(){
+	
+	console.log("Doc ready");
+	initAjax();
+	
+	$.getJSON("/api/getuploaddir/",null,function(data){
+			if (data && data.rtn == undefined) { 
+				$('#hdtitle').text($('#hdtitle').text() + data.dir)
+			} else
+			{ console.log("getdownload data undefined")}
+		});
+	
+})
+</script>
+</body>
+</html>

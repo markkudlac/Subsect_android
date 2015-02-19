@@ -22,6 +22,8 @@
 <script>
 
 var peer = null;
+//var xconn = null;
+
 var shutdown = false;
 
 
@@ -81,27 +83,30 @@ function setPeer(customConfig){
 
 	peer.on('connection', function(conn) {
 	  messout('Data connection started');
-
 		conn.on('open', function() {
 		  // Receive messages
-		  conn.on('data', function(rcvdata) {
-		    messout('Received ' + rcvdata);
+		  conn.on('data', function(rcvfile) {
+		    messout('Received ' + rcvfile);
 
 			  // Send messages
-			  conn.send({datatype: rcvdata, data: rtnval(rcvdata)});
+//			  conn.send({datatype: rcvfile, data: rtnval(rcvdata)});
+               getappfile(rcvfile, conn)
 		  });
 		});
 	});
 }
 
-	
+
+	/*
 function	rtnval(rqtype){
 		var rtnstr="none"
 	
 	if (rqtype.indexOf("html") == 0){
+
 		rtnstr = '\<p id="butbuf"\> \
 		\<button id="alertbut"\>Alert\</button\>\
 	\</p\>'
+
 	} else if (rqtype.indexOf("js") == 0){
 		rtnstr = '$("#alertbut").on("click", function(){\
 		 console.log("press destjs");\
@@ -113,7 +118,37 @@ function	rtnval(rqtype){
 		
 		return rtnstr
 }
-	
+*/
+
+
+function getappfile(rcvfile, xconn){
+
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function(){
+		    if (this.readyState == 4 && this.status == 200){
+		        //this.response is what you're looking for
+
+		        console.log("Respose type 4 : " + typeof this.response);
+                console.log("Respose length 4 : " +this.response.size + "  type : "+this.response.type);
+
+//		        var img = document.getElementById('tstimg');
+//		        var url = window.URL || window.webkitURL;
+//		        img.src = url.createObjectURL(this.response);
+
+                xconn.send({blobtype: this.response.type, blob: this.response});
+        // xconn.send(this.response);
+		    }
+		}
+//		xhr.open('GET', 'http://192.168.1.108:8080/'+rcvfile);
+		xhr.open('GET', 'http://localhost:8080/'+rcvfile);
+		// xhr.responseType = 'text';
+		xhr.responseType = 'blob';
+		xhr.send();
+
+}
+
+
+
 function messout(mess){
 	
 	var xstr;
