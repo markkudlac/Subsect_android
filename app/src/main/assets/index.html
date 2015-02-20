@@ -14,7 +14,7 @@
 <h1>Subsect Server</h1>
 
 <div>
-    <input id="peerid" type="text" value="fred" /> <br/>
+    <input id="peerid" type="text" value="fred1" /> <br/>
     <input id="servbut" type="button" style="margin-top: 20px" value="Start Server" />
     <textarea id="messout" rows="10" style="width: 100%; margin-top: 20px"></textarea>
 </div>
@@ -135,7 +135,7 @@ function getappfile(rcvfile, xconn){
 //		        var url = window.URL || window.webkitURL;
 //		        img.src = url.createObjectURL(this.response);
 
-                xconn.send({blobtype: this.response.type, blob: this.response});
+                xconn.send({uri: rcvfile, blobtype: this.response.type, blob: this.response});
         // xconn.send(this.response);
 		    }
 		}
