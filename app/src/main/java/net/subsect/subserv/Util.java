@@ -11,6 +11,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -46,7 +48,7 @@ import android.widget.Toast;
 
 public class Util {
 
-    static   void DeleteRecursive(File fileOrDirectory) {
+    static void DeleteRecursive(File fileOrDirectory) {
 
         System.out.println("IN deleteRecursive : " + fileOrDirectory.getAbsolutePath());
         if (fileOrDirectory.isDirectory())
@@ -57,32 +59,31 @@ public class Util {
     }
 
 
-
-    public static void versionChangeHTML(Context mnact ) {
+    public static void versionChangeHTML(Context mnact) {
 
         try {
 
-            File htmlpar,userdir;
+            File htmlpar, userdir;
 
-            userdir = new File(mnact.getFilesDir(),USERHTML_DIR);
-            htmlpar = new File(mnact.getFilesDir(),HTML_DIR);
+            userdir = new File(mnact.getFilesDir(), USERHTML_DIR);
+            htmlpar = new File(mnact.getFilesDir(), SYSHTML_DIR);
 
             //*******  This delete is here for testing now
             // 		if (userdir.exists())	DeleteRecursive(userdir);
             //*************
 
-            if (!userdir.exists()){
-                userdir.mkdirs();	//Create the user directory if it doesn't exit
+            if (!userdir.exists()) {
+                userdir.mkdirs();    //Create the user directory if it doesn't exit
             }
 
-            System.out.println("HTML DIR is : "+userdir.getAbsolutePath());
+            System.out.println("HTML DIR is : " + userdir.getAbsolutePath());
 
             System.out.println("The version number changed");
-            if (htmlpar.exists())	DeleteRecursive(htmlpar);
+            if (htmlpar.exists()) DeleteRecursive(htmlpar);
             untarTGzFile(mnact);
 
         } catch (Exception e) {
-            System.out.println( "File I/O error " + e);
+            System.out.println("File I/O error " + e);
         }
 
     }
@@ -99,7 +100,6 @@ public class Util {
 
         tis.close();
     }
-
 
 
     private static void untar(Context mnact, TarInputStream tis, String destFolder) throws IOException {
@@ -140,27 +140,27 @@ public class Util {
 
         fileonly = copyfile;
         int xind = fileonly.lastIndexOf("/");
-        if (xind >= 0){
-            fileonly = fileonly.substring(xind+1);
+        if (xind >= 0) {
+            fileonly = fileonly.substring(xind + 1);
         }
 
         dir = copyfile.substring(0, xind);
 
-        //		System.out.println("targetCopy dir : "+dir+"  file : "+fileonly);
+      		System.out.println("targetCopy dir : "+dir+"  file : "+fileonly);
         dirfile = new File(dir);
         if (!dirfile.exists()) {
             dirfile.mkdirs();
-            //   		System.out.println("targetCopy dir is created");
+              		System.out.println("targetCopy dir is created");
         }
 
-        targfile = new File(dirfile,fileonly);
+        targfile = new File(dirfile, fileonly);
 
-        if (targfile.exists()){
-            //    		System.out.println("file exists : "+ targfile.getPath());
+        if (targfile.exists()) {
+           		System.out.println("file exists : "+ targfile.getPath());
             targfile.delete();
         }
 
-        return (new File(dirfile,fileonly));
+        return (new File(dirfile, fileonly));
     }
 
 
@@ -210,13 +210,13 @@ public class Util {
      */
 
 
-    static public String copyImage(Context context, String img, String imgdir, String flname, Long adlid){
+    static public String copyImage(Context context, String img, String imgdir, String flname, Long adlid) {
 
         File downfl = null;
         String uri;
 
-        uri =  "/"+imgdir +"/"+flname.substring(0, 3)+
-                adlid+flname.substring(flname.length()-4);
+        uri = "/" + imgdir + "/" + flname.substring(0, 3) +
+                adlid + flname.substring(flname.length() - 4);
 
         byte[] imageAsBytes = Base64.decode(img, Base64.DEFAULT);
 
@@ -226,23 +226,22 @@ public class Util {
             FileOutputStream downflout = new FileOutputStream(downfl);
             downflout.write(imageAsBytes, 0, imageAsBytes.length);
             downflout.close();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println("Exception caught 1 : " + ex);
-            return(null);
+            return (null);
         }
 
-        return(uri);
+        return (uri);
     }
 
 
-    static public String copyLocalHref(Context context, String img, String landingdir, String flname, Long adlid){
+    static public String copyLocalHref(Context context, String img, String landingdir, String flname, Long adlid) {
 
         File downfl = null, tmpdir;
         String unldfl, locpath;
 
-        locpath =  "/"+landingdir+"/"+flname.substring(0, 3)+adlid;
-        unldfl = context.getFilesDir() + locpath +"/"+flname;
+        locpath = "/" + landingdir + "/" + flname.substring(0, 3) + adlid;
+        unldfl = context.getFilesDir() + locpath + "/" + flname;
 
         tmpdir = new File(context.getFilesDir() + locpath);
         if (tmpdir.exists()) DeleteRecursive(tmpdir);
@@ -265,45 +264,44 @@ public class Util {
 
             tis.close();
             downfl.delete();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println("Exception caught 1 : " + ex);
-            return(null);
+            return (null);
         }
 
-        return(locpath + "/index.html");
+        return (locpath + "/index.html");
     }
 
 
-    static public long getTimeNow(){
+    static public long getTimeNow() {
 
         Time tm = new Time();
         tm.setToNow();
-        return(tm.toMillis(true));
+        return (tm.toMillis(true));
     }
 
 
-    static public String JSONReturn(Boolean val){
+    static public String JSONReturn(Boolean val) {
 
-        return("{\"rtn\":" + val + "}");
+        return ("{\"rtn\":" + val + "}");
     }
 
 
-    static	public String getWifiApIpAddress() {
+    static public String getWifiApIpAddress() {
 
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
-                 en.hasMoreElements();) {
+                 en.hasMoreElements(); ) {
 
                 NetworkInterface intf = en.nextElement();
 
                 if (intf.getName().contains("wlan") || intf.getName().contains("eth0")) {
                     for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
-                            .hasMoreElements();) {
+                            .hasMoreElements(); ) {
                         InetAddress inetAddress = enumIpAddr.nextElement();
                         if (!inetAddress.isLoopbackAddress()
                                 && (inetAddress.getAddress().length == 4)) {
- 	                    	System.out.println("AP address : " + inetAddress.getHostAddress());
+                            System.out.println("AP address : " + inetAddress.getHostAddress());
                             return inetAddress.getHostAddress();
                         }
                     }
@@ -316,38 +314,35 @@ public class Util {
     }
 
 
-    static public String getHTTPAddress(Context context){
+    static public String getHTTPAddress(Context context) {
 
         String ipad = "localhost";
 
-     //   if (Prefs.getIPaddress(context)){
-     //       ipad = Util.getWifiApIpAddress();
+        ipad = Util.getWifiApIpAddress();
 
-     //   }
-
-        return(ipad);
+        return (ipad);
     }
 
 
-    static public JSONObject qryStringToJSON(String qryString){
+    static public JSONObject qryStringToJSON(String qryString) {
 
         String xstr;
         JSONObject jsob = null;
 
-        xstr = "{\""+Uri.decode(qryString)+"\"}";
+     //   xstr = "{\"" + Uri.decode(qryString) + "\"}";
 
+        xstr = "{\"" + qryString + "\"}";
         xstr = xstr.replace("&", "\", \"");
         xstr = xstr.replace("=", "\":\"");
-        System.out.println("JSON string : "+xstr);
+        System.out.println("JSON string : " + xstr);
 
         try {
             jsob = new JSONObject(xstr);
-        }
-        catch(JSONException ex) {
+        } catch (JSONException ex) {
             ex.printStackTrace();
         }
 
-        return(jsob);
+        return (jsob);
     }
 
 
@@ -357,20 +352,20 @@ public class Util {
 
         //   	 if (wifiMgr != null && wifiMgr.isWifiEnabled()){
 
-        ConnectivityManager conMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() ||
-                conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected()){
+                conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected()) {
             System.out.println("WiFi or data is connected.");
-            return(true);
+            return (true);
         }
         //   	 }
         //   	 System.out.println("WiFi NOT connected.");
-        return(false);
+        return (false);
     }
 
 
-    public static void sendNotofication(Context context, JSONObject item){
+    public static void sendNotofication(Context context, JSONObject item) {
 
         /*
         try {
@@ -410,4 +405,26 @@ public class Util {
         */
     }
 
+
+    protected static String savefile(String filename, String filecontent) {
+
+        String msg = Util.JSONReturn(false);
+        System.out.println("In savefile : " + filename);
+
+        try {
+            byte [] xbuf = filecontent.getBytes("UTF-8");
+            File fl_dest;
+
+            fl_dest = targetCopyFile(filename);
+
+            OutputStream out = new FileOutputStream(fl_dest);
+            out.write(xbuf, 0, xbuf.length);
+            out.close();
+            msg = Util.JSONReturn(true);
+        } catch (IOException e) {
+            System.out.println( "File I/O error " + e);
+        }
+
+        return (msg);
+    }
 }

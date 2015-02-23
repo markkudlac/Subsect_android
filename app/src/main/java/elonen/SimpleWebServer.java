@@ -106,7 +106,7 @@ public class SimpleWebServer extends NanoHTTPD {
         	String msg;
         	
  //       	System.out.println("uri has api");
-        	msg = Routes.callMethods(uri, qryString, context);
+        	msg = Routes.callMethods(uri, qryString, context, getRootDir());
         	
         	res = new Response(msg);
         } else if (!homeDir.isDirectory())

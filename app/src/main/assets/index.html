@@ -1,3 +1,5 @@
+
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -7,11 +9,9 @@
     <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 </head>
 
-<!-- API Key wcf528rijzx8byb9  -->
-
 <body>
 
-<h1>Subsect Server</h1>
+<h2>Subsect Server</h2>
 
 <div>
     <input id="peerid" type="text" value="fred1" /> <br/>
@@ -22,8 +22,6 @@
 <script>
 
 var peer = null;
-//var xconn = null;
-
 var shutdown = false;
 
 
@@ -44,10 +42,7 @@ function peerServerOn() {
 	    secure: 1
 	  },
 	  success: function (data, status) {
-			messout("Completed XirSys");
-//	    console.log(data.d);
-
-	    // data.d is where the iceServers object lives
+		messout("Completed XirSys");
 	    setPeer(data.d);
 	  }
 	});
@@ -89,36 +84,12 @@ function setPeer(customConfig){
 		    messout('Received ' + rcvfile);
 
 			  // Send messages
-//			  conn.send({datatype: rcvfile, data: rtnval(rcvdata)});
                getappfile(rcvfile, conn)
 		  });
 		});
 	});
 }
 
-
-	/*
-function	rtnval(rqtype){
-		var rtnstr="none"
-	
-	if (rqtype.indexOf("html") == 0){
-
-		rtnstr = '\<p id="butbuf"\> \
-		\<button id="alertbut"\>Alert\</button\>\
-	\</p\>'
-
-	} else if (rqtype.indexOf("js") == 0){
-		rtnstr = '$("#alertbut").on("click", function(){\
-		 console.log("press destjs");\
-	 	alert("Button pressed")})'
-	} else if (rqtype.indexOf("css") == 0){
-		rtnstr = '#butbuf{height: 100px; width: 200px; background-color: #b0c4de; text-align: center;}\
-		#alertbut{width:75px; height:30px; margin-top: 35px;}'
-	}
-		
-		return rtnstr
-}
-*/
 
 
 function getappfile(rcvfile, xconn){
@@ -127,20 +98,14 @@ function getappfile(rcvfile, xconn){
 		xhr.onreadystatechange = function(){
 		    if (this.readyState == 4 && this.status == 200){
 		        //this.response is what you're looking for
-
-		        console.log("Respose type 4 : " + typeof this.response);
-                console.log("Respose length 4 : " +this.response.size + "  type : "+this.response.type);
-
-//		        var img = document.getElementById('tstimg');
-//		        var url = window.URL || window.webkitURL;
-//		        img.src = url.createObjectURL(this.response);
+ //               console.log("Respose length 4 : " +this.response.size + "  type : "+this.response.type);
 
                 xconn.send({uri: rcvfile, blobtype: this.response.type, blob: this.response});
         // xconn.send(this.response);
 		    }
 		}
-//		xhr.open('GET', 'http://192.168.1.108:8080/'+rcvfile);
-		xhr.open('GET', 'http://localhost:8080/'+rcvfile);
+		xhr.open('GET', 'http://' + android.localhostaddress() + '/' + rcvfile);
+//		xhr.open('GET', 'http://localhost:8080/'+rcvfile);
 		// xhr.responseType = 'text';
 		xhr.responseType = 'blob';
 		xhr.send();
@@ -161,7 +126,8 @@ function messout(mess){
 
 
 	$(document).ready(function(){
-		messout("Server document ready")
+	console.log("Local : " + android.localhostaddress());
+		messout("localhost : " + android.localhostaddress())
 	
 		initall();
 	})

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ACE in Action</title>
+
+<script src="/SysHtml/lib/jquery-1.11.2.min.js" ype="text/javascript"></script>
+<script src="/SysHtml/lib/ace.1.1.8/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<style type="text/css" media="screen">
+    #editor { 
+        positon: absolute;
+        top: 0;
+        left: 0;
+		width: 700px;
+		height: 1000px;
+		border: solid 3px #AAA;
+    }
+</style>
+</head>
+<body>
+
+
+	<p>
+		<input id="hostname" type="text" placeholder="Host" style="width: 150px">
+		<input id="filename" type="text" placeholder="File" style="width: 350px">
+<p>
+	<input type="button" value="Save" id='savebut'>
+	<input type="button" value="Load" id='loadbut'>
+</p>
+
+<div id="editor">hello && world</div>
+    
+
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/eclipse");
+    editor.getSession().setMode("ace/mode/html");
+		
+		$('#savebut').on('click', function() {
+
+		$.post("http://"+$("#hostname").val()+"/api/savefile", 'filename=' +$("#filename").val()+'&filecontent='+
+		encodeURIComponent(editor.getSession().getValue()), function(rcv){
+		//	alert("rcv : " + rcv);
+})	     
+
+	})
+				
+	$('#loadbut').on('click', function() {
+		$.get("http://" + $("#hostname").val()+'/'+$("#filename").val(), function(rcv){
+		//	alert("rcv : " + rcv);
+			editor.getSession().setValue(rcv);
+		})	     
+	})
+						
+</script>
+</body>
+</html>

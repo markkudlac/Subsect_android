@@ -2,8 +2,7 @@
 <html>
 
 <head>
-	<script type="text/javascript" src="/AdlHtml/js/jquery-1.10.0.min.js"></script>
-	<script type="text/javascript" src="/AdlHtml/js/static.js"></script>
+	<script type="text/javascript" src="/SysHtml/lib/jquery-1.11.2.min.js"></script>
 </head>
 <body>
 
@@ -27,13 +26,12 @@ enctype="multipart/form-data">
 $(document).ready(function(){
 	
 	console.log("Doc ready");
-	initAjax();
 	
 	$.getJSON("/api/getuploaddir/",null,function(data){
 			if (data && data.rtn == undefined) { 
 				$('#hdtitle').text($('#hdtitle').text() + data.dir)
 			} else
-			{ console.log("getdownload data undefined")}
+			{ alert("getdownload data undefined")}
 		});
 	
 })

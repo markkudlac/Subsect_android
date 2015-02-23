@@ -1,12 +1,26 @@
 
-#butbuf {
-    height: 100px;
+.wrapper {
+    padding: 2px 20px;
     width: 200px;
     background-color: #b0c4de;
     text-align: center;
 }
 
+
+#outname {
+    margin-top: 20px;
+}
+
+
 #pic1 {
+    margin: 20px 20px;
     height: 250px;
     width: 200px;
+}
+
+
+#droppic {
+    margin: 20px 20px;
+    height: 250px;
+    width: 160px;
 }

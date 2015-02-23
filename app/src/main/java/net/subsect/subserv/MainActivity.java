@@ -2,10 +2,13 @@ package net.subsect.subserv;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -16,11 +19,16 @@ public class MainActivity extends Activity {
 
     private static SimpleWebServer HttpdServ = null;
     private static SQLHelper SubservDb = null;
+    private static String hostadd = null;
+    private static int hostport = 8080;
+    private static TextView androidout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        androidout = (TextView)findViewById(R.id.androidout);
 
         startdb();
         turnServerOn(this);
@@ -28,6 +36,8 @@ public class MainActivity extends Activity {
         WebView serverjs = (WebView)findViewById(R.id.serverJS);
         WebSettings webSettings = serverjs.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        serverjs.addJavascriptInterface(this.new JsInterface(), "android");
+
         serverjs.loadUrl("file:///android_asset/index.html");
     }
 
@@ -58,6 +68,10 @@ public class MainActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            System.out.println("In Settings ");
+
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -94,11 +108,15 @@ public class MainActivity extends Activity {
     public  void turnServerOn(final Context ctx) {
 
         stopHttpdServer();
+        hostadd = Util.getHTTPAddress(ctx);
+
+        String fullhost = hostadd + ":" + hostport;
+        androidout.setText("HOST : " + fullhost);
+
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    String ipad = Util.getHTTPAddress(ctx);
-                    startHttpdServer(8080, ipad);
+                    startHttpdServer(hostport, hostadd);
 
                 } catch (Exception ex) {
                     System.out.println("Select thread exception : " + ex);
@@ -135,4 +153,18 @@ public class MainActivity extends Activity {
             SubservDb = null;
         }
     }
+
+
+
+    private final class JsInterface {
+
+        @JavascriptInterface
+        public String localhostaddress(){
+
+            String fullhost = hostadd + ":" + hostport;
+         //   androidout.setText("HOST 2 : " + fullhost);
+            return(fullhost);
+        }
+    }
+
 }
