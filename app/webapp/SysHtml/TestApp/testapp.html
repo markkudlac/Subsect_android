@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html ng-app>
+<head>
+    <!-- will need to look at closing (unneeded )meta tag. Problem with htmlDock on client -->
+    <meta charset="UTF-8"></meta>
+
+    <title>TestApp</title>
+
+    <script src="/localjs/client.js"></script>
+    <link rel="stylesheet" type="text/css" href="/localcss/client.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+</head>
+
+<body>
+<div id="content">
+    <h2>Last Name</h2>
+
+    <input id="lastname" type="text" ng-model="lastnme" placeholder="Last Name" /> <br/>
+    <input id="lastnamebut" type="button" style="margin-top: 5px" value="Save" />
+
+    <div id="outname">Name : {{lastnme}}</div>
+
+    <img id="pic1" src="/img/adladl_a.png"/>
+    <img id="droppic"
+         src="https://dl.dropboxusercontent.com/u/69030648/Screenshot_5s_2.png"/>
+</div>
+
+<script>
+       $(document).ready(function(){
+
+		initbut();
+	})
+    </script>
+</body>
+</html>

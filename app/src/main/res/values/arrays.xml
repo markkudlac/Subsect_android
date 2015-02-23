@@ -3,10 +3,10 @@
     <string-array name="uploadto">
         <item>"SysHtml"</item>
         <item>"SysHtml/TestApp"</item>
-        <item>"SysHtml/TestApp/js"</item>
-        <item>"SysHtml/TestApp/css"</item>
         <item>"SysHtml/TestApp/img"</item>
+        <item>"SysHtml/AceEdit"</item>
         <item>"SysHtml/lib"</item>
+        <item>"SysHtml/lib/ace.1.1.8"</item>
         <item>"UserHtml"</item>
     </string-array>
 </resources>
