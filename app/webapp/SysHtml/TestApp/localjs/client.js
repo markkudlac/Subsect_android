@@ -2,7 +2,7 @@
 
 function initbut() {
 
-console.log("In initbut client.js");
+// console.log("In initbut client.js");
 
  $("#lastnamebut").on("click", alertbut)
 
@@ -11,5 +11,5 @@ console.log("In initbut client.js");
 
 function alertbut(){
 
-    processimg($("#pic1"), "img/mark_head2.jpg")
+    processimg($("#pic1")[0], "img/mark_head2.jpg")
 }
