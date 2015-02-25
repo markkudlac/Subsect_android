@@ -316,10 +316,10 @@ public class Util {
 
     static public String getHTTPAddress(Context context) {
 
-        String ipad = "localhost";
+        String ipad;
 
         ipad = Util.getWifiApIpAddress();
-
+        if (ipad == null) ipad = "localhost";
         return (ipad);
     }
 

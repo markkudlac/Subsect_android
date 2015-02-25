@@ -1,1 +1,1 @@
-COPYFILE_DISABLE=1 tar --exclude=".*" -zcvf ../../rootpack.targz subsect.html SysHtml UserHtml
+COPYFILE_DISABLE=1 tar --exclude=".*" -zcvf ../../rootpack.targz SysHtml UserHtml

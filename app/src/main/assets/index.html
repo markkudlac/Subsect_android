@@ -25,6 +25,14 @@ var peer = null;
 var shutdown = false;
 
 
+	$(document).ready(function(){
+//	console.log("Local : " + android.localhostaddress());
+		messout("localhost : " + android.localhostaddress())
+
+		initall();
+	})
+
+
 function peerServerOn() {
 
 	// and override the original config object
@@ -113,25 +121,16 @@ function getappfile(rcvfile, xconn){
 }
 
 
-
 function messout(mess){
-	
+
 	var xstr;
-	
+
 	xstr = $("#messout").val()
 	$("#messout").val(xstr+'\\\n'+mess)
 	$("textarea").scrollTop(99999)
-	
+
 }
 
-
-	$(document).ready(function(){
-	console.log("Local : " + android.localhostaddress());
-		messout("localhost : " + android.localhostaddress())
-	
-		initall();
-	})
-	
 
 	function initall() {
 	$('#servbut').on("click",function(){
