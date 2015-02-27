@@ -109,12 +109,10 @@ function getappfile(rcvfile, xconn){
  //               console.log("Respose length 4 : " +this.response.size + "  type : "+this.response.type);
 
                 xconn.send({uri: rcvfile, blobtype: this.response.type, blob: this.response});
-        // xconn.send(this.response);
 		    }
 		}
 		xhr.open('GET', 'http://' + android.localhostaddress() + '/' + rcvfile);
-//		xhr.open('GET', 'http://localhost:8080/'+rcvfile);
-		// xhr.responseType = 'text';
+
 		xhr.responseType = 'blob';
 		xhr.send();
 

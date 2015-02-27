@@ -22,29 +22,96 @@ public class Routes {
 
         JSONObject qryJSON;
 
-        String msg = Util.JSONReturn(false);
+        String msg = Util.JSONReturn(false, -1);
 
         System.out.println("Route : "+uri + " qryString : "+qryString);
 
         uri = trimUri(uri,API_PATH);
 
         if (uri.indexOf(API_SAVEFILE) == 0){
-  //         uri = trimUri(uri,API_SAVEFILE);
 
             qryJSON = Util.qryStringToJSON(qryString);
             try {
                 String fullpath = rootdir.getPath()+qryJSON.getString("filename");
-                System.out.println("JSON filename : "+ fullpath);
+             //   System.out.println("JSON filename : "+ fullpath);
                 msg = Util.savefile(fullpath,
-                        URLDecoder.decode(qryJSON.getString("filecontent").replace("+", "%2B"), "UTF-8").replace("%2B", "+"));
+                        Util.decodeJSuriComp(qryJSON.getString("filecontent")));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
 
-        } else if (uri.indexOf(API_PROCSQL) == 0){
-            uri = trimUri(uri,API_PROCSQL);
-        //    msg = SQLHelper.exclude(getArg(uri, 0), Long.valueOf(getArg(uri, 0)).longValue());
+        } else if (uri.indexOf(API_INSERTDB) == 0) {
 
+            qryJSON = Util.qryStringToJSON(qryString);
+
+            try {
+                String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
+
+                JSONObject jsob = new JSONObject(sqlpk);
+
+                String table = jsob.getString("table");
+                System.out.println("Value str : " + table);
+
+                jsob = jsob.getJSONObject("values");
+                msg = SQLHelper.insertDB(table, jsob);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else if (uri.indexOf(API_QUERYDB) == 0){
+
+            qryJSON = Util.qryStringToJSON(qryString);
+
+            try {
+                String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
+                JSONObject jsob = new JSONObject(sqlpk);
+                JSONObject jsob_args, jsob_limits;
+
+                String qstr = jsob.getString("qstr");
+
+                jsob_args = jsob.getJSONObject("args");
+                jsob_limits = jsob.getJSONObject("limits");
+                msg = SQLHelper.queryDB(qstr, jsob_args, jsob_limits);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else if (uri.indexOf(API_UPDATEDB) == 0){
+
+            qryJSON = Util.qryStringToJSON(qryString);
+
+            try {
+                String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
+                JSONObject jsob = new JSONObject(sqlpk);
+                JSONObject jsob_args, jsob_values;
+                String table = jsob.getString("table");
+                String qstr = jsob.getString("qstr");
+
+                jsob_values = jsob.getJSONObject("values");
+                jsob_args = jsob.getJSONObject("args");
+                msg = SQLHelper.updateDB(table, jsob_values, qstr, jsob_args);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else if (uri.indexOf(API_REMOVEDB) == 0){
+
+            qryJSON = Util.qryStringToJSON(qryString);
+
+            try {
+                String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
+
+                JSONObject jsob = new JSONObject(sqlpk);
+                JSONObject jsob_args;
+                String table = jsob.getString("table");
+                String qstr = jsob.getString("qstr");
+
+                jsob_args = jsob.getJSONObject("args");
+                msg = SQLHelper.removeDB(table, qstr, jsob_args);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         } else if (uri.indexOf(API_GETUPLOADDIR) == 0){
             msg = Prefs.getuploaddir(context);
             System.out.println("Get Upload dir : " + msg);

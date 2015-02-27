@@ -1,15 +1,38 @@
 
-
 function initbut() {
 
 // console.log("In initbut client.js");
 
- $("#lastnamebut").on("click", alertbut)
-
+    $("#imagebut").on("click", imagebut)
+    $("#savebut").on("click", savebut)
+    $("#findbut").on("click", findbut)
 }
 
 
-function alertbut(){
+function imagebut(){
 
     processimg($("#pic1")[0], "img/mark_head2.jpg")
+}
+
+
+function savebut() {
+    insertDB("device", {tag: $("#lastname").val(), status: "X"})
+}
+
+
+function findbut() {
+
+    queryDB("device", {}, {limit: 23})
+}
+
+
+function updatebut() {
+
+    updateDB("device", {tag: "Its alive", status: "J"}, "id > ?", {id: 4})
+}
+
+
+function removebut() {
+
+    removeDB("device", 'status = "J" AND id > ?', {id: 0})
 }

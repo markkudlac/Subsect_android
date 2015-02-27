@@ -16,10 +16,11 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URL;
 
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.zip.GZIPInputStream;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,22 +30,11 @@ import jtar.TarInputStream;
 
 import static net.subsect.subserv.Const.*;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.net.wifi.WifiManager;
-//import android.support.v4.app.NotificationCompat;
+
 import android.text.format.Time;
 import android.util.Base64;
-import android.widget.Toast;
+
 
 public class Util {
 
@@ -85,7 +75,6 @@ public class Util {
         } catch (Exception e) {
             System.out.println("File I/O error " + e);
         }
-
     }
 
 
@@ -164,52 +153,6 @@ public class Util {
     }
 
 
-     /*
-
-     static public void downloadFile(Context context, long id, String uri){
-     	HttpURLConnection con = null;
-        File downfl = null;
-        byte [] xbuf = new byte[BASE_BLOCKSIZE];
-
-    	try {
-    		System.out.println("HttpAdImage : "+uri);
-    		downfl = Util.targetCopyFile(context.getFilesDir()+uri);
-
-    		URL url = new URL(HTTP_PROT, SOURCE_ADDRESS, Uri.encode(uri));
-    		con = (HttpURLConnection) url.openConnection();
-
-    		InputStream httpin = (InputStream) con.getInputStream();
-    	    FileOutputStream downflout = new FileOutputStream(downfl);
-
-    	    // Transfer bytes from in to out
-    	    System.out.println("Start transfer");
-    	    Integer fbytes = 0;
-    	    int len;
-    	    while ((len = httpin.read(xbuf)) > 0) {
-    	        downflout.write(xbuf, 0, len);
-    	        fbytes += len;
-    	    }
-    	    httpin.close();
-    	    downflout.close();
-
-    	    SQLHelper.setAdvertStatus(id, "A");		//Make advert active
-    	    System.out.println("Done transfer");
-    	}
-    	catch (Exception ex) {
-    		System.out.println("Exception caught 1 : " + ex);
-    	}
-
-    	finally {
-    		if (con != null) {
-    			con.disconnect();
-    		} else {
-    			System.out.println("con null 2");
-    		}
-    	}
-     }
-     */
-
-
     static public String copyImage(Context context, String img, String imgdir, String flname, Long adlid) {
 
         File downfl = null;
@@ -235,44 +178,6 @@ public class Util {
     }
 
 
-    static public String copyLocalHref(Context context, String img, String landingdir, String flname, Long adlid) {
-
-        File downfl = null, tmpdir;
-        String unldfl, locpath;
-
-        locpath = "/" + landingdir + "/" + flname.substring(0, 3) + adlid;
-        unldfl = context.getFilesDir() + locpath + "/" + flname;
-
-        tmpdir = new File(context.getFilesDir() + locpath);
-        if (tmpdir.exists()) DeleteRecursive(tmpdir);
-
-        byte[] imageAsBytes = Base64.decode(img, Base64.DEFAULT);
-
-        System.out.println("copyLocalHref : " + unldfl);
-        downfl = Util.targetCopyFile(unldfl);
-
-        try {
-            FileOutputStream downflout = new FileOutputStream(downfl);
-            downflout.write(imageAsBytes, 0, imageAsBytes.length);
-            downflout.close();
-
-            FileInputStream zis = new FileInputStream(downfl);
-
-            TarInputStream tis = new TarInputStream(new BufferedInputStream(new GZIPInputStream(zis)));
-            tis.setDefaultSkip(true);
-            untar(context, tis, context.getFilesDir() + locpath);
-
-            tis.close();
-            downfl.delete();
-        } catch (Exception ex) {
-            System.out.println("Exception caught 1 : " + ex);
-            return (null);
-        }
-
-        return (locpath + "/index.html");
-    }
-
-
     static public long getTimeNow() {
 
         Time tm = new Time();
@@ -281,9 +186,9 @@ public class Util {
     }
 
 
-    static public String JSONReturn(Boolean val) {
+    static public String JSONReturn(Boolean val, long id) {
 
-        return ("{\"rtn\":" + val + "}");
+        return ("{\"rtn\":" + val + ", " + "\"db\":" + id +"}");
     }
 
 
@@ -346,70 +251,23 @@ public class Util {
     }
 
 
-    public static boolean isWifiDataConected(Context context) {
+    static public String decodeJSuriComp(String str){
 
-//    	 WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        String decodestr = null;
 
-        //   	 if (wifiMgr != null && wifiMgr.isWifiEnabled()){
-
-        ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() ||
-                conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected()) {
-            System.out.println("WiFi or data is connected.");
-            return (true);
-        }
-        //   	 }
-        //   	 System.out.println("WiFi NOT connected.");
-        return (false);
+        try {
+            decodestr = URLDecoder.decode(str.replace("+", "%2B"), "UTF-8").replace("%2B", "+");
+        }  catch (Exception ex) {
+        ex.printStackTrace();
     }
 
-
-    public static void sendNotofication(Context context, JSONObject item) {
-
-        /*
-        try {
-
-            Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getString(FLD_URLHREF)));
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    context,
-                    0,
-                    myIntent,
-                    Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            byte[] imageAsBytes = Base64.decode(item.getString("icon"), Base64.DEFAULT);
-
-            //   	     Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.adladla72x72);
-            Bitmap largeIcon = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length );
-
-            Notification myNotification = new NotificationCompat.Builder(context)
-                    .setContentTitle("Your Followup Request")
-                    .setContentText(item.getString("descript"))
-                    .setWhen(System.currentTimeMillis())
-                    .setContentIntent(pendingIntent)
-                    .setDefaults(Notification.DEFAULT_SOUND)
-                    .setAutoCancel(true)
-                    .setSmallIcon(R.drawable.adladl_a)
-                    .setLargeIcon(largeIcon)
-                    .build();
-
-            NotificationManager notificationManager =
-                    (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(item.getInt(FLD_ADVERT_ID), myNotification);
-
-            SQLHelper.uploadDone(new JSONArray().put(item), context);
-        }
-        catch(JSONException ex) {
-            ex.printStackTrace();
-        }
-        */
+    return (decodestr);
     }
 
 
     protected static String savefile(String filename, String filecontent) {
 
-        String msg = Util.JSONReturn(false);
-        System.out.println("In savefile : " + filename);
+        String msg = Util.JSONReturn(false, -1);
 
         try {
             byte [] xbuf = filecontent.getBytes("UTF-8");
@@ -420,11 +278,37 @@ public class Util {
             OutputStream out = new FileOutputStream(fl_dest);
             out.write(xbuf, 0, xbuf.length);
             out.close();
-            msg = Util.JSONReturn(true);
+            msg = Util.JSONReturn(true, -1);
         } catch (IOException e) {
             System.out.println( "File I/O error " + e);
         }
 
         return (msg);
+    }
+
+
+    public static String[] JSONOtoStringArray(JSONObject jsob){
+
+        String[] ary = new String[jsob.length()];
+        int i = 0;
+
+        try {
+            Iterator<String> itr = jsob.keys();
+            while(itr.hasNext()) {
+                ary[i] = jsob.getString(itr.next());
+                i++;
+            }
+        }
+        catch(JSONException ex) {
+            ex.printStackTrace();
+        }
+
+        return ary;
+    }
+
+
+    public static Boolean singleWord(String str){
+
+        return(! str.contains(" "));
     }
 }
