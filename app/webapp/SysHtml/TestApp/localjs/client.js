@@ -6,6 +6,8 @@ function initbut() {
     $("#imagebut").on("click", imagebut)
     $("#savebut").on("click", savebut)
     $("#findbut").on("click", findbut)
+    $("#updatebut").on("click", updatebut)
+    $("#removebut").on("click", removebut)
 }
 
 
