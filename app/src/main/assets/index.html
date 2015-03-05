@@ -14,7 +14,7 @@
 <h2>Subsect Server</h2>
 
 <div>
-    <input id="peerid" type="text" value="fred1" /> <br/>
+    <input id="peerid" type="text" value="fred" /> <br/>
     <input id="servbut" type="button" style="margin-top: 20px" value="Start Server" />
     <textarea id="messout" rows="10" style="width: 100%; margin-top: 20px"></textarea>
 </div>
@@ -23,7 +23,12 @@
 
 var peer = null;
 var shutdown = false;
+var blobbuff = {};
 
+/*
+var splitsz = 1800000;  // This size works for Opera, Chrome, and FFox
+*/
+var splitsz = 100000;
 
 	$(document).ready(function(){
 //	console.log("Local : " + android.localhostaddress());
@@ -88,34 +93,79 @@ function setPeer(customConfig){
 	  messout('Data connection started');
 		conn.on('open', function() {
 		  // Receive messages
-		  conn.on('data', function(rcvfile) {
-		    messout('Received ' + rcvfile);
+		  conn.on('data', function(rcv) {
+		//    messout('Received ' + rcv.file);
 
 			  // Send messages
-               getappfile(rcvfile, conn)
+               getappfile(rcv, conn)
 		  });
+		});
+
+		 conn.on('error', function(err) {
+
+		    messout('Connection error : ' + err);
+
 		});
 	});
 }
 
 
 
-function getappfile(rcvfile, xconn){
+function getappfile(rcv, xconn){
 
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function(){
-		    if (this.readyState == 4 && this.status == 200){
-		        //this.response is what you're looking for
- //               console.log("Respose length 4 : " +this.response.size + "  type : "+this.response.type);
+//console.log("Receive count : " + rcv.cnt + "  Receive file : " + rcv.file);
 
-                xconn.send({uri: rcvfile, blobtype: this.response.type, blob: this.response});
-		    }
-		}
-		xhr.open('GET', 'http://' + android.localhostaddress() + '/' + rcvfile);
+    if (rcv.cnt > 0)
+    {
+        var splitend = rcv.cnt * splitsz
+        var xcnt = rcv.cnt + 1
+        var tblob = blobbuff[rcv.file].slice((rcv.cnt - 1)*splitsz, splitend,
+            blobbuff[rcv.file].type);
 
-		xhr.responseType = 'blob';
-		xhr.send();
+  //      console.log("Respose size 1 : " +tblob.size + "  type : "+ tblob.type);
+        if (tblob.size < splitsz || splitend == blobbuff[rcv.file].size)
+        {
+            xcnt = -1;
+     // These caches should be cleaned up and only good for static files
+     //       blobbuff[rcv.file] = null;
+        }
+        xconn.send({uri: rcv.file, blobtype: tblob.type, blob: tblob, cnt: xcnt});
+        return;
+    }
 
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function(){
+	    if (this.readyState == 4 && this.status == 200){
+            console.log("Respose size 4 : " +this.response.size + "  type : "+this.response.type);
+
+            if (this.response.size > splitsz) {
+
+                var yblob = this.response.slice(0, splitsz, this.response.type);
+
+                if (blobbuff[rcv.file] === undefined || blobbuff[rcv.file] === null) {
+                console.log("Putting into blobbuff : " + rcv.file)
+                    blobbuff[rcv.file] = this.response.slice(splitsz,
+                        this.response.size, this.response.type);
+                }
+
+  //              console.log("Respose size 5 : " +yblob.size + "  type : "+ yblob.type);
+                xconn.send({uri: rcv.file, blobtype: this.response.type, blob: yblob, cnt: 1});
+
+            } else {
+                xconn.send({uri: rcv.file, blobtype: this.response.type, blob: this.response, cnt: 0});
+            }
+
+		 }
+	}
+	xhr.open(rcv.type, 'http://' + fullPath(rcv.file));
+	xhr.responseType = 'blob';
+	xhr.send();
+}
+
+
+function fullPath(file) {
+
+return(android.localhostaddress() + '/' + file);
 }
 
 
