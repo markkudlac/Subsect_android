@@ -14,7 +14,7 @@
 <h2>Subsect Server</h2>
 
 <div>
-    <input id="peerid" type="text" value="fred" /> <br/>
+    <input id="peerid" type="text" value="" /> <br/>
     <input id="servbut" type="button" style="margin-top: 20px" value="Start Server" />
     <textarea id="messout" rows="10" style="width: 100%; margin-top: 20px"></textarea>
 </div>
@@ -25,13 +25,13 @@ var peer = null;
 var shutdown = false;
 var blobbuff = {};
 
-/*
-var splitsz = 1800000;  // This size works for Opera, Chrome, and FFox
-*/
+var connectcnt = 0;
+var lastcontime = 0;
+var timer = null;
+
 var splitsz = 100000;
 
 	$(document).ready(function(){
-//	console.log("Local : " + android.localhostaddress());
 		messout("localhost : " + android.localhostaddress())
 
 		initall();
@@ -57,12 +57,18 @@ function peerServerOn() {
 	  success: function (data, status) {
 		messout("Completed XirSys");
 	    setPeer(data.d);
+	  },
+	  error: function() {
+	    messout("ERROR  XirSys");
 	  }
 	});
 }
 
 
 function setPeer(customConfig){
+
+     connectcnt = 0;
+     lastcontime = 0;
 
 	peer = new Peer($('#peerid').val(),
 		{key: 'wcf528rijzx8byb9',
@@ -75,37 +81,68 @@ function setPeer(customConfig){
 
 
 	peer.on('open', function(id) {
-	  messout('My peer ID is: ' + id);
+
+	  messout('My peer ID is: ' + id + " Name server : "+ getParam("subnamesrv"));
+	  messout('My  subHostname is: ' + getParam("subhost"));
+
+	  $.getJSON("http://"+getParam("subnamesrv")+"/api/setrtcid/"+ getParam("subhost") +"/"+id,
+	    function(rtnobj){
+	    messout("server rtn : " + rtnobj.rtn);
+
+	    $("#servbut").val("Close Server")
+	    timer = setTimeout(peerReset, 60000 * 12);
+	  })
+	  .fail(function(xhr, text){
+	    messout("server call failed : " + text);
+
+	    peerShutDown();
+	  });
 	});
 
 
 	peer.on('disconnected', function(){
 		messout('Server has disconnected');
 
-		if (! shutdown) {
-			messout('Calling reconnect');
-			peer.reconnect();
-		}
+		peerShutDown();
 	});
 
 
 	peer.on('connection', function(conn) {
+
 	  messout('Data connection started');
+	  lastcontime = new Date().getTime();
+	  ++connectcnt;
+
 		conn.on('open', function() {
 		  // Receive messages
-		  conn.on('data', function(rcv) {
-		//    messout('Received ' + rcv.file);
 
-			  // Send messages
-               getappfile(rcv, conn)
-		  });
+		     messout('Data Connection openned cnt : ' + connectcnt);
 		});
+
+        conn.on('close', function() {
+		  // Receive messages
+		  --connectcnt;
+		     messout('Data Connection closeded cnt : ' + connectcnt);
+		});
+
+            conn.on('data', function(rcv) {
+		   // messout('Received ' + rcv.file);
+
+                if (rcv.file.indexOf("sub_ping") == 0) {
+                    messout('Got Ping');
+                } else {
+                    getappfile(rcv, conn);
+                }
+		  });
 
 		 conn.on('error', function(err) {
-
 		    messout('Connection error : ' + err);
-
 		});
+	});
+
+
+	peer.on('close', function() {
+	  messout('Peer closed');
 	});
 }
 
@@ -184,20 +221,58 @@ function messout(mess){
 	$('#servbut').on("click",function(){
 //		console.log("destbut: pressed")
 		if ($("#servbut").val().indexOf("St") == 0){
-			shutdown = false;
-			peerServerOn();
-			$("#servbut").val("Close Server")
+			peerStartUp();
 		} else {
-			shutdown = true;
-			peer.destroy();
-			peer = null;
-			$("#servbut").val("Start Server")
+			peerShutDown();
 		}
 	})
 	
 	
 }
 
+
+function peerStartUp(){
+
+			shutdown = false;
+			peerServerOn();
+}
+
+
+function peerShutDown(){
+
+            shutdown = true;
+            if (timer != null) {
+                clearTimeout(timer);
+                timer = null;
+            }
+			 if (peer != null) peer.destroy();
+			peer = null;
+			$("#servbut").val("Start Server")
+}
+
+
+function peerReset(){
+
+console.log("In peerRest conectcnt : "+connectcnt);
+    if (connectcnt <= 0 || new Date().getTime() - lastcontime > 60000 * 20) {
+        peerShutDown()
+        peerStartUp()
+    } else {
+        timer = setTimeout(peerReset, 60000);
+    }
+}
+
+
+function getParam(val) {
+
+    tmp = [];
+    var items = location.search.substr(1).split("&");
+    for (var index = 0; index < items.length; index++) {
+        tmp = items[index].split("=");
+        if (tmp[0] === val) return(tmp[1]);
+    }
+    return "";
+}
 </script>
 
 </body>

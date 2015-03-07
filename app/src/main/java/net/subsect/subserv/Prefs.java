@@ -44,12 +44,11 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
     public static String getUploadDir(Context context) {
 
-        String xstr = PreferenceManager
+        return( PreferenceManager
                 .getDefaultSharedPreferences(context).getString(
-                        context.getString(R.string.uploadto), SYSHTML_DIR);
-        return(xstr);
+                        context.getString(R.string.uploadto), SYSHTML_DIR)
+        );
     }
-
 
 
 
@@ -61,4 +60,28 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
     }
 
+
+    public static String getHostname(Context context) {
+
+        return( PreferenceManager
+                .getDefaultSharedPreferences(context).getString(
+                        context.getString(R.string.hostname), "demo")
+        );
+    }
+
+
+    public static String getNameServer(Context context) {
+
+        if (PreferenceManager
+                .getDefaultSharedPreferences(context).getBoolean(
+                        context.getString(R.string.heroku), false)
+                ) {
+            return("www.subsect.net");
+        } else {
+            return (PreferenceManager
+                    .getDefaultSharedPreferences(context).getString(
+                            context.getString(R.string.localnameserv), "error")
+            );
+        }
+    }
 }

@@ -23,6 +23,7 @@ public class MainActivity extends Activity {
     private static int hostport = 8080;
     private static TextView androidout;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +37,13 @@ public class MainActivity extends Activity {
         WebView serverjs = (WebView)findViewById(R.id.serverJS);
         WebSettings webSettings = serverjs.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setAllowFileAccessFromFileURLs(true);
+        webSettings.setAllowUniversalAccessFromFileURLs(true);
+
         serverjs.addJavascriptInterface(this.new JsInterface(), "android");
 
-        serverjs.loadUrl("file:///android_asset/index.html");
+        serverjs.loadUrl("file:///android_asset/index.html?subhost="+Prefs.getHostname(this)+
+                "&subnamesrv=" + Prefs.getNameServer(this));
     }
 
 
@@ -155,6 +160,8 @@ public class MainActivity extends Activity {
     }
 
 
+    //THis could be eliminated but leaving here as example
+    // Pass in as a param to webview
 
     private final class JsInterface {
 
@@ -165,6 +172,7 @@ public class MainActivity extends Activity {
          //   androidout.setText("HOST 2 : " + fullhost);
             return(fullhost);
         }
+
     }
 
 }

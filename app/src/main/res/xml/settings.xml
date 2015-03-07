@@ -2,12 +2,28 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     
     <ListPreference
-    android:summary="%s"
-    android:defaultValue="0"
-    android:key="@string/uploadto"
-    android:title="@string/uploadto"
-    android:entries="@array/uploadto"
-    android:entryValues="@array/uploadto"/>
+        android:key="@string/uploadto"
+        android:title="@string/uploadto"
+        android:entries="@array/uploadto"
+        android:entryValues="@array/uploadto"
+        android:defaultValue="0"
+        android:summary="%s" />
 
+    <EditTextPreference
+        android:key="@string/hostname"
+        android:title="@string/hostname"
+        android:defaultValue="demo"
+        android:summary="%s" />
+
+    <EditTextPreference
+        android:key="@string/localnameserv"
+        android:title="@string/localnameserv"
+        android:defaultValue="192.168.1.103:3000"
+        android:summary="%s" />
+
+    <CheckBoxPreference
+        android:key="@string/heroku"
+        android:title="@string/heroku"
+        android:defaultValue="false"/>
 </PreferenceScreen>
 
