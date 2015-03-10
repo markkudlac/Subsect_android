@@ -192,6 +192,13 @@ public class Util {
     }
 
 
+    static public String JSONdbReturn(Boolean val, long id, String funcid) {
+
+        return ("[ {\"rtn\":" + val + ", " + "\"db\":" + id +
+                    ", " + "\"funcid\":\"" + funcid +"\"} ]");
+    }
+
+
     static public String getWifiApIpAddress() {
 
         try {

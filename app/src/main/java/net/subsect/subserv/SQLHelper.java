@@ -107,10 +107,10 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    protected static String insertDB(String table, JSONObject jsob) {
+    protected static String insertDB(String table, JSONObject jsob, String funcid) {
 
         ContentValues values = new ContentValues();
-        String msg = Util.JSONReturn(false, -1);
+        String msg = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
 
@@ -127,7 +127,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
             idval = database.insert(table, null, values);
             if (-1 != idval){
-                msg =  Util.JSONReturn(true, idval);
+                msg =  Util.JSONdbReturn(true, idval, funcid);
             } else {
                 System.out.println("Insert error");
             }
@@ -135,6 +135,8 @@ public class SQLHelper extends SQLiteOpenHelper {
           catch(JSONException ex) {
               ex.printStackTrace();
         }
+        System.out.println("JSONdbRetyrn insert : " + msg);
+
         return msg;
     }
 

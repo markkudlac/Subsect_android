@@ -1,7 +1,6 @@
 
 	var editor;
 
-
     function aceinit() {
         editor = ace.edit("editor");
         editor.setTheme("ace/theme/eclipse");
@@ -9,35 +8,52 @@
       }
 
 
-	function initUI(){
+	function getFileName(){
+             var tmpfile = $("#filename").val();
 
-		$('#savebut').on('click', function() {
-		$.post("http://"+$("#hostname").val()+"/api/savefile", 'filename=' +$("#filename").val()+
-		'&filecontent='+
-		encodeURIComponent(editor.getSession().getValue()), function(rcv){
+            if (tmpfile.charAt(0) != "/") {
+                tmpfile = "/" + tmpfile;
+            }
+            return(tmpfile);
+        }
 
-		    if (!JSON.parse(rcv).rtn) alert("File save error");
-        });
-	    });
+    	function initUI(){
 
+    		$('#savebut').on('click', function() {
 
-	    $('#loadbut').on('click', function() {
+    		$.post("http://"+$("#hostname").val()+"/api/savefile", 'filename=' + getFileName() +
+    		'&filecontent='+
+    		encodeURIComponent(editor.getSession().getValue()), function(rcv){
 
-		$.get("http://" + $("#hostname").val()+'/'+$("#filename").val(), function(rcv){
-		    var flnm = $("#filename").val();
-		    if (flnm.indexOf(".js") > 0){
-		        editor.getSession().setMode("ace/mode/javascript");
-		    } else if (flnm.indexOf(".html") > 0){
-		    editor.getSession().setMode("ace/mode/html");
-		    } else {
-		        editor.getSession().setMode("ace/mode/text");
-		    }
+    		    if (!JSON.parse(rcv).rtn) alert("File save error");
+            });
+    	    });
 
-			editor.getSession().setValue(rcv);
-			localStorage.setItem("lastfile", $("#filename").val());
-		});
-	    });
+	     $('#loadbut').on('click', function() {
 
-	    $("#hostname").val(window.location.host);
-	    $("#filename").val(localStorage.getItem("lastfile"));
-	}
+        		$.ajax({
+        		    type: "GET",
+        		    url: "http://" + $("#hostname").val() + getFileName(),
+        		    dataType: "text",
+        		    success: function(rcv){
+        		        var flnm = $("#filename").val();
+        		        if (flnm.indexOf(".js") > 0){
+        		          editor.getSession().setMode("ace/mode/javascript");
+        		        } else if (flnm.indexOf(".html") > 0){
+        		        editor.getSession().setMode("ace/mode/html");
+        		        } else {
+        		            editor.getSession().setMode("ace/mode/text");
+        		        }
+
+        			    editor.getSession().setValue(rcv);
+        			    localStorage.setItem("lastfile", $("#filename").val());
+        		    },
+        		    error: function(err,texts){
+        		        alert("Load error : " + texts)
+        		    }
+        		  });
+        	    });
+
+        	    $("#hostname").val(window.location.host);
+        	    $("#filename").val(localStorage.getItem("lastfile"));
+        	}

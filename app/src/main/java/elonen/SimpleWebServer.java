@@ -36,6 +36,8 @@ public class SimpleWebServer extends NanoHTTPD {
         put("xml", "text/xml");
         put("txt", "text/plain");
         put("asc", "text/plain");
+        put("js",  "text/javascript");
+        put("json", "application/json");  // added mark to support JQuery getJSON
         put("gif", "image/gif");
         put("jpg", "image/jpeg");
         put("jpeg", "image/jpeg");
@@ -48,8 +50,6 @@ public class SimpleWebServer extends NanoHTTPD {
         put("flv", "video/x-flv");
         put("mov", "video/quicktime");
         put("swf", "application/x-shockwave-flash");
-        put("js", "application/javascript");
-        put("json", "text/javascript");  // added mark to support JQuery getJSON
         put("pdf", "application/pdf");
         put("doc", "application/msword");
         put("ogg", "application/x-ogg");

@@ -50,10 +50,11 @@ public class Routes {
                 JSONObject jsob = new JSONObject(sqlpk);
 
                 String table = jsob.getString("table");
+                String funcid = jsob.getString("funcid");
                 System.out.println("Value str : " + table);
 
                 jsob = jsob.getJSONObject("values");
-                msg = SQLHelper.insertDB(table, jsob);
+                msg = SQLHelper.insertDB(table, jsob, funcid);
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -71,6 +72,7 @@ public class Routes {
 
                 jsob_args = jsob.getJSONObject("args");
                 jsob_limits = jsob.getJSONObject("limits");
+
                 msg = SQLHelper.queryDB(qstr, jsob_args, jsob_limits);
 
             } catch (Exception ex) {
