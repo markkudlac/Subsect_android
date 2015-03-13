@@ -30,7 +30,7 @@ public interface Const extends BaseColumns {
     public static final String FLD_STATUS = "status";
     public static final String FLD_CREATED_AT = "created_at";
     public static final String FLD_UPDATED_AT = "updated_at";
-    public static final int CURRENT_DB_VERSION = 9;
+    public static final int CURRENT_DB_VERSION = 1;
 
     public static final String TABLE_DEVICE = "device";
     public static final String FLD_TAG= "tag";

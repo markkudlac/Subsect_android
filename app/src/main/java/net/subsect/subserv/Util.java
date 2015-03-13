@@ -186,9 +186,9 @@ public class Util {
     }
 
 
-    static public String JSONReturn(Boolean val, long id) {
+    static public String JSONReturn(Boolean val) {
 
-        return ("{\"rtn\":" + val + ", " + "\"db\":" + id +"}");
+        return ("{\"rtn\":" + val +"}");
     }
 
 
@@ -274,7 +274,7 @@ public class Util {
 
     protected static String savefile(String filename, String filecontent) {
 
-        String msg = Util.JSONReturn(false, -1);
+        String msg = Util.JSONReturn(false);
 
         try {
             byte [] xbuf = filecontent.getBytes("UTF-8");
@@ -285,7 +285,7 @@ public class Util {
             OutputStream out = new FileOutputStream(fl_dest);
             out.write(xbuf, 0, xbuf.length);
             out.close();
-            msg = Util.JSONReturn(true, -1);
+            msg = Util.JSONReturn(true);
         } catch (IOException e) {
             System.out.println( "File I/O error " + e);
         }

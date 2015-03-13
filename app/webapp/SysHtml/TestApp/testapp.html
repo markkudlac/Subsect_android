@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,41 +8,58 @@
     <title>TestApp</title>
 
     <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-    <script src="http://www.subsect.net/lib/dev_subsect.js"></script>
+    <script src="http://www.subsect.net:3000/lib/dev_subsect.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular-route.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="localcss/client.css">
     <script src="localjs/client.js"></script>
 
+    <!-- NO id for script tag to load with src. Need .ngtp extension. If using inline then need id -->
+    <script type="text/ng-template" src="templ.ngtp"></script>
+    <script type="text/ng-template" src="additem.ngtp"></script>
 
 </head>
 
-<body ng-app="testApp">
-<div id="content">
-    <h2>Last Name</h2>
+<body>
+<div id="content" ng-controller="NamesController">
+    <h2>Test App</h2>
 
-    <input id="lastname" type="text" placeholder="Last Name" /> <br/>
+    <button type="button"
+            ng-click="clearall()" style="margin-top: 5px">Clear</button>
+    <button  type="button"
+             ng-click="findall()" style="margin-top: 5px">Find</button>
+    <button  type="button"
+             ng-click="newitem()" style="margin-top: 5px">New</button>
 
-    <button id="savebut" type="button" style="margin-top: 15px">Save</button>
-    <button id="findbut" type="button" style="margin-top: 15px">Find</button>
-    <button id="updatebut" type="button" style="margin-top: 15px">Update</button>
-    <button id="removebut" type="button" style="margin-top: 15px">Remove</button>
+    <div style="margin-top: 15px">
+        <table>
+            <tr ng-repeat="item in names" ng-show="showitem(item)">
+                <td> {{item.tag}} </td>
+                <td> {{item.status}} </td>
+                <td> <button  type="button" ng-click="deleteitem(item, $index)">Delete</button></td>
+                <td> <button  type="button" ng-click="edititem(item, $first)">Edit</button></td>
+            </tr>
+        </table>
 
-    <div id="outname" ng-controller="NamesController">
-        <button type="button" ng-click="chgname()" style="margin-top: 15px">Change Name</button>
-        <p>{{names.first}}</p>
+        <div ng-include=" 'templ.ngtp' "></div>
+
+        <ng-view />
+
+
     </div>
 
     <div>
         <div>
             <img id="pic1" src="img/adladl_a.png"/>
 
-            <img id="droppic"
-                 src="https://dl.dropboxusercontent.com/u/69030648/Screenshot_5s_2.png"/>
-
             <!--
-            <img id="pic1" src="img/passat97.jpg"/>
-             -->
+              <img id="droppic"
+                   src="https://dl.dropboxusercontent.com/u/69030648/Screenshot_5s_2.png"/>
+
+
+              <img id="pic1" src="img/passat97.jpg"/>
+               -->
         </div>
         <button id="imagebut" type="button" style="margin-top: 15px">Image</button>
     </div>
@@ -55,7 +71,7 @@
                <source src="img/bluejay.mp3" type="audio/mpeg">
                 <source id="audsrc" src="img/WickedGrav.mp3" type="audio/mpeg">
                 -->
-                <source id="audsrc" src="#" type="audio/mpeg">
+                <source id="audsrc" src="" type="audio/mpeg">
             </audio>
         </div>
         <button id="audiobut" type="button" style="margin-top: 15px">Play Audio</button>

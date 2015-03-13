@@ -135,17 +135,17 @@ public class SQLHelper extends SQLiteOpenHelper {
           catch(JSONException ex) {
               ex.printStackTrace();
         }
-        System.out.println("JSONdbRetyrn insert : " + msg);
 
         return msg;
     }
 
 
-    protected static String queryDB(String qstr, JSONObject jsob_args, JSONObject jsob_limits) {
+    protected static String queryDB(String qstr, JSONObject jsob_args, JSONObject jsob_limits,
+                                    String funcid) {
 
         Cursor tmpCursor;
         String[] args = Util.JSONOtoStringArray(jsob_args);
-        String msg = Util.JSONReturn(false, -1);
+        String msg = Util.JSONdbReturn(false, -1, funcid);
         JSONObject jsob;
 
         try {
@@ -180,6 +180,13 @@ public class SQLHelper extends SQLiteOpenHelper {
             JSONArray jArray =  new JSONArray();
             String[] colnames = tmpCursor.getColumnNames();
 
+            jsob = new JSONObject();
+            jsob.put("rtn", true);
+            jsob.put("db", 0);
+            jsob.put("funcid", funcid);
+            jArray.put(jsob);
+
+            int reccnt = 0;
             if (tmpCursor.moveToFirst()){
 
                 do {
@@ -195,8 +202,10 @@ public class SQLHelper extends SQLiteOpenHelper {
                         }
                     }
                     jArray.put(jsob);
-            } while(tmpCursor.moveToNext());
+                    ++reccnt;
+                } while(tmpCursor.moveToNext());
             }
+            jArray.getJSONObject(0).put("db", reccnt);
             msg = jArray.toString().replace("\\", "");
         }
         catch(JSONException ex) {
@@ -206,11 +215,12 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    protected static String updateDB(String table, JSONObject jsob_values, String qstr, JSONObject jsob_args) {
+    protected static String updateDB(String table, JSONObject jsob_values, String qstr, JSONObject jsob_args,
+                                     String funcid) {
 
         ContentValues values = new ContentValues();
         String[] args = Util.JSONOtoStringArray(jsob_args);
-        String msg = Util.JSONReturn(false, -1);
+        String msg = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
         //System.out.println("insert sqlpk : "+ sqlpk);
@@ -243,7 +253,7 @@ public class SQLHelper extends SQLiteOpenHelper {
             //System.out.println("Update qstr 3 : "+ "x"+qstr+"x");
             idval = database.update(table, values, qstr, args);
             if (-1 != idval){
-                msg =  Util.JSONReturn(true, idval);
+                msg =  Util.JSONdbReturn(true, idval, funcid);
             } else {
                 System.out.println("Update error");
             }
@@ -255,10 +265,11 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    protected static String removeDB(String table, String qstr, JSONObject jsob_args) {
+    protected static String removeDB(String table, String qstr, JSONObject jsob_args,
+                                     String funcid) {
 
         String[] args = Util.JSONOtoStringArray(jsob_args);
-        String msg = Util.JSONReturn(false, -1);
+        String msg = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
         //System.out.println("insert sqlpk : "+ sqlpk);
@@ -282,7 +293,7 @@ public class SQLHelper extends SQLiteOpenHelper {
             //System.out.println("Update qstr 3 : "+ "x"+qstr+"x");
             idval = database.delete(table, qstr, args);
             if (-1 != idval){
-                msg =  Util.JSONReturn(true, idval);
+                msg =  Util.JSONdbReturn(true, idval, funcid);
             } else {
                 System.out.println("Delete error");
             }

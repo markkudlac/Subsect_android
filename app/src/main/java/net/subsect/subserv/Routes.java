@@ -22,7 +22,7 @@ public class Routes {
 
         JSONObject qryJSON;
 
-        String msg = Util.JSONReturn(false, -1);
+        String msg = Util.JSONReturn(false);
 
         System.out.println("Route : "+uri + " qryString : "+qryString);
 
@@ -67,13 +67,14 @@ public class Routes {
                 String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args, jsob_limits;
+                String funcid = jsob.getString("funcid");
 
                 String qstr = jsob.getString("qstr");
 
                 jsob_args = jsob.getJSONObject("args");
                 jsob_limits = jsob.getJSONObject("limits");
 
-                msg = SQLHelper.queryDB(qstr, jsob_args, jsob_limits);
+                msg = SQLHelper.queryDB(qstr, jsob_args, jsob_limits, funcid);
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -87,11 +88,12 @@ public class Routes {
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args, jsob_values;
                 String table = jsob.getString("table");
+                String funcid = jsob.getString("funcid");
                 String qstr = jsob.getString("qstr");
 
                 jsob_values = jsob.getJSONObject("values");
                 jsob_args = jsob.getJSONObject("args");
-                msg = SQLHelper.updateDB(table, jsob_values, qstr, jsob_args);
+                msg = SQLHelper.updateDB(table, jsob_values, qstr, jsob_args, funcid);
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -106,10 +108,11 @@ public class Routes {
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args;
                 String table = jsob.getString("table");
+                String funcid = jsob.getString("funcid");
                 String qstr = jsob.getString("qstr");
 
                 jsob_args = jsob.getJSONObject("args");
-                msg = SQLHelper.removeDB(table, qstr, jsob_args);
+                msg = SQLHelper.removeDB(table, qstr, jsob_args, funcid);
 
             } catch (Exception ex) {
                 ex.printStackTrace();

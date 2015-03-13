@@ -37,6 +37,7 @@ public class SimpleWebServer extends NanoHTTPD {
         put("txt", "text/plain");
         put("asc", "text/plain");
         put("js",  "text/javascript");
+        put("ngtp", "text/ng-template");  // added mark for Angular templates
         put("json", "application/json");  // added mark to support JQuery getJSON
         put("gif", "image/gif");
         put("jpg", "image/jpeg");
