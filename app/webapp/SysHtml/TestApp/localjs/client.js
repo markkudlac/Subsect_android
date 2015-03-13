@@ -69,7 +69,7 @@ testAppModule.controller("NamesController", ['$scope', '$templateCache', '$locat
             insertDB("device", {tag: $scope.master.tag, status: $scope.master.status.substr(0,1)},
             function(rcv){
                 if (rcv[0].rtn) {
-                    clearadd();
+                    $scope.clearadd();
                     $scope.findall();
                 } else {
                     alert("Add failed")
@@ -81,7 +81,7 @@ testAppModule.controller("NamesController", ['$scope', '$templateCache', '$locat
             updateDB("device", {tag: user.tag, status: user.status.substr(0,1)}, "",
                 {id: user.id}, function(rcv){
                 if (rcv[0].rtn) {
-                    clearadd();
+                    $scope.clearadd();
                     $scope.findall();
                 } else {
                     alert("Add failed")

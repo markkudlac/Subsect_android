@@ -150,7 +150,7 @@ function setPeer(customConfig){
 
 function getappfile(rcv, xconn){
 
-//console.log("Receive count : " + rcv.cnt + "  Receive file : " + rcv.file);
+//console.log("Receive count : " + rcv.cnt + "  Receive mime : " + rcv.mimetp);
 
     if (rcv.cnt > 0)
     {
@@ -196,6 +196,9 @@ function getappfile(rcv, xconn){
 	}
 	xhr.open(rcv.type, 'http://' + fullPath(rcv.file));
 	xhr.responseType = 'blob';
+	if (rcv.mimetp.length > 0 ) {
+	    xhr.overrideMimeType(rcv.mimetp);
+	}
 	xhr.send();
 }
 

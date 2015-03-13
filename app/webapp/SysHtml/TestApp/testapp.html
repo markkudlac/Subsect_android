@@ -15,9 +15,9 @@
     <link rel="stylesheet" type="text/css" href="localcss/client.css">
     <script src="localjs/client.js"></script>
 
-    <!-- NO id for script tag to load with src. Need .ngtp extension. If using inline then need id -->
-    <script type="text/ng-template" src="templ.ngtp"></script>
-    <script type="text/ng-template" src="additem.ngtp"></script>
+    <!-- NO id for script tag to load with src. If using inline then need id -->
+    <script type="text/ng-template" src="templ.html"></script>
+    <script type="text/ng-template" src="additem.html"></script>
 
 </head>
 
@@ -42,7 +42,7 @@
             </tr>
         </table>
 
-        <div ng-include=" 'templ.ngtp' "></div>
+        <div ng-include=" 'templ.html' "></div>
 
         <ng-view />
 
