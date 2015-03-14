@@ -10,7 +10,7 @@ testAppModule = angular.module("testApp", ['ngRoute'])
 .config(function($routeProvider){
     
     $routeProvider.when("/additem", {
-        templateUrl: "additem.ngtp"
+        templateUrl: "additem.html"
     });
 })
 .directive('script', ['$templateCache', '$http',
@@ -20,11 +20,6 @@ testAppModule = angular.module("testApp", ['ngRoute'])
             terminal: true,
             compile: function(element, attr) {
                 if (attr.type == 'text/ng-template' && attr.src && !attr.id) {
-                    console.log("In directive 2")
-                   // $http.get(attr.src).success(function(rcv){
-                    //    console.log("In directive 3 : " +rcv)
-                     //   $templateCache.put(attr.id, rcv)
-                   // });
                     $http.get(attr.src, { cache: $templateCache });
                 }
             }

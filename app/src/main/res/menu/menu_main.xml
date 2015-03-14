@@ -5,4 +5,14 @@
         android:title="@string/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
+
+    <item android:id="@+id/connect"
+        android:title="@string/connect"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+
+    <item android:id="@+id/server"
+        android:title="@string/server"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>

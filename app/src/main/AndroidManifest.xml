@@ -36,6 +36,13 @@
             android:parentActivityName="net.subsect.subserv.MainActivity" >
         </activity>
 
+        <activity
+            android:name="net.subsect.subserv.ConnectActivity"
+            android:label="@string/connect"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" >
+        </activity>
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import elonen.SimpleWebServer;
 
@@ -22,7 +23,7 @@ public class MainActivity extends Activity {
     private static String hostadd = null;
     private static int hostport = 8080;
     private static TextView androidout;
-
+    //private static WebView serverjs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +35,16 @@ public class MainActivity extends Activity {
         startdb();
         turnServerOn(this);
 
-        WebView serverjs = (WebView)findViewById(R.id.serverJS);
-        WebSettings webSettings = serverjs.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setAllowFileAccessFromFileURLs(true);
-        webSettings.setAllowUniversalAccessFromFileURLs(true);
+            WebView serverjs = (WebView) findViewById(R.id.serverJS);
+            WebSettings webSettings = serverjs.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            webSettings.setAllowFileAccessFromFileURLs(true);
+            webSettings.setAllowUniversalAccessFromFileURLs(true);
 
-        serverjs.addJavascriptInterface(this.new JsInterface(), "android");
+            serverjs.addJavascriptInterface(this.new JsInterface(), "android");
 
-        serverjs.loadUrl("file:///android_asset/index.html?subhost="+Prefs.getHostname(this)+
-                "&subnamesrv=" + Prefs.getNameServer(this));
+            serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(this) +
+                    "&subnamesrv=" + Prefs.getNameServer(this));
     }
 
 
@@ -51,9 +52,28 @@ public class MainActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
 
-        System.out.println("In DESTROY");
+        System.out.println("In onDestroy");
         stopHttpdServer();
         stopDb();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        System.out.println("In onResume");
+      //  onCreate(null);
+    }
+
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+
+        System.out.println("In onRestart");
+        //When BACK BUTTON is pressed, the activity on the stack is restarted
+        //Do what you want on the refresh procedure here
     }
 
 
@@ -73,10 +93,20 @@ public class MainActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            System.out.println("In Settings ");
 
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
+            return true;
+        } else if (id == R.id.connect) {
+
+            Intent intent = new Intent(this, ConnectActivity.class);
+            startActivity(intent);
+
+            return true;
+        } else if (id == R.id.server) {
+            Toast.makeText(getBaseContext(), "Server",
+                    Toast.LENGTH_LONG).show();
+
             return true;
         }
 
