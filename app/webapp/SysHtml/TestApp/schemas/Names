@@ -1,0 +1,4 @@
+create table names (
+  firstname text,
+  status char(1) default 'A'
+  )

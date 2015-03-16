@@ -20,18 +20,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Hashtable;
 import java.util.Iterator;
 
 public class SQLHelper extends SQLiteOpenHelper {
 
-    private static SQLiteDatabase database = null;
-    private static Context srvcontext;
+    private SQLiteDatabase database = null;
+    private String dbname;
+    private Context context;
 
-    public SQLHelper(Context context) {
+    public SQLHelper(Context context, String dbname, int dbversion) {
 
-        super(context, DB_NAME, null, CURRENT_DB_VERSION);
-
-        srvcontext = context;
+        super(context, dbname, null, dbversion);
+        this.dbname = dbname;
+        this.context = context;
 
         try {
             database = getWritableDatabase();
@@ -43,8 +45,10 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        System.out.println("In onCreate db");
-        Util.versionChangeHTML(srvcontext);
+        System.out.println("In onCreate db : "+dbname);
+        if(isadmindb(dbname)) {
+            Util.versionChangeHTML(context);
+        }
         dropAndCreate(db);
     }
 
@@ -53,8 +57,8 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         System.out.println("In onUpgrade db old : " + oldVersion + " new : " + newVersion);
 
-        if (newVersion >= CURRENT_DB_VERSION) {
-            Util.versionChangeHTML(srvcontext);
+        if (newVersion > oldVersion && isadmindb(dbname)) {
+            Util.versionChangeHTML(context);
         }
     }
 
@@ -65,49 +69,64 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     protected void createTables(SQLiteDatabase db) {
 
-        System.out.println("In createTables");
+        System.out.println("In createTables : " + dbname);
 
         try {
-            db.execSQL(
-                    "create table " + TABLE_DEVICE + " ( " +
-                            FLD_ID + " integer primary key autoincrement, " +
-                            FLD_TAG + " text, " +
-                            FLD_STATUS + " char(1) default \'A\', " +
-                            FLD_CREATED_AT + " integer default 0, " +
-                            FLD_UPDATED_AT + " integer default 0 " +
-                            ")"
-            );
+            System.out.println("CreateTables : " + dbname);
+            if (isadmindb(dbname)) {
 
+                db.execSQL(
+                        "create table " + TBL_REGISTRY + " ( " +
+                                FLD_ID + " integer primary key autoincrement, " +
+                                FLD_APP + " text, " +
+                                FLD_TYPE + " char(1) default \'S\', " +
+                                FLD_STATUS + " char(1) default \'A\', " +
+                                FLD_CREATED_AT + " integer default 0, " +
+                                FLD_UPDATED_AT + " integer default 0 " +
+                                ")"
+                );
 
-            initializeDevice(db);
+                initializeRegistry(db, "TestApp");
+
+            } else {
+                db.execSQL(
+                        Util.getSchema(context, dbname.substring(2), "Names")
+                );
+            }
 
             System.out.println("Out createTables");
         } catch (SQLException e) {
-            System.out.println("SQLException create");
+              System.out.println("SQLException create");
         }
+
     }
 
 
-    protected void closeDb() {
+    private boolean isadmindb(String dbnm){
+
+        return(dbnm == DB_SUBSERV);
+    }
+
+
+    public void closeDb() {
         database.close();
         database = null;
     }
 
 
-    private static void initializeDevice(SQLiteDatabase db) {
+    private void initializeRegistry(SQLiteDatabase db, String app) {
         ContentValues values = new ContentValues();
 
-        System.out.println("nIn initialize Device");
-        values.put(FLD_TAG, "TEST_DEVICE_ID_0");
+        values.put(FLD_APP, app);
         values.put(FLD_CREATED_AT, Util.getTimeNow());
 
-        if (-1 == db.insert(TABLE_DEVICE, null, values)) {
-            System.out.println("device insert error");
+        if (-1 == db.insert(TBL_REGISTRY, null, values)) {
+            System.out.println(TBL_REGISTRY + " insert error");
         }
     }
 
 
-    protected static String insertDB(String table, JSONObject jsob, String funcid) {
+    protected String insertDB(String table, JSONObject jsob, String funcid) {
 
         ContentValues values = new ContentValues();
         String msg = Util.JSONdbReturn(false, -1, funcid);
@@ -140,7 +159,7 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    protected static String queryDB(String qstr, JSONObject jsob_args, JSONObject jsob_limits,
+    protected String queryDB(String qstr, JSONObject jsob_args, JSONObject jsob_limits,
                                     String funcid) {
 
         Cursor tmpCursor;
@@ -215,7 +234,7 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    protected static String updateDB(String table, JSONObject jsob_values, String qstr, JSONObject jsob_args,
+    protected String updateDB(String table, JSONObject jsob_values, String qstr, JSONObject jsob_args,
                                      String funcid) {
 
         ContentValues values = new ContentValues();
@@ -265,7 +284,7 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    protected static String removeDB(String table, String qstr, JSONObject jsob_args,
+    protected String removeDB(String table, String qstr, JSONObject jsob_args,
                                      String funcid) {
 
         String[] args = Util.JSONOtoStringArray(jsob_args);
@@ -273,7 +292,6 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         long idval = -1;
         //System.out.println("insert sqlpk : "+ sqlpk);
-
 
             if (qstr == null || qstr == "null" || qstr.isEmpty()) {
                 Iterator<String> itr = jsob_args.keys();
@@ -299,6 +317,30 @@ public class SQLHelper extends SQLiteOpenHelper {
             }
 
         return msg;
+    }
+
+
+    // Call only with DB_SUBSERV
+
+    protected Hashtable<Integer, String> getAllDbs() {
+
+        Hashtable<Integer, String> dbs = new Hashtable<Integer, String>();
+        Cursor tmpCursor;
+        String[] args = new String[0];
+
+        tmpCursor = database.rawQuery("SELECT * FROM " + TBL_REGISTRY, args);
+
+        int reccnt = 0;
+        String dbval;
+
+        if (tmpCursor.moveToFirst()){
+            dbval = tmpCursor.getString(tmpCursor.getColumnIndex(FLD_TYPE));
+            dbval = dbval + "_"+ tmpCursor.getString(tmpCursor.getColumnIndex(FLD_APP));
+
+            dbs.put(reccnt, dbval);
+        }
+
+        return dbs;
     }
 }
 

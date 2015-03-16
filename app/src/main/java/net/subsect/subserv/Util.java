@@ -3,12 +3,14 @@ package net.subsect.subserv;
 /**
  * Created by markkudlac on 2015-02-16.
  */
+import java.io.BufferedReader;
 import java.io.File;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 
 import java.io.InputStream;
@@ -66,9 +68,8 @@ public class Util {
                 userdir.mkdirs();    //Create the user directory if it doesn't exit
             }
 
-            System.out.println("HTML DIR is : " + userdir.getAbsolutePath());
+           // System.out.println("HTML DIR is : " + userdir.getAbsolutePath());
 
-            System.out.println("The version number changed");
             if (htmlpar.exists()) DeleteRecursive(htmlpar);
             untarTGzFile(mnact);
 
@@ -135,17 +136,17 @@ public class Util {
 
         dir = copyfile.substring(0, xind);
 
-      		System.out.println("targetCopy dir : "+dir+"  file : "+fileonly);
+     // 		System.out.println("targetCopy dir : "+dir+"  file : "+fileonly);
         dirfile = new File(dir);
         if (!dirfile.exists()) {
             dirfile.mkdirs();
-              		System.out.println("targetCopy dir is created");
+      //        		System.out.println("targetCopy dir is created");
         }
 
         targfile = new File(dirfile, fileonly);
 
         if (targfile.exists()) {
-           		System.out.println("file exists : "+ targfile.getPath());
+           	//	System.out.println("file exists : "+ targfile.getPath());
             targfile.delete();
         }
 
@@ -317,5 +318,39 @@ public class Util {
     public static Boolean singleWord(String str){
 
         return(! str.contains(" "));
+    }
+
+
+    public static String getSchema(Context context, String appname, String flnme) {
+
+        String schema ="";
+
+        try {
+
+            File schemfl;
+            String schemapath = context.getFilesDir().getPath();
+            String readbuf;
+            schemapath = schemapath + "/" + SYSHTML_DIR+"/"+appname+"/schemas";
+         //    System.out.println("Scemas DIR is : " + schemapath);
+            schemfl = new File(schemapath, flnme);
+
+            BufferedReader buf = new BufferedReader(new FileReader(schemfl));
+            while ((readbuf = buf.readLine()) != null){
+                schema = schema + " " + readbuf;
+            }
+
+            buf.close();
+
+            String ext = " , " + FLD_ID + " integer primary key autoincrement, " +
+                    FLD_CREATED_AT + " integer default 0, " +
+                    FLD_UPDATED_AT + " integer default 0 " +
+                    ")";
+            schema = schema.replaceAll("\\)\\s*$", ext);
+        } catch (Exception e) {
+            System.out.println("File I/O error " + e);
+        }
+
+        System.out.println("Schema SQL: " + schema);
+        return schema;
     }
 }

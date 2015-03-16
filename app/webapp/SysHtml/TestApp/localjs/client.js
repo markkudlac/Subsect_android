@@ -35,7 +35,7 @@ testAppModule.controller("NamesController", ['$scope', '$templateCache', '$locat
     $scope.master = {};
     
     $scope.findall = function() {
-    queryDB("device", {}, {limit: 50}, function(rcv){ 
+    queryDB("names", {}, {limit: 50}, function(rcv){
       //  console.log("testApp ran run 1 db :" + rcv[0].db);
         rcv.shift();
         $scope.names = rcv
@@ -61,7 +61,7 @@ testAppModule.controller("NamesController", ['$scope', '$templateCache', '$locat
         if ($scope.user.id == -1) {
             $scope.master = angular.copy(user);
      //   console.log("name : "+ $scope.master.name + "  STS : " + $scope.master.status)
-            insertDB("device", {tag: $scope.master.tag, status: $scope.master.status.substr(0,1)},
+            insertDB("names", {firstname: $scope.master.firstname, status: $scope.master.status.substr(0,1)},
             function(rcv){
                 if (rcv[0].rtn) {
                     $scope.clearadd();
@@ -73,7 +73,7 @@ testAppModule.controller("NamesController", ['$scope', '$templateCache', '$locat
         } else {
             console.log("Save update")
             
-            updateDB("device", {tag: user.tag, status: user.status.substr(0,1)}, "",
+            updateDB("names", {firstname: user.firstname, status: user.status.substr(0,1)}, "",
                 {id: user.id}, function(rcv){
                 if (rcv[0].rtn) {
                     $scope.clearadd();
@@ -88,7 +88,7 @@ testAppModule.controller("NamesController", ['$scope', '$templateCache', '$locat
     
     $scope.deleteitem = function(item, index) {
         console.log("Delete : " + item.id + "  index : " + index)
-        removeDB("device", '', {id: $scope.names[index].id}, function(){
+        removeDB("names", '', {id: $scope.names[index].id}, function(){
         $scope.names[index].id = -1;
         console.log("Deleted : " + $scope.names[index].tag)
         $scope.$apply();

@@ -24,7 +24,7 @@ public class Routes {
 
         String msg = Util.JSONReturn(false);
 
-        System.out.println("Route : "+uri + " qryString : "+qryString);
+       // System.out.println("Route : "+uri + " qryString : "+qryString);
 
         uri = trimUri(uri,API_PATH);
 
@@ -48,13 +48,11 @@ public class Routes {
                 String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
 
                 JSONObject jsob = new JSONObject(sqlpk);
+                JSONObject jsob_vals = jsob.getJSONObject("values");
 
-                String table = jsob.getString("table");
-                String funcid = jsob.getString("funcid");
-                System.out.println("Value str : " + table);
-
-                jsob = jsob.getJSONObject("values");
-                msg = SQLHelper.insertDB(table, jsob, funcid);
+                msg = SQLManager.getSQLHelper(jsob.getString("db")).
+                        insertDB(jsob.getString("table"), jsob_vals,
+                                jsob.getString("funcid"));
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -67,14 +65,15 @@ public class Routes {
                 String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args, jsob_limits;
-                String funcid = jsob.getString("funcid");
-
-                String qstr = jsob.getString("qstr");
 
                 jsob_args = jsob.getJSONObject("args");
                 jsob_limits = jsob.getJSONObject("limits");
 
-                msg = SQLHelper.queryDB(qstr, jsob_args, jsob_limits, funcid);
+               // System.out.println("Value db : " + jsob.getString("db"));
+
+                msg = SQLManager.getSQLHelper(jsob.getString("db")).
+                        queryDB(jsob.getString("qstr"), jsob_args, jsob_limits,
+                                jsob.getString("funcid"));
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -87,13 +86,14 @@ public class Routes {
                 String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args, jsob_values;
-                String table = jsob.getString("table");
-                String funcid = jsob.getString("funcid");
-                String qstr = jsob.getString("qstr");
 
                 jsob_values = jsob.getJSONObject("values");
                 jsob_args = jsob.getJSONObject("args");
-                msg = SQLHelper.updateDB(table, jsob_values, qstr, jsob_args, funcid);
+
+                msg = SQLManager.getSQLHelper(jsob.getString("db")).
+                        updateDB(jsob.getString("table"),
+                                jsob_values, jsob.getString("qstr"), jsob_args,
+                                jsob.getString("funcid"));
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -107,12 +107,13 @@ public class Routes {
 
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args;
-                String table = jsob.getString("table");
                 String funcid = jsob.getString("funcid");
                 String qstr = jsob.getString("qstr");
 
                 jsob_args = jsob.getJSONObject("args");
-                msg = SQLHelper.removeDB(table, qstr, jsob_args, funcid);
+                msg = SQLManager.getSQLHelper(jsob.getString("db"))
+                        .removeDB(jsob.getString("table"),
+                                qstr, jsob_args, funcid);
 
             } catch (Exception ex) {
                 ex.printStackTrace();

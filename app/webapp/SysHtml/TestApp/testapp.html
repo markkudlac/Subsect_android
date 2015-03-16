@@ -35,7 +35,7 @@
     <div style="margin-top: 15px">
         <table>
             <tr ng-repeat="item in names" ng-show="showitem(item)">
-                <td> {{item.tag}} </td>
+                <td> {{item.firstname}} </td>
                 <td> {{item.status}} </td>
                 <td> <button  type="button" ng-click="deleteitem(item, $index)">Delete</button></td>
                 <td> <button  type="button" ng-click="edititem(item, $first)">Edit</button></td>

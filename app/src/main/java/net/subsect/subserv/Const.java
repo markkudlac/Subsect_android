@@ -25,13 +25,15 @@ public interface Const extends BaseColumns {
     public static final String API_REMOVEDB = "removeDB";
     public static final String API_GETUPLOADDIR = "getuploaddir/";
 
-    public static final String DB_NAME = "subserv";
+    public static final String DB_SUBSERV = "S_subserv";
     public static final String FLD_ID = "id";
     public static final String FLD_STATUS = "status";
     public static final String FLD_CREATED_AT = "created_at";
     public static final String FLD_UPDATED_AT = "updated_at";
-    public static final int CURRENT_DB_VERSION = 1;
+    public static final int CURRENT_DB_VERSION = 2;
+    public static final int FIXED_DB_VERSION = 1;
 
-    public static final String TABLE_DEVICE = "device";
-    public static final String FLD_TAG= "tag";
+    public static final String TBL_REGISTRY= "registry";
+    public static final String FLD_APP= "app";
+    public static final String FLD_TYPE= "type";
 }

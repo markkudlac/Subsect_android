@@ -14,12 +14,12 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import elonen.SimpleWebServer;
-
+import static net.subsect.subserv.Const.*;
 
 public class MainActivity extends Activity {
 
     private static SimpleWebServer HttpdServ = null;
-    private static SQLHelper SubservDb = null;
+    private static SQLManager SubservDb = null;
     private static String hostadd = null;
     private static int hostport = 8080;
     private static TextView androidout;
@@ -177,14 +177,15 @@ public class MainActivity extends Activity {
 
     private void startdb(){
         stopDb();
-        SubservDb = new SQLHelper(this);
+        SubservDb = new SQLManager(this);
+        SQLManager.openAll();
     }
 
 
     private void stopDb(){
 
         if (SubservDb != null){
-            SubservDb.closeDb();
+            SQLManager.closeAll();
             SubservDb = null;
         }
     }
