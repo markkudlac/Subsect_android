@@ -49,22 +49,23 @@
             <ul class="nav navbar-nav">
 
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button"
                        aria-expanded="false">File <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a id='newbut' href="#">New</a></li>
+                        <li><a id='newbut'>New</a></li>
                         <li class="divider"></li>
-                        <li><a id='savebut' href="#">Save</a></li>
+                        <li><a id='savebut'>Save</a></li>
                         <li class="divider"></li>
-                        <li><a id="aceundo" href="#">Undo</a></li>
+                        <li><a id="aceundo">Undo</a></li>
                         <li class="divider"></li>
-                        <li><a id="aceredo" href="#">Redo</a></li>
+                        <li><a id="aceredo">Redo</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Cancel</a></li>
+                        <li><a>Cancel</a></li>
                     </ul>
                 </li>
 
-                <li><a href="#">Link</a></li>
+                <li><a><button id='selectallbut' type="button" class="btn btn-default btn-xs">
+                    Select All</button></a></li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -78,7 +79,7 @@
                 </a></li>
 
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                         Dropdown <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="#">Action</a></li>
@@ -112,12 +113,13 @@
                                 data-toggle="dropdown" aria-expanded="false" tabindex="-1">
                             <span class="caret"></span></button>
                         <ul class="dropdown-menu" role="menu">
-                            <li ng-repeat="item in recentfls" ><a href="#" ng-click="menuload($event)">
+                            <li ng-repeat="item in recentfls | orderBy: '-time'" ><a ng-click="menuload($event)">
                                 {{item.path}}</a></li>
                         </ul>
                     </div>
                     <input id="filename" ng-keypress="rtnload($event)" type="text" class="form-control"
                            placeholder="File" style="width: 20em">
+                    <span id="modicon" class="glyphicon glyphicon-pencil hidden" style="margin-left: 1em"></span>
                 </div>
             </form>
         </div>

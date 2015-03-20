@@ -61,6 +61,7 @@ aceEditModule.controller("EditController", ['$scope',
         			    if (title.length > 0){
         			        $("title").text(title[title.length-1]);
         			    }
+                        clearChanged();
         		    },
         	error: function(err,texts){
         		        alertmodal("Load error : " + texts)
@@ -127,7 +128,6 @@ function setPathStore(flpath){
         }
          ++cnt;
         key = LOCSTORE + cnt;
-        console.log("Looping bottom of while : "+ key);
     }
     
     localStorage.setItem(keyoldest, makeRecent(flpath));
@@ -139,3 +139,7 @@ function makeRecent(flpath){
     return(JSON.stringify({path: flpath, time: new Date().getTime()}))
 }
 
+
+       
+       
+       
