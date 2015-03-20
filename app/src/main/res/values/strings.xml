@@ -9,4 +9,6 @@
     <string name="heroku">Use Heroku</string>
     <string name="connect">Connect To</string>
     <string name="server">Server</string>
+    <string name="defLocServer">"192.168.1.103:3000"</string>
+    <string name="defRemoteServer">"www.subsect.net"</string>
 </resources>

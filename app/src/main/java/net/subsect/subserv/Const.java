@@ -13,7 +13,7 @@ public interface Const extends BaseColumns {
 
 
     public static final String HTTP_PROT = "http";
-    public static final String SYSHTML_DIR = "SysHtml";
+    public static final String SYSHTML_DIR = "SysHtml";;
     public static final String USERHTML_DIR = "UserHtml";
     public static final String FORMUPLOAD = "formupload";
 

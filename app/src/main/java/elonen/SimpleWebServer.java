@@ -33,6 +33,7 @@ public class SimpleWebServer extends NanoHTTPD {
         put("css", "text/css");
         put("htm", "text/html");
         put("html", "text/html");
+        put("ngml", "text/ng-template");    //add to support AngularJS
         put("xml", "text/xml");
         put("txt", "text/plain");
         put("asc", "text/plain");

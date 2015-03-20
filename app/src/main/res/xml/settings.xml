@@ -6,7 +6,7 @@
         android:title="@string/uploadto"
         android:entries="@array/uploadto"
         android:entryValues="@array/uploadto"
-        android:defaultValue="0"
+        android:defaultValue="SysHtml"
         android:summary="%s" />
 
     <EditTextPreference
@@ -18,7 +18,7 @@
     <EditTextPreference
         android:key="@string/localnameserv"
         android:title="@string/localnameserv"
-        android:defaultValue="192.168.1.103:3000"
+        android:defaultValue="@string/defLocServer"
         android:summary="%s" />
 
     <CheckBoxPreference

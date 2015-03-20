@@ -7,8 +7,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+
+import java.util.prefs.Preferences;
 
 import static net.subsect.subserv.Const.*;
 
@@ -20,6 +25,11 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.settings);
+
+        setSummary(getPreferenceScreen().getSharedPreferences(),
+                this.getString(R.string.hostname));
+        setSummary(getPreferenceScreen().getSharedPreferences(),
+                this.getString(R.string.localnameserv));
     }
 
     @Override
@@ -37,9 +47,20 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-
+        setSummary(sharedPreferences, key);
     }
 
+
+    // This is stupid and should be looked at later
+    private void setSummary(SharedPreferences sharedPreferences, String key) {
+
+     //   System.out.println("In Pref 2 changd : " +key);
+            if (key.equals(this.getString(R.string.hostname)) ||
+                    key.equals(this.getString(R.string.localnameserv))) {
+                Preference pref = findPreference(key);
+                pref.setSummary(sharedPreferences.getString(key, ""));
+            }
+    }
 
 
     public static String getUploadDir(Context context) {
@@ -51,13 +72,10 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
     }
 
 
-
     protected static String getuploaddir(Context context){
 
 //		System.out.println("In getuploaddir");
-
         return("{\"dir\":\"" + getUploadDir(context) + "\"}");
-
     }
 
 
@@ -76,11 +94,12 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
                 .getDefaultSharedPreferences(context).getBoolean(
                         context.getString(R.string.heroku), false)
                 ) {
-            return("www.subsect.net");
+            return(context.getString(R.string.defRemoteServer));
         } else {
             return (PreferenceManager
                     .getDefaultSharedPreferences(context).getString(
-                            context.getString(R.string.localnameserv), "error")
+                            context.getString(R.string.localnameserv),
+                            context.getString(R.string.defLocServer))
             );
         }
     }

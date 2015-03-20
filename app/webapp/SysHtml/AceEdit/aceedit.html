@@ -1,36 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="AceEdit">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>AceEdit</title>
 
     <script src="/SysHtml/lib/jquery-1.11.2.min.js" type="text/javascript"></script>
+    <script src="/SysHtml/lib/angular-1.3.15/angular.min.js" type="text/javascript"></script>
     <script src="/SysHtml/lib/ace.1.1.8/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/SysHtml/lib/bootstrap-3.3.4/js/bootstrap.min.js" type="text/javascript"></script>
 
     <script src="/SysHtml/AceEdit/aceedit.js" type="text/javascript"></script>
+    <script src="/SysHtml/AceEdit/editcontroller.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/SysHtml/lib/bootstrap-3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/SysHtml/lib/bootstrap-3.3.4/css/bootstrap-theme.min.css">
 
     <style type="text/css" media="screen">
         #editor {
-        positon: absolute;
-        top: 0;
-        left: 0;
-        width: 70em;
-        height: 800px;
+        width: calc(100% - 10px);
+        margin: 5px 5px;
+        height:calc(100% - 45px);
         border: solid 3px #AAA;
+        }
+
+        html { height: 100%; }
+        body { padding-top: 65px;
+        height: 100%;
         }
     </style>
 </head>
 
-<body>
-<p>
-    <input id="hostname" type="text" placeholder="Host" style="width: 150px">
-    <input id="filename" type="text" placeholder="File" style="width: 350px">
-</p>
-<p>
-    <input type="button" value="Save" id='savebut'>
-    <input type="button" value="Load" id='loadbut'>
-</p>
+<body ng-controller="EditController">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-ex-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-ex-collapse">
+            <ul class="nav navbar-nav">
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-expanded="false">File <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a id='newbut' href="#">New</a></li>
+                        <li class="divider"></li>
+                        <li><a id='savebut' href="#">Save</a></li>
+                        <li class="divider"></li>
+                        <li><a id="aceundo" href="#">Undo</a></li>
+                        <li class="divider"></li>
+                        <li><a id="aceredo" href="#">Redo</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Cancel</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="#">Link</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><select id="pointsz">
+                    <option>8.5pt</option>
+                    <option>9pt</option>
+                    <option selected>9.5pt</option>
+                    <option>10pt</option>
+                    <option>10.5pt</option>
+                </select>
+                </a></li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+
+            <form class="form-inline">
+                <div class="input-group input-group-sm">
+                    <span  id="host-addon" class="input-group-addon">Host</span>
+                    <input id="hostname" type="text" class="form-control" placeholder="Host" style="width: 12em"
+                           aria-describedby="host-addon">
+                </div>
+                <div class="input-group input-group-sm">
+                    <div class="input-group-btn">
+                        <button ng-click="loadfile()" type="button" class="btn btn-default"
+                                aria-expanded="false" tabindex="-1">Open File </button>
+
+                        <button id='loadsel' type="button" class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown" aria-expanded="false" tabindex="-1">
+                            <span class="caret"></span></button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="item in recentfls" ><a href="#" ng-click="menuload($event)">
+                                {{item.path}}</a></li>
+                        </ul>
+                    </div>
+                    <input id="filename" ng-keypress="rtnload($event)" type="text" class="form-control"
+                           placeholder="File" style="width: 20em">
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
 
 <div id="editor"></div>
+
+<div id="alertmodal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title alert-danger" style="padding-left: 10px">Alert</h4>
+            </div>
+            <div class="modal-body">
+                <p id="alertmess"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script>
     aceinit();

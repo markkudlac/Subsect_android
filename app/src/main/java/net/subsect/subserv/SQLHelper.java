@@ -72,7 +72,6 @@ public class SQLHelper extends SQLiteOpenHelper {
         System.out.println("In createTables : " + dbname);
 
         try {
-            System.out.println("CreateTables : " + dbname);
             if (isadmindb(dbname)) {
 
                 db.execSQL(
@@ -89,12 +88,17 @@ public class SQLHelper extends SQLiteOpenHelper {
                 initializeRegistry(db, "TestApp");
 
             } else {
-                db.execSQL(
-                        Util.getSchema(context, dbname.substring(2), "Names")
-                );
-            }
 
-            System.out.println("Out createTables");
+                String[] schemafls = Util.getSchemaFileNames(context, dbname);
+
+                for (int i = 0; i < schemafls.length; i++) {
+    //                System.out.println("Loop createTables : " + schemafls[i]);
+                    db.execSQL(
+                        Util.getSchema(context, dbname, schemafls[i])
+                    );
+                }
+            }
+    //        System.out.println("Out createTables");
         } catch (SQLException e) {
               System.out.println("SQLException create");
         }

@@ -321,16 +321,16 @@ public class Util {
     }
 
 
-    public static String getSchema(Context context, String appname, String flnme) {
+    public static String getSchema(Context context, String dbname, String flnme) {
 
         String schema ="";
 
         try {
-
+            String appname = dbname.substring(2);
             File schemfl;
             String schemapath = context.getFilesDir().getPath();
             String readbuf;
-            schemapath = schemapath + "/" + SYSHTML_DIR+"/"+appname+"/schemas";
+            schemapath = schemapath + "/" + getDirfromDb(dbname) +"/"+appname+"/schemas";
          //    System.out.println("Scemas DIR is : " + schemapath);
             schemfl = new File(schemapath, flnme);
 
@@ -352,5 +352,38 @@ public class Util {
 
         System.out.println("Schema SQL: " + schema);
         return schema;
+    }
+
+
+    public static String[] getSchemaFileNames(Context context, String dbname){
+
+        String[] flnmes = new String[0];
+
+        try {
+            String appname = dbname.substring(2);
+            String schemapath = context.getFilesDir().getPath();
+            schemapath = schemapath + "/" + getDirfromDb(dbname) +"/"+appname+"/schemas";
+
+            File schemdir = new File(schemapath);
+
+            if (!schemdir.exists() || !schemdir.isDirectory()) return flnmes;
+
+            flnmes = schemdir.list();
+            System.out.println("Got schema files list  " + flnmes.toString() );
+        } catch (Exception e) {
+            System.out.println("File I/O error " + e);
+        }
+
+        return(flnmes);
+    }
+
+
+    public static String getDirfromDb(String dbnm){
+
+        if (dbnm.charAt(0) == SYSHTML_DIR.charAt(0)){
+            return SYSHTML_DIR;
+        } else {
+            return USERHTML_DIR;
+        }
     }
 }
