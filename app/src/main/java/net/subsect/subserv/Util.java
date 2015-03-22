@@ -21,6 +21,8 @@ import java.net.SocketException;
 
 import java.net.URLDecoder;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.*;
 
@@ -51,27 +53,71 @@ public class Util {
     }
 
 
-    public static void versionChangeHTML(Context mnact) {
+    public static String installApp(Context context, String appdir, String filenm){
+        String rtn = JSONReturn(false);
+
+        try {
+
+          //  System.out.println("In installapp appdir : "+appdir + "  filenm : " + filenm);
+            String appName;
+            File installto;
+            File installfl;
+            FileInputStream installfrom;
+
+            appName = checkInstall(context);
+            installfl = new File(context.getFilesDir().getAbsolutePath()+
+                    "/"+INSTALL_DIR+"/"+filenm);
+
+            installfrom = new FileInputStream(installfl);
+            installto = new File(context.getFilesDir(), appdir+"/"+ appName);
+            // System.out.println("HTML DIR is : " + userdir.getAbsolutePath());
+
+            if (installto.exists()) DeleteRecursive(installto);
+            untarTGzFile(context, installfrom);
+            installfl.delete();
+
+            // There could be a problem here because dup app name
+            if (SQLManager.createIsOpenDb("S_"+appName, FIXED_DB_VERSION)){
+                // This is a new install db created and log registry
+                System.out.println("New install : "+appName);
+                SQLHelper.initializeRegistry((SQLManager.getSQLHelper(DB_SUBSERV)).getDatabase(),
+                        appName, true);
+            } else {
+                System.out.println("Update install : "+appName);
+                // This is an update with db already open tables should be mods only
+                SQLHelper.processTables(context,
+                        (SQLManager.getSQLHelper("S_"+appName)).getDatabase(),
+                        "S_"+appName, true);
+            }
+            rtn = JSONReturn(true);
+        } catch (Exception e) {
+            System.out.println("File I/O error " + e);
+        }
+        return(rtn);
+    }
+
+
+    public static void installAssets(Context context) {
 
         try {
 
             File htmlpar, userdir;
 
-            userdir = new File(mnact.getFilesDir(), USERHTML_DIR);
-            htmlpar = new File(mnact.getFilesDir(), SYSHTML_DIR);
-
-            //*******  This delete is here for testing now
-            // 		if (userdir.exists())	DeleteRecursive(userdir);
-            //*************
-
+            userdir = new File(context.getFilesDir(), USERHTML_DIR);
             if (!userdir.exists()) {
                 userdir.mkdirs();    //Create the user directory if it doesn't exit
+            } else {
+                //*******  This delete is here for testing now
+                // 		DeleteRecursive(userdir);
+                //*************
             }
 
+            htmlpar = new File(context.getFilesDir(), SYSHTML_DIR);
            // System.out.println("HTML DIR is : " + userdir.getAbsolutePath());
 
             if (htmlpar.exists()) DeleteRecursive(htmlpar);
-            untarTGzFile(mnact);
+
+            untarTGzFile(context, (context.getAssets().openFd("rootpack.targz")).createInputStream());
 
         } catch (Exception e) {
             System.out.println("File I/O error " + e);
@@ -79,10 +125,10 @@ public class Util {
     }
 
 
-    public static void untarTGzFile(Context mnact) throws IOException {
+    public static void untarTGzFile(Context mnact, FileInputStream zis) throws IOException {
 
         String destFolder = mnact.getFilesDir().getAbsolutePath();
-        FileInputStream zis = (mnact.getAssets().openFd("rootpack.targz")).createInputStream();
+       // FileInputStream zis = (mnact.getAssets().openFd("rootpack.targz")).createInputStream();
 
         TarInputStream tis = new TarInputStream(new BufferedInputStream(new GZIPInputStream(zis)));
         tis.setDefaultSkip(true);
@@ -121,6 +167,14 @@ public class Util {
             dest.flush();
             dest.close();
         }
+    }
+
+
+    static protected String checkInstall(Context context){
+
+        String appfile =  "TestApp";
+
+        return(appfile);
     }
 
 
@@ -326,7 +380,7 @@ public class Util {
         String schema ="";
 
         try {
-            String appname = dbname.substring(2);
+            String appname = getAppfromDb(dbname);
             File schemfl;
             String schemapath = context.getFilesDir().getPath();
             String readbuf;
@@ -341,11 +395,24 @@ public class Util {
 
             buf.close();
 
-            String ext = " , " + FLD_ID + " integer primary key autoincrement, " +
-                    FLD_CREATED_AT + " integer default 0, " +
-                    FLD_UPDATED_AT + " integer default 0 " +
-                    ")";
-            schema = schema.replaceAll("\\)\\s*$", ext);
+            Pattern ptn = Pattern.compile("^\\s*" + SKIP_SCHEMA, Pattern.CASE_INSENSITIVE);
+            Matcher mtcher = ptn.matcher(schema);
+
+            if (mtcher.find()) {   // if at beginning of table file
+                System.out.println("Table skipped");
+                schema = "";
+            } else {
+                ptn = Pattern.compile("^\\s*create", Pattern.CASE_INSENSITIVE);
+                mtcher = ptn.matcher(schema);
+                // Only add id etc if on create table
+                if (mtcher.find()) {
+                    String ext = " , " + FLD_ID + " integer primary key autoincrement, " +
+                            FLD_CREATED_AT + " integer default 0, " +
+                            FLD_UPDATED_AT + " integer default 0 " +
+                            ")";
+                    schema = schema.replaceAll("\\)\\s*$", ext);
+                }
+            }
         } catch (Exception e) {
             System.out.println("File I/O error " + e);
         }
@@ -360,7 +427,7 @@ public class Util {
         String[] flnmes = new String[0];
 
         try {
-            String appname = dbname.substring(2);
+            String appname = getAppfromDb(dbname);
             String schemapath = context.getFilesDir().getPath();
             schemapath = schemapath + "/" + getDirfromDb(dbname) +"/"+appname+"/schemas";
 
@@ -380,10 +447,14 @@ public class Util {
 
     public static String getDirfromDb(String dbnm){
 
-        if (dbnm.charAt(0) == SYSHTML_DIR.charAt(0)){
+        if (dbnm.charAt(0) == DB_SYS.charAt(0)){
             return SYSHTML_DIR;
         } else {
             return USERHTML_DIR;
         }
+    }
+
+    public static String getAppfromDb(String dbnm){
+        return(dbnm.substring(2));
     }
 }

@@ -67,7 +67,7 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
         return( PreferenceManager
                 .getDefaultSharedPreferences(context).getString(
-                        context.getString(R.string.uploadto), SYSHTML_DIR)
+                        context.getString(R.string.uploadto), INSTALL_DIR)
         );
     }
 

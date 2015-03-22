@@ -24,7 +24,7 @@ public class Routes {
 
         String msg = Util.JSONReturn(false);
 
-       // System.out.println("Route : "+uri + " qryString : "+qryString);
+        System.out.println("Route : "+uri + " qryString : "+qryString);
 
         uri = trimUri(uri,API_PATH);
 
@@ -69,7 +69,7 @@ public class Routes {
                 jsob_args = jsob.getJSONObject("args");
                 jsob_limits = jsob.getJSONObject("limits");
 
-               // System.out.println("Value db : " + jsob.getString("db"));
+           //     System.out.println("Value db : " + jsob.getString("db"));
 
                 msg = SQLManager.getSQLHelper(jsob.getString("db")).
                         queryDB(jsob.getString("qstr"), jsob_args, jsob_limits,
@@ -118,9 +118,13 @@ public class Routes {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        } else if (uri.indexOf(API_INSTALLAPP) == 0){
+            uri = trimUri(uri,API_INSTALLAPP);
+            msg = Util.installApp(context, getArg(uri, 0), getArg(uri, 1)); //rootpack for now
+
         } else if (uri.indexOf(API_GETUPLOADDIR) == 0){
             msg = Prefs.getuploaddir(context);
-            System.out.println("Get Upload dir : " + msg);
+          //  System.out.println("Get Upload dir : " + msg);
         }
 
         return(msg);
@@ -144,7 +148,7 @@ public class Routes {
 
         String xx = null;
         int i = 0;
-        final Matcher matcher = Pattern.compile("(-?\\w+)").matcher(uri);
+        final Matcher matcher = Pattern.compile("(\\w+\\.?\\w+)").matcher(uri);
 
         while (matcher.find()) {
             if (i == indx) {

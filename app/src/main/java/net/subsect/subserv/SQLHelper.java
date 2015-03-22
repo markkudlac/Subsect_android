@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 public class SQLHelper extends SQLiteOpenHelper {
 
@@ -47,9 +48,9 @@ public class SQLHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         System.out.println("In onCreate db : "+dbname);
         if(isadmindb(dbname)) {
-            Util.versionChangeHTML(context);
+            Util.installAssets(context);
         }
-        dropAndCreate(db);
+        createTables(db);
     }
 
     @Override
@@ -57,15 +58,11 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         System.out.println("In onUpgrade db old : " + oldVersion + " new : " + newVersion);
 
-        if (newVersion > oldVersion && isadmindb(dbname)) {
-            Util.versionChangeHTML(context);
-        }
+      //  if (newVersion > oldVersion && isadmindb(dbname)) {
+      //      Util.installAssets(context);
+      //  }
     }
 
-    protected void dropAndCreate(SQLiteDatabase db) {
-
-        createTables(db);
-    }
 
     protected void createTables(SQLiteDatabase db) {
 
@@ -78,25 +75,16 @@ public class SQLHelper extends SQLiteOpenHelper {
                         "create table " + TBL_REGISTRY + " ( " +
                                 FLD_ID + " integer primary key autoincrement, " +
                                 FLD_APP + " text, " +
-                                FLD_TYPE + " char(1) default \'S\', " +
+                                FLD_TYPE + " char(1) default \'"+ DB_USER + "\', " +
                                 FLD_STATUS + " char(1) default \'A\', " +
                                 FLD_CREATED_AT + " integer default 0, " +
                                 FLD_UPDATED_AT + " integer default 0 " +
                                 ")"
                 );
 
-                initializeRegistry(db, "TestApp");
-
+                initializeRegistry(db, PREINSTALL_1, true);
             } else {
-
-                String[] schemafls = Util.getSchemaFileNames(context, dbname);
-
-                for (int i = 0; i < schemafls.length; i++) {
-    //                System.out.println("Loop createTables : " + schemafls[i]);
-                    db.execSQL(
-                        Util.getSchema(context, dbname, schemafls[i])
-                    );
-                }
+                processTables(context, db, dbname, true);
             }
     //        System.out.println("Out createTables");
         } catch (SQLException e) {
@@ -106,8 +94,26 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    private boolean isadmindb(String dbnm){
+    public static void processTables(Context context, SQLiteDatabase db, String dbnm, boolean sys) {
+        String sqlst;
+        String[] schemafls = Util.getSchemaFileNames(context, dbnm);
 
+        System.out.println("In processTables : " + Util.getAppfromDb(dbnm));
+        for (int i = 0; i < schemafls.length; i++) {
+            sqlst = Util.getSchema(context, dbnm, schemafls[i]);
+
+            if (sqlst.length() > 0) db.execSQL(sqlst);
+        }
+     //   initializeRegistry(db, app, sys);
+    }
+
+
+    public SQLiteDatabase getDatabase(){
+        return(database);
+    }
+
+
+    private boolean isadmindb(String dbnm){
         return(dbnm == DB_SUBSERV);
     }
 
@@ -118,10 +124,17 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    private void initializeRegistry(SQLiteDatabase db, String app) {
+    public static void initializeRegistry(SQLiteDatabase db, String app, boolean sys) {
         ContentValues values = new ContentValues();
 
-        values.put(FLD_APP, app);
+        System.out.println(TBL_REGISTRY + " app : "+ app);
+                values.put(FLD_APP, app);
+
+        if (sys) {
+            values.put(FLD_TYPE, DB_SYS);
+        } else {
+            values.put(FLD_TYPE, DB_USER);
+        }
         values.put(FLD_CREATED_AT, Util.getTimeNow());
 
         if (-1 == db.insert(TBL_REGISTRY, null, values)) {

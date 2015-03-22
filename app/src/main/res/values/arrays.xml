@@ -6,7 +6,7 @@
         <item>"SysHtml/TestApp/img"</item>
         <item>"SysHtml/AceEdit"</item>
         <item>"SysHtml/lib"</item>
-        <item>"SysHtml/lib/ace.1.1.8"</item>
+        <item>"install"</item>
         <item>"UserHtml"</item>
     </string-array>
 </resources>

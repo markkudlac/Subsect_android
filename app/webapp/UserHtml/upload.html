@@ -19,13 +19,23 @@ enctype="multipart/form-data">
 </form>
 </div>
 
-<div style="margin:50px">
+<div style="margin-left:50px">
+    <button id="installbut">Install rootpack</button>
 </div>
 <script>
 
 $(document).ready(function(){
 	
-	console.log("Doc ready");
+	$("#installbut").on("click", function(){
+
+	    $.getJSON("/api/installapp/SysHtml/rootpack.targz/",null,function(data){
+			if (data && data.rtn) {
+				alert("Installed")
+			} else
+			{ alert("Installfailed")}
+		});
+	})
+
 	
 	$.getJSON("/api/getuploaddir/",null,function(data){
 			if (data && data.rtn == undefined) { 

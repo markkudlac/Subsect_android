@@ -15,6 +15,7 @@ public interface Const extends BaseColumns {
     public static final String HTTP_PROT = "http";
     public static final String SYSHTML_DIR = "SysHtml";;
     public static final String USERHTML_DIR = "UserHtml";
+    public static final String INSTALL_DIR = "install";
     public static final String FORMUPLOAD = "formupload";
 
     public static final String API_PATH = "/api/";
@@ -24,8 +25,15 @@ public interface Const extends BaseColumns {
     public static final String API_UPDATEDB = "updateDB";
     public static final String API_REMOVEDB = "removeDB";
     public static final String API_GETUPLOADDIR = "getuploaddir/";
+    public static final String API_INSTALLAPP = "installapp/";
 
-    public static final String DB_SUBSERV = "S_subserv";
+    public static final String SUBSERV = "subserv";
+    public static final String DB_SYS = "S";
+    public static final String DB_USER = "U";
+    public static final String DB_SUBSERV = DB_SYS+"_" + SUBSERV;
+    public static final String PREINSTALL_1 = "TestApp";
+    public static final String SKIP_SCHEMA = "#skip";
+
     public static final String FLD_ID = "id";
     public static final String FLD_STATUS = "status";
     public static final String FLD_CREATED_AT = "created_at";
