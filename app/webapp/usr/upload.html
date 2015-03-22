@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<script type="text/javascript" src="/SysHtml/lib/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript" src="/sys/lib/jquery-1.11.2.min.js"></script>
 </head>
 <body>
 
@@ -28,7 +28,7 @@ $(document).ready(function(){
 	
 	$("#installbut").on("click", function(){
 
-	    $.getJSON("/api/installapp/SysHtml/rootpack.targz/",null,function(data){
+	    $.getJSON("/api/installapp/sys/rootpack.targz/",null,function(data){
 			if (data && data.rtn) {
 				alert("Installed")
 			} else

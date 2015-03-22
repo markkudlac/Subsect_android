@@ -77,7 +77,7 @@ public class Util {
             installfl.delete();
 
             // There could be a problem here because dup app name
-            if (SQLManager.createIsOpenDb("S_"+appName, FIXED_DB_VERSION)){
+            if (SQLManager.createIsOpenDb(DB_SYS+appName, FIXED_DB_VERSION)){
                 // This is a new install db created and log registry
                 System.out.println("New install : "+appName);
                 SQLHelper.initializeRegistry((SQLManager.getSQLHelper(DB_SUBSERV)).getDatabase(),
@@ -86,8 +86,8 @@ public class Util {
                 System.out.println("Update install : "+appName);
                 // This is an update with db already open tables should be mods only
                 SQLHelper.processTables(context,
-                        (SQLManager.getSQLHelper("S_"+appName)).getDatabase(),
-                        "S_"+appName, true);
+                        (SQLManager.getSQLHelper(DB_SYS+appName)).getDatabase(),
+                        DB_SYS+appName, true);
             }
             rtn = JSONReturn(true);
         } catch (Exception e) {
@@ -103,7 +103,7 @@ public class Util {
 
             File htmlpar, userdir;
 
-            userdir = new File(context.getFilesDir(), USERHTML_DIR);
+            userdir = new File(context.getFilesDir(), USR_DIR);
             if (!userdir.exists()) {
                 userdir.mkdirs();    //Create the user directory if it doesn't exit
             } else {
@@ -112,7 +112,7 @@ public class Util {
                 //*************
             }
 
-            htmlpar = new File(context.getFilesDir(), SYSHTML_DIR);
+            htmlpar = new File(context.getFilesDir(), SYS_DIR);
            // System.out.println("HTML DIR is : " + userdir.getAbsolutePath());
 
             if (htmlpar.exists()) DeleteRecursive(htmlpar);
@@ -447,10 +447,10 @@ public class Util {
 
     public static String getDirfromDb(String dbnm){
 
-        if (dbnm.charAt(0) == DB_SYS.charAt(0)){
-            return SYSHTML_DIR;
+        if (dbnm.startsWith(DB_SYS)){
+            return SYS_DIR;
         } else {
-            return USERHTML_DIR;
+            return USR_DIR;
         }
     }
 

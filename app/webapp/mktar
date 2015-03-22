@@ -1,1 +1,1 @@
-COPYFILE_DISABLE=1 tar --exclude=".*" -zcvf ../../rootpack.targz SysHtml/AceEdit SysHtml/lib UserHtml
+COPYFILE_DISABLE=1 tar --exclude=".*" -zcvf ../../rootpack.targz sys/AceEdit sys/lib sys/Menu usr

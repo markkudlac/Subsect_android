@@ -75,14 +75,14 @@ public class SQLHelper extends SQLiteOpenHelper {
                         "create table " + TBL_REGISTRY + " ( " +
                                 FLD_ID + " integer primary key autoincrement, " +
                                 FLD_APP + " text, " +
-                                FLD_TYPE + " char(1) default \'"+ DB_USER + "\', " +
+                                FLD_TYPE + " char(2) default \'"+ DB_USR + "\', " +
                                 FLD_STATUS + " char(1) default \'A\', " +
                                 FLD_CREATED_AT + " integer default 0, " +
                                 FLD_UPDATED_AT + " integer default 0 " +
                                 ")"
                 );
 
-                initializeRegistry(db, PREINSTALL_1, true);
+             //   initializeRegistry(db, PREINSTALL_1, true);
             } else {
                 processTables(context, db, dbname, true);
             }
@@ -133,7 +133,7 @@ public class SQLHelper extends SQLiteOpenHelper {
         if (sys) {
             values.put(FLD_TYPE, DB_SYS);
         } else {
-            values.put(FLD_TYPE, DB_USER);
+            values.put(FLD_TYPE, DB_USR);
         }
         values.put(FLD_CREATED_AT, Util.getTimeNow());
 
@@ -352,7 +352,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         if (tmpCursor.moveToFirst()){
             dbval = tmpCursor.getString(tmpCursor.getColumnIndex(FLD_TYPE));
-            dbval = dbval + "_"+ tmpCursor.getString(tmpCursor.getColumnIndex(FLD_APP));
+            dbval = dbval + tmpCursor.getString(tmpCursor.getColumnIndex(FLD_APP));
 
             dbs.put(reccnt, dbval);
         }
