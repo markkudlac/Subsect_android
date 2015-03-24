@@ -23,13 +23,15 @@ public class MainActivity extends Activity {
     private static String hostadd = null;
     private static int hostport = 8080;
     private static TextView androidout;
+    private static Context context;
+
     //private static WebView serverjs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        context = this;
         androidout = (TextView)findViewById(R.id.androidout);
 
         startdb();
@@ -202,6 +204,14 @@ public class MainActivity extends Activity {
             String fullhost = hostadd + ":" + hostport;
          //   androidout.setText("HOST 2 : " + fullhost);
             return(fullhost);
+        }
+
+        @JavascriptInterface
+        public void install(int xid){
+
+            Toast.makeText(getBaseContext(), "install xid : "+xid,
+                    Toast.LENGTH_LONG).show();
+            new HttpCom(context).execute("serve/"+xid);
         }
 
     }

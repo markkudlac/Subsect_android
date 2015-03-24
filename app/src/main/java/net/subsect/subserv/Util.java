@@ -64,16 +64,21 @@ public class Util {
             File installfl;
             FileInputStream installfrom;
 
-            appName = checkInstall(context);
+
             installfl = new File(context.getFilesDir().getAbsolutePath()+
                     "/"+INSTALL_DIR+"/"+filenm);
 
             installfrom = new FileInputStream(installfl);
+            appName = checkInstall(context, installfrom);
+            installfrom = new FileInputStream(installfl); //Need to reopen as tar closes
+
+            if (appName.length() == 0) throw new Exception("No name found in targz"); //No name found in taegz
+
             installto = new File(context.getFilesDir(), appdir+"/"+ appName);
             // System.out.println("HTML DIR is : " + userdir.getAbsolutePath());
 
             if (installto.exists()) DeleteRecursive(installto);
-            untarTGzFile(context, installfrom);
+            untarTGzFile(context, installfrom, appdir);
             installfl.delete();
 
             // There could be a problem here because dup app name
@@ -117,7 +122,7 @@ public class Util {
 
             if (htmlpar.exists()) DeleteRecursive(htmlpar);
 
-            untarTGzFile(context, (context.getAssets().openFd("rootpack.targz")).createInputStream());
+            untarTGzFile(context, (context.getAssets().openFd("rootpack.targz")).createInputStream(), "");
 
         } catch (Exception e) {
             System.out.println("File I/O error " + e);
@@ -125,9 +130,12 @@ public class Util {
     }
 
 
-    public static void untarTGzFile(Context mnact, FileInputStream zis) throws IOException {
+    public static void untarTGzFile(Context mnact, FileInputStream zis, String targdir) throws IOException {
 
         String destFolder = mnact.getFilesDir().getAbsolutePath();
+        if (targdir.length() > 0){
+            destFolder = destFolder + "/" + targdir;
+        }
        // FileInputStream zis = (mnact.getAssets().openFd("rootpack.targz")).createInputStream();
 
         TarInputStream tis = new TarInputStream(new BufferedInputStream(new GZIPInputStream(zis)));
@@ -170,11 +178,32 @@ public class Util {
     }
 
 
-    static protected String checkInstall(Context context){
+    static protected String checkInstall(Context context, FileInputStream zis) throws IOException {
 
-        String appfile =  "TestApp";
+        TarEntry entry;
 
-        return(appfile);
+        String appdir =  "";
+        TarInputStream tis = new TarInputStream(new BufferedInputStream(new GZIPInputStream(zis)));
+        tis.setDefaultSkip(true);
+
+        byte data[] = new byte[BASE_BLOCKSIZE];
+
+        System.out.println("Extracting appdir from targz ");
+
+        while ((entry = tis.getNextEntry()) != null) {
+            if (entry.isDirectory()) {
+                appdir = entry.getName();
+                appdir = (appdir.split("/",3))[0];
+                System.out.println("Extracting got name : "+appdir);
+                break;
+            }
+
+            while (tis.read(data) != -1) {
+             // * just loop to directory
+            }
+        }
+        tis.close();
+        return(appdir);
     }
 
 

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="uploadto">
-        <item>"SysHtml"</item>
-        <item>"SysHtml/TestApp"</item>
-        <item>"SysHtml/TestApp/img"</item>
-        <item>"SysHtml/AceEdit"</item>
-        <item>"SysHtml/lib"</item>
         <item>"install"</item>
-        <item>"UserHtml"</item>
+        <item>"sys"</item>
+        <item>"sys/TestApp"</item>
+        <item>"sys/AceEdit"</item>
+        <item>"sys/lib"</item>
+        <item>"usr"</item>
     </string-array>
 </resources>

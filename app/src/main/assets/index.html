@@ -16,6 +16,7 @@
 <div>
     <input id="peerid" type="text" value="" /> <br/>
     <input id="servbut" type="button" style="margin-top: 20px" value="Start Server" />
+    <input id="installbut" type="button" style="margin-top: 20px" value="Install" />
     <textarea id="messout" rows="10" style="width: 100%; margin-top: 20px"></textarea>
 </div>
 
@@ -230,7 +231,10 @@ function messout(mess){
 		}
 	})
 	
-	
+	$('#installbut').on("click",function(){
+	    console.log("installbut: pressed");
+	    android.install(1);
+	})
 }
 
 

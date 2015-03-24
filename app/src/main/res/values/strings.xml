@@ -11,4 +11,6 @@
     <string name="server">Server</string>
     <string name="defLocServer">"192.168.1.103:3000"</string>
     <string name="defRemoteServer">"www.subsect.net"</string>
+    <string name="installdir">"install"</string>
+    <string name="defaulthost">"demo"</string>
 </resources>

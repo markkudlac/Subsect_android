@@ -83,7 +83,7 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
         return( PreferenceManager
                 .getDefaultSharedPreferences(context).getString(
-                        context.getString(R.string.hostname), "demo")
+                        context.getString(R.string.hostname), context.getString(R.string.defaulthost))
         );
     }
 
