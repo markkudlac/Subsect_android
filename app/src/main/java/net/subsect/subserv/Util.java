@@ -53,7 +53,8 @@ public class Util {
     }
 
 
-    public static String installApp(Context context, String appdir, String filenm){
+    public static String installApp(Context context, String appdir, String filenm, String icon,
+                                    int subsectid){
         String rtn = JSONReturn(false);
 
         try {
@@ -86,7 +87,7 @@ public class Util {
                 // This is a new install db created and log registry
                 System.out.println("New install : "+appName);
                 SQLHelper.initializeRegistry((SQLManager.getSQLHelper(DB_SUBSERV)).getDatabase(),
-                        appName, true);
+                        appName, true, icon, subsectid);
             } else {
                 System.out.println("Update install : "+appName);
                 // This is an update with db already open tables should be mods only
@@ -122,7 +123,7 @@ public class Util {
 
             if (htmlpar.exists()) DeleteRecursive(htmlpar);
 
-            untarTGzFile(context, (context.getAssets().openFd("rootpack.targz")).createInputStream(), "");
+            untarTGzFile(context, (context.getAssets().openFd(INSTALL_FILE)).createInputStream(), "");
 
         } catch (Exception e) {
             System.out.println("File I/O error " + e);
@@ -136,7 +137,7 @@ public class Util {
         if (targdir.length() > 0){
             destFolder = destFolder + "/" + targdir;
         }
-       // FileInputStream zis = (mnact.getAssets().openFd("rootpack.targz")).createInputStream();
+       // FileInputStream zis = (mnact.getAssets().openFd(INSTALL_FILE)).createInputStream();
 
         TarInputStream tis = new TarInputStream(new BufferedInputStream(new GZIPInputStream(zis)));
         tis.setDefaultSkip(true);
@@ -237,28 +238,22 @@ public class Util {
     }
 
 
-    static public String copyImage(Context context, String img, String imgdir, String flname, Long adlid) {
+    static public Boolean copyBase64(Context context, String flin, String flout) {
 
         File downfl = null;
-        String uri;
 
-        uri = "/" + imgdir + "/" + flname.substring(0, 3) +
-                adlid + flname.substring(flname.length() - 4);
-
-        byte[] imageAsBytes = Base64.decode(img, Base64.DEFAULT);
-
-        downfl = Util.targetCopyFile(context.getFilesDir() + uri);
+        byte[] fileAsBytes = Base64.decode(flin, Base64.DEFAULT);
+        downfl = Util.targetCopyFile(context.getFilesDir() + flout);
 
         try {
             FileOutputStream downflout = new FileOutputStream(downfl);
-            downflout.write(imageAsBytes, 0, imageAsBytes.length);
+            downflout.write(fileAsBytes, 0, fileAsBytes.length);
             downflout.close();
         } catch (Exception ex) {
             System.out.println("Exception caught 1 : " + ex);
-            return (null);
+            return (false);
         }
-
-        return (uri);
+        return (true);
     }
 
 

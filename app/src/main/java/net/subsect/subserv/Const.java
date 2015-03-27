@@ -16,6 +16,7 @@ public interface Const extends BaseColumns {
     public static final String SYS_DIR = "sys";;
     public static final String USR_DIR = "usr";
     public static final String INSTALL_DIR = "install";
+    public static final String INSTALL_FILE = "rootpack.targz";
     public static final String FORMUPLOAD = "formupload";
 
     public static final String API_PATH = "/api/";
@@ -26,12 +27,15 @@ public interface Const extends BaseColumns {
     public static final String API_REMOVEDB = "removeDB";
     public static final String API_GETUPLOADDIR = "getuploaddir/";
     public static final String API_INSTALLAPP = "installapp/";
+    public static final String API_GETMENU = "getMenu/";
 
     public static final String SUBSERV = "subserv";
     public static final String DB_SYS = "S_";
     public static final String DB_USR = "U_";
     public static final String DB_SUBSERV = DB_SYS + SUBSERV;
-    public static final String PREINSTALL_1 = "TestApp";
+    public static final String PREINSTALL_1 = "AceEdit";
+    public static final String SUB_HREF_REMOTE = "Sub_Href_Remote";
+    public static final String SUB_HREF_LOCAL = "Sub_Href_Local";
     public static final String SKIP_SCHEMA = "#skip";
 
     public static final String FLD_ID = "id";
@@ -41,7 +45,10 @@ public interface Const extends BaseColumns {
     public static final int CURRENT_DB_VERSION = 2;
     public static final int FIXED_DB_VERSION = 1;
 
-    public static final String TBL_REGISTRY= "registry";
-    public static final String FLD_APP= "app";
-    public static final String FLD_TYPE= "type";
+    public static final String TBL_REGISTRY = "registry";
+    public static final String FLD_APP = "app";
+    public static final String FLD_TYPE = "type";
+    public static final String FLD_SUBSECTID = "subsectid";
+    public static final String FLD_ICON = "icon";
+    public static final String FLD_HREF = "href";
 }

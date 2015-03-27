@@ -76,7 +76,9 @@ public class SQLHelper extends SQLiteOpenHelper {
                                 FLD_ID + " integer primary key autoincrement, " +
                                 FLD_APP + " text, " +
                                 FLD_TYPE + " char(2) default \'"+ DB_USR + "\', " +
-                                FLD_STATUS + " char(1) default \'A\', " +
+                                FLD_ICON + " text, " +
+                                FLD_SUBSECTID + " integer, " +
+                                FLD_HREF + " char(50), " +
                                 FLD_CREATED_AT + " integer default 0, " +
                                 FLD_UPDATED_AT + " integer default 0 " +
                                 ")"
@@ -124,11 +126,19 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    public static void initializeRegistry(SQLiteDatabase db, String app, boolean sys) {
+    public static void initializeRegistry(SQLiteDatabase db, String app, boolean sys,
+                       String icon, int subsectid) {
         ContentValues values = new ContentValues();
 
         System.out.println(TBL_REGISTRY + " app : "+ app);
                 values.put(FLD_APP, app);
+                values.put(FLD_ICON, icon);
+                values.put(FLD_SUBSECTID, subsectid);
+                if (app.equals(PREINSTALL_1)) {
+                    values.put(FLD_HREF, SUB_HREF_LOCAL +app+"/"+app.toLowerCase()+".html");
+                } else {
+                    values.put(FLD_HREF, SUB_HREF_REMOTE + app);
+                }
 
         if (sys) {
             values.put(FLD_TYPE, DB_SYS);
@@ -140,6 +150,25 @@ public class SQLHelper extends SQLiteOpenHelper {
         if (-1 == db.insert(TBL_REGISTRY, null, values)) {
             System.out.println(TBL_REGISTRY + " insert error");
         }
+    }
+
+
+    public String getMenu(String funcid){
+        String items;
+
+        items = queryDB(TBL_REGISTRY, new JSONObject(),
+                new JSONObject(), funcid);
+
+         //   System.out.print("items string 1 : " + items.substring(6500));
+        String rmt = "http://"+Prefs.getHostname(context)+".subsect.net/app/";
+        items = items.replace(SUB_HREF_REMOTE, rmt);
+
+        if (items.indexOf(SUB_HREF_LOCAL) > 0){
+            rmt = "http://"+MainActivity.getHost()+"/"+SYS_DIR+"/";
+            items = items.replace(SUB_HREF_LOCAL, rmt);
+        }
+
+        return(items);
     }
 
 

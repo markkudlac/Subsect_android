@@ -5,6 +5,7 @@
         <item>"sys"</item>
         <item>"sys/TestApp"</item>
         <item>"sys/AceEdit"</item>
+        <item>"sys/Menu"</item>
         <item>"sys/lib"</item>
         <item>"usr"</item>
     </string-array>

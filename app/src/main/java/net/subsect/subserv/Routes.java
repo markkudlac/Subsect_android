@@ -69,8 +69,7 @@ public class Routes {
                 jsob_args = jsob.getJSONObject("args");
                 jsob_limits = jsob.getJSONObject("limits");
 
-           //     System.out.println("Value db : " + jsob.getString("db"));
-
+                // System.out.println("Value db 2 : " + dbase);
                 msg = SQLManager.getSQLHelper(jsob.getString("db")).
                         queryDB(jsob.getString("qstr"), jsob_args, jsob_limits,
                                 jsob.getString("funcid"));
@@ -118,9 +117,14 @@ public class Routes {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        } else if (uri.indexOf(API_GETMENU) == 0) {
+
+            uri = trimUri(uri,API_GETMENU);
+            msg = SQLManager.getSQLHelper(DB_SUBSERV).getMenu(getArg(uri, 0));
+
         } else if (uri.indexOf(API_INSTALLAPP) == 0){
             uri = trimUri(uri,API_INSTALLAPP);
-            msg = Util.installApp(context, getArg(uri, 0), getArg(uri, 1)); //rootpack for now
+            msg = Util.installApp(context, getArg(uri, 0), getArg(uri, 1), "", -1); //rootpack for now
 
         } else if (uri.indexOf(API_GETUPLOADDIR) == 0){
             msg = Prefs.getuploaddir(context);

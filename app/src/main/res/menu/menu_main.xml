@@ -11,8 +11,13 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
 
-    <item android:id="@+id/server"
-        android:title="@string/server"
+    <item android:id="@+id/subzaar"
+        android:title="@string/subzaar"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+
+    <item android:id="@+id/installed"
+        android:title="@string/installed"
         android:orderInCategory="100"
         android:showAsAction="never" />
 </menu>

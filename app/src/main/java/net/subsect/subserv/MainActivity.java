@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebChromeClient;
 import android.widget.TextView;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -38,6 +39,8 @@ public class MainActivity extends Activity {
         turnServerOn(this);
 
             WebView serverjs = (WebView) findViewById(R.id.serverJS);
+            serverjs.setWebChromeClient(new WebChromeClient());
+
             WebSettings webSettings = serverjs.getSettings();
             webSettings.setJavaScriptEnabled(true);
             webSettings.setAllowFileAccessFromFileURLs(true);
@@ -95,20 +98,23 @@ public class MainActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.connect) {
-
             Intent intent = new Intent(this, ConnectActivity.class);
+            intent.putExtra(context.getString(R.string.webviewctr), R.string.connect);
             startActivity(intent);
-
             return true;
-        } else if (id == R.id.server) {
-            Toast.makeText(getBaseContext(), "Server",
-                    Toast.LENGTH_LONG).show();
-
+        } else if (id == R.id.subzaar) {
+            Intent intent = new Intent(this, ConnectActivity.class);
+            intent.putExtra(context.getString(R.string.webviewctr), R.string.subzaar);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.installed) {
+            Intent intent = new Intent(this, ConnectActivity.class);
+            intent.putExtra(context.getString(R.string.webviewctr), R.string.installed);
+            startActivity(intent);
             return true;
         }
 
@@ -142,13 +148,17 @@ public class MainActivity extends Activity {
     }
 
 
+    public static String getHost(){
+        return(hostadd + ":" + hostport);
+    }
+
+
     public  void turnServerOn(final Context ctx) {
 
         stopHttpdServer();
         hostadd = Util.getHTTPAddress(ctx);
 
-        String fullhost = hostadd + ":" + hostport;
-        androidout.setText("HOST : " + fullhost);
+        androidout.setText("HOST : " + getHost());
 
         new Thread(new Runnable() {
             public void run() {
@@ -201,17 +211,9 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public String localhostaddress(){
 
-            String fullhost = hostadd + ":" + hostport;
+            String fullhost = getHost();
          //   androidout.setText("HOST 2 : " + fullhost);
             return(fullhost);
-        }
-
-        @JavascriptInterface
-        public void install(int xid){
-
-            Toast.makeText(getBaseContext(), "install xid : "+xid,
-                    Toast.LENGTH_LONG).show();
-            new HttpCom(context).execute("serve/"+xid);
         }
 
     }
