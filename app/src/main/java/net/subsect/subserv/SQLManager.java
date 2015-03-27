@@ -55,6 +55,12 @@ public class SQLManager {
     }
 
 
+    static public void removeFromDBList(String dbname){
+
+        dbs.remove(dbname);
+    }
+
+
     static public SQLHelper getSQLHelper(String dbname) {
 
         return(dbs.get(dbname));

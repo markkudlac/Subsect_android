@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static net.subsect.subserv.Const.*;
 
 /**
  * Created by markkudlac on 2015-03-13.
@@ -181,11 +182,22 @@ public class ConnectActivity extends Activity {
 
 
         @JavascriptInterface
-        public String removeSite(int id){
+        public boolean removeSite(final int siteid) {
+/*
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
 
-            return("hello");
+                        SQLManager.getSQLHelper(DB_SUBSERV).removeSite(siteid);
+
+                    } catch (Exception ex) {
+                        System.out.println("Select thread exception : " + ex);
+                    }
+                }
+            }).start();
+            */
+            return(SQLManager.getSQLHelper(DB_SUBSERV).removeSite(siteid));
         }
-
     }
 
 }

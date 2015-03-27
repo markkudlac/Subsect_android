@@ -52,7 +52,7 @@ public class Routes {
 
                 msg = SQLManager.getSQLHelper(jsob.getString("db")).
                         insertDB(jsob.getString("table"), jsob_vals,
-                                jsob.getString("funcid"));
+                                jsob.getString("funcid")).toString().replace("\\", "");
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -70,9 +70,10 @@ public class Routes {
                 jsob_limits = jsob.getJSONObject("limits");
 
                 // System.out.println("Value db 2 : " + dbase);
+                //jArray.toString().replace("\\", "");
                 msg = SQLManager.getSQLHelper(jsob.getString("db")).
                         queryDB(jsob.getString("qstr"), jsob_args, jsob_limits,
-                                jsob.getString("funcid"));
+                                jsob.getString("funcid")).toString().replace("\\", "");
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -92,7 +93,7 @@ public class Routes {
                 msg = SQLManager.getSQLHelper(jsob.getString("db")).
                         updateDB(jsob.getString("table"),
                                 jsob_values, jsob.getString("qstr"), jsob_args,
-                                jsob.getString("funcid"));
+                                jsob.getString("funcid")).toString().replace("\\", "");
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -112,7 +113,7 @@ public class Routes {
                 jsob_args = jsob.getJSONObject("args");
                 msg = SQLManager.getSQLHelper(jsob.getString("db"))
                         .removeDB(jsob.getString("table"),
-                                qstr, jsob_args, funcid);
+                                qstr, jsob_args, funcid).toString().replace("\\", "");
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -120,7 +121,8 @@ public class Routes {
         } else if (uri.indexOf(API_GETMENU) == 0) {
 
             uri = trimUri(uri,API_GETMENU);
-            msg = SQLManager.getSQLHelper(DB_SUBSERV).getMenu(getArg(uri, 0));
+            msg = SQLManager.getSQLHelper(DB_SUBSERV).getMenu(getArg(uri, 0)).
+                    toString().replace("\\", "");
 
         } else if (uri.indexOf(API_INSTALLAPP) == 0){
             uri = trimUri(uri,API_INSTALLAPP);

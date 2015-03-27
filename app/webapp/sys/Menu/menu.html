@@ -1,19 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="menuApp">
 <head>
     <title>Installed</title>
 
     <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
     <script src="http://192.168.1.103:3000/lib/dev_subsect.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js">
+    </script>
+    <script src="menu.js"></script>
 
     <style>
-        .deletebut{
-            display: none;
+        img{
+        height: 50px;
+        width: 50px;
         }
     </style>
 </head>
 
-<body>
+<body ng-controller="MenuController">
 <h1>Installed</h1>
 
 <table>
@@ -26,58 +30,16 @@
     </thead>
 
     <tbody>
-    <tr>
-        <td id="subsectid"></td>
-        <td id="appname" >None</td>
-        <td id="runsite"><img id="icon" style="height: 50px; width: 50px"></td>
-        <td><button class="deletebut">Remove Site</button></td>
+    <tr ng-repeat="site in sites" ng-show="showitem(site)">
+        <td>{{site.id}}</td>
+        <td ng-click="newurl(site)">{{site.app}}</td>
+        <td ng-click="newurl(site)">
+            <img ng-src="data:image/gif;base64,{{site.icon}}">
+        </td>
+        <td><button ng-click="delSite(site)">Remove Site</button></td>
     </tr>
     </tbody>
 </table>
-
-
-<script>
-
-function isLocal(){
-
-    return(typeof android !== "undefined" && typeof android.removeSite === "function")
-}
-
-function rundelete(id){
-	if (!isLocal()) {
-		alert("Can remove site only from phone");
-	} else if (confirm("Continue to delete : " + $("#appname").text())) {
-		var rtn = android.removeSite(id);
-		console.log("return from del : "+rtn);
-	}
-}
-
-
-    $(document).ready(function(){
-
-  getMenu(function(jobj){
- //   console.log("href : "+jobj[1].href);
-
-    if (jobj[0].rtn && jobj[0].db > 0) {
-        $("#subsectid").text(jobj[1].subsectid);
-        $("#appname").text(jobj[1].app);
-        $("#icon").attr("src", "data:image/gif;base64,"+jobj[1].icon);
-        $.data($("button")[0], "recid", jobj[1].id);
-        $("#runsite").on("click",function(){
-            location.assign(jobj[1].href);})
-
-        if (isLocal()){
-        console.log("isLocal true");
-            $("button.deletebut").on("click", rundelete).removeClass("deletebut");
-        }
-    } else if (!jobj[0].rtn){
-        alert("Database Error");
-    }
-    });
-})
-
-
-</script>
 
 </body>
 </html>

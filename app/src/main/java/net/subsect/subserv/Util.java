@@ -271,10 +271,20 @@ public class Util {
     }
 
 
-    static public String JSONdbReturn(Boolean val, long id, String funcid) {
+    static public JSONArray JSONdbReturn(Boolean val, long id, String funcid) {
 
-        return ("[ {\"rtn\":" + val + ", " + "\"db\":" + id +
-                    ", " + "\"funcid\":\"" + funcid +"\"} ]");
+        JSONArray jray = new JSONArray();
+
+        try {
+            JSONObject jobj = new JSONObject("{\"rtn\":" + val + ", " + "\"db\":" + id +
+                ", " + "\"funcid\":\"" + funcid +"\"}");
+
+            jray.put(0, jobj);
+        }
+        catch(JSONException ex) {
+            ex.printStackTrace();
+        }
+        return(jray);
     }
 
 

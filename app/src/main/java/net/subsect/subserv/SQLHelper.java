@@ -20,9 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+
 
 public class SQLHelper extends SQLiteOpenHelper {
 
@@ -79,6 +80,7 @@ public class SQLHelper extends SQLiteOpenHelper {
                                 FLD_ICON + " text, " +
                                 FLD_SUBSECTID + " integer, " +
                                 FLD_HREF + " char(50), " +
+                                FLD_STATUS + " char(1) default \'"+ ACTIVE_STATUS + "\', " +
                                 FLD_CREATED_AT + " integer default 0, " +
                                 FLD_UPDATED_AT + " integer default 0 " +
                                 ")"
@@ -92,7 +94,6 @@ public class SQLHelper extends SQLiteOpenHelper {
         } catch (SQLException e) {
               System.out.println("SQLException create");
         }
-
     }
 
 
@@ -106,7 +107,6 @@ public class SQLHelper extends SQLiteOpenHelper {
 
             if (sqlst.length() > 0) db.execSQL(sqlst);
         }
-     //   initializeRegistry(db, app, sys);
     }
 
 
@@ -126,7 +126,7 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    public static void initializeRegistry(SQLiteDatabase db, String app, boolean sys,
+    public static boolean initializeRegistry(SQLiteDatabase db, String app, boolean sys,
                        String icon, int subsectid) {
         ContentValues values = new ContentValues();
 
@@ -149,38 +149,93 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         if (-1 == db.insert(TBL_REGISTRY, null, values)) {
             System.out.println(TBL_REGISTRY + " insert error");
+            return(false);
         }
+
+        return(true);
     }
 
 
-    public String getMenu(String funcid){
-        String items;
+    public boolean removeSite(int siteid){
+        JSONArray jray;
 
-        items = queryDB(TBL_REGISTRY, new JSONObject(),
-                new JSONObject(), funcid);
+        try {
+            JSONObject qargs = new JSONObject("{ \"id\": \""+ siteid +"\" }");
+         //   System.out.println("json args : "+ qargs.getInt("id"));
 
-         //   System.out.print("items string 1 : " + items.substring(6500));
-        String rmt = "http://"+Prefs.getHostname(context)+".subsect.net/app/";
-        items = items.replace(SUB_HREF_REMOTE, rmt);
+            jray = queryDB(TBL_REGISTRY, qargs,
+                    new JSONObject(), "1");
 
-        if (items.indexOf(SUB_HREF_LOCAL) > 0){
-            rmt = "http://"+MainActivity.getHost()+"/"+SYS_DIR+"/";
-            items = items.replace(SUB_HREF_LOCAL, rmt);
+            if (jray.length() > 1){
+                System.out.println("Print status : " + jray.getJSONObject(1).getString(FLD_STATUS));
+
+                JSONObject vals = new JSONObject("{ \""+FLD_STATUS+"\": \""+ DELETE_STATUS +"\" }");
+                JSONArray tmpary = updateDB(TBL_REGISTRY, vals, "", qargs, "-1");
+
+                System.out.println("Updatr status : "+tmpary.getJSONObject(0).getInt("db"));
+
+                if (tmpary.getJSONObject(0).getInt("db") > 0){
+                    String dbnm =  jray.getJSONObject(1).getString(FLD_TYPE) +
+                               jray.getJSONObject(1).getString(FLD_APP);
+
+                    context.deleteDatabase(dbnm);
+                   // System.out.println("DBPath  2 : " + context.getDatabasePath("S_TestApp").getPath());
+
+                    Util.DeleteRecursive(new File(context.getFilesDir().getAbsolutePath()+
+                            "/"+ Util.getDirfromDb(dbnm)+"/" +
+                            jray.getJSONObject(1).getString(FLD_APP)));
+
+                    removeDB(TBL_REGISTRY, "", qargs,"-1");
+                    return(true);
+                }
+            }
         }
-
-        return(items);
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return(false);
     }
 
 
-    protected String insertDB(String table, JSONObject jsob, String funcid) {
+    public JSONArray getMenu(String funcid){
+
+        JSONArray jray = Util.JSONdbReturn(false, -1, "-1");
+
+        try {
+
+            JSONObject qargs = new JSONObject("{ \""+FLD_STATUS+"\": \""+ ACTIVE_STATUS +"\" }");
+          //  JSONObject qargs = new JSONObject();
+            jray = queryDB(TBL_REGISTRY, qargs, new JSONObject(), funcid);
+
+
+            if (jray.length() > 1) {
+                String tmphref = jray.getJSONObject(1).getString(FLD_HREF);
+                //   System.out.print("items string 1 : " + items.substring(6500));
+                String rmt = "http://" + Prefs.getHostname(context) + ".subsect.net/app/";
+                tmphref = tmphref.replace(SUB_HREF_REMOTE, rmt);
+
+                if (tmphref.indexOf(SUB_HREF_LOCAL) > 0) {
+                    rmt = "http://" + MainActivity.getHost() + "/" + SYS_DIR + "/";
+                    tmphref = tmphref.replace(SUB_HREF_LOCAL, rmt);
+                }
+                jray.getJSONObject(1).put(FLD_HREF,tmphref);
+            }
+        }
+        catch(JSONException ex) {
+            ex.printStackTrace();
+        }
+        return(jray);
+    }
+
+
+    protected JSONArray insertDB(String table, JSONObject jsob, String funcid) {
 
         ContentValues values = new ContentValues();
-        String msg = Util.JSONdbReturn(false, -1, funcid);
+        JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
 
         try {
-
             Iterator<String> itr = jsob.keys();
             String tmpkey;
 
@@ -192,7 +247,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
             idval = database.insert(table, null, values);
             if (-1 != idval){
-                msg =  Util.JSONdbReturn(true, idval, funcid);
+                jray =  Util.JSONdbReturn(true, idval, funcid);
             } else {
                 System.out.println("Insert error");
             }
@@ -200,17 +255,16 @@ public class SQLHelper extends SQLiteOpenHelper {
           catch(JSONException ex) {
               ex.printStackTrace();
         }
-
-        return msg;
+        return jray;
     }
 
 
-    protected String queryDB(String qstr, JSONObject jsob_args, JSONObject jsob_limits,
+    protected JSONArray queryDB(String qstr, JSONObject jsob_args, JSONObject jsob_limits,
                                     String funcid) {
 
         Cursor tmpCursor;
         String[] args = Util.JSONOtoStringArray(jsob_args);
-        String msg = Util.JSONdbReturn(false, -1, funcid);
+        JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
         JSONObject jsob;
 
         try {
@@ -226,7 +280,9 @@ public class SQLHelper extends SQLiteOpenHelper {
                         qstr = qstr + " AND ";
                     } else {
                         andflg = true;
+                        qstr = qstr + " where ";
                     }
+                    qstr = qstr + itr.next() + " = ? ";
                 }
             }
 
@@ -238,18 +294,10 @@ public class SQLHelper extends SQLiteOpenHelper {
             }
 
             System.out.println("query str : "+ qstr + " Limits size: " + jsob_limits.length());
-
-
             tmpCursor = database.rawQuery(qstr, args);
 
-            JSONArray jArray =  new JSONArray();
             String[] colnames = tmpCursor.getColumnNames();
-
-            jsob = new JSONObject();
-            jsob.put("rtn", true);
-            jsob.put("db", 0);
-            jsob.put("funcid", funcid);
-            jArray.put(jsob);
+            JSONArray jArray = Util.JSONdbReturn(true, 0, funcid);
 
             int reccnt = 0;
             if (tmpCursor.moveToFirst()){
@@ -271,21 +319,21 @@ public class SQLHelper extends SQLiteOpenHelper {
                 } while(tmpCursor.moveToNext());
             }
             jArray.getJSONObject(0).put("db", reccnt);
-            msg = jArray.toString().replace("\\", "");
+            jray = jArray;
         }
         catch(JSONException ex) {
             ex.printStackTrace();
         }
-        return msg;
+        return jray;
     }
 
 
-    protected String updateDB(String table, JSONObject jsob_values, String qstr, JSONObject jsob_args,
+    protected JSONArray updateDB(String table, JSONObject jsob_values, String qstr, JSONObject jsob_args,
                                      String funcid) {
 
         ContentValues values = new ContentValues();
         String[] args = Util.JSONOtoStringArray(jsob_args);
-        String msg = Util.JSONdbReturn(false, -1, funcid);
+        JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
         //System.out.println("insert sqlpk : "+ sqlpk);
@@ -312,13 +360,13 @@ public class SQLHelper extends SQLiteOpenHelper {
                     } else {
                         andflg = true;
                     }
-                    qstr = qstr + itr.next() + " = ?";
+                    qstr = qstr + itr.next() + " = ? ";
                 }
             }
             //System.out.println("Update qstr 3 : "+ "x"+qstr+"x");
             idval = database.update(table, values, qstr, args);
             if (-1 != idval){
-                msg =  Util.JSONdbReturn(true, idval, funcid);
+                jray =  Util.JSONdbReturn(true, idval, funcid);
             } else {
                 System.out.println("Update error");
             }
@@ -326,15 +374,15 @@ public class SQLHelper extends SQLiteOpenHelper {
         catch(JSONException ex) {
             ex.printStackTrace();
         }
-        return msg;
+        return jray;
     }
 
 
-    protected String removeDB(String table, String qstr, JSONObject jsob_args,
+    protected JSONArray removeDB(String table, String qstr, JSONObject jsob_args,
                                      String funcid) {
 
         String[] args = Util.JSONOtoStringArray(jsob_args);
-        String msg = Util.JSONdbReturn(false, -1, funcid);
+        JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
         //System.out.println("insert sqlpk : "+ sqlpk);
@@ -357,12 +405,12 @@ public class SQLHelper extends SQLiteOpenHelper {
             //System.out.println("Update qstr 3 : "+ "x"+qstr+"x");
             idval = database.delete(table, qstr, args);
             if (-1 != idval){
-                msg =  Util.JSONdbReturn(true, idval, funcid);
+                jray =  Util.JSONdbReturn(true, idval, funcid);
             } else {
                 System.out.println("Delete error");
             }
 
-        return msg;
+        return jray;
     }
 
 
@@ -371,19 +419,26 @@ public class SQLHelper extends SQLiteOpenHelper {
     protected Hashtable<Integer, String> getAllDbs() {
 
         Hashtable<Integer, String> dbs = new Hashtable<Integer, String>();
-        Cursor tmpCursor;
         String[] args = new String[0];
 
-        tmpCursor = database.rawQuery("SELECT * FROM " + TBL_REGISTRY, args);
+        try {
 
-        int reccnt = 0;
-        String dbval;
+            JSONObject qargs = new JSONObject("{ \""+FLD_STATUS+"\": \""+ ACTIVE_STATUS +"\" }");
+         //   JSONObject qargs = new JSONObject();
+        //   System.out.println("json args : "+ qargs.getInt("id"));
 
-        if (tmpCursor.moveToFirst()){
-            dbval = tmpCursor.getString(tmpCursor.getColumnIndex(FLD_TYPE));
-            dbval = dbval + tmpCursor.getString(tmpCursor.getColumnIndex(FLD_APP));
+            JSONArray jray = queryDB(TBL_REGISTRY, qargs,
+                new JSONObject(), "1");
+            System.out.println("het all db count : "+jray.length());
 
-            dbs.put(reccnt, dbval);
+            for (int i=1; i < jray.length(); i++){
+
+            dbs.put(i, jray.getJSONObject(i).getString(FLD_TYPE)+
+                    jray.getJSONObject(i).getString(FLD_APP));
+            }
+        }
+        catch(JSONException ex) {
+            ex.printStackTrace();
         }
 
         return dbs;
