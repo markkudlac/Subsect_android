@@ -16,7 +16,6 @@
 <div>
     <input id="peerid" type="text" value="" /> <br/>
     <input id="servbut" type="button" style="margin-top: 20px" value="Start Server" />
-    <input id="installbut" type="button" style="margin-top: 20px" value="Install TestApp" />
     <textarea id="messout" rows="10" style="width: 100%; margin-top: 20px"></textarea>
 </div>
 
@@ -30,10 +29,10 @@ var connectcnt = 0;
 var lastcontime = 0;
 var timer = null;
 
-var splitsz = 100000;
+var splitsz = 65536;
 
 	$(document).ready(function(){
-		messout("localhost : " + android.localhostaddress())
+		messout("localhost : " + getParam("fullhost"));
 
 		initall();
 	})
@@ -91,7 +90,7 @@ function setPeer(customConfig){
 	    messout("server rtn : " + rtnobj.rtn);
 
 	    $("#servbut").val("Close Server")
-	    timer = setTimeout(peerReset, 60000 * 12);
+	   // timer = setTimeout(peerReset, 60000 * 12);
 	  })
 	  .fail(function(xhr, text){
 	    messout("server call failed : " + text);
@@ -130,7 +129,7 @@ function setPeer(customConfig){
 		   // messout('Received ' + rcv.file);
 
                 if (rcv.file.indexOf("sub_ping") == 0) {
-                    messout('Got Ping');
+                    messout('PING : '+rcv.file);
                 } else {
                     getappfile(rcv, conn);
                 }
@@ -206,7 +205,7 @@ function getappfile(rcv, xconn){
 
 function fullPath(file) {
 
-return(android.localhostaddress() + '/' + file);
+return(getParam("fullhost") + '/' + file);
 }
 
 
@@ -230,11 +229,7 @@ function messout(mess){
 			peerShutDown();
 		}
 	})
-	
-	$('#installbut').on("click",function(){
-	    console.log("installbut: pressed");
-	    android.install(1);
-	})
+
 }
 
 

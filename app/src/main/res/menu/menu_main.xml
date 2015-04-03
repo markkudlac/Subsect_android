@@ -20,4 +20,9 @@
         android:title="@string/installed"
         android:orderInCategory="100"
         android:showAsAction="never" />
+
+    <item android:id="@+id/tools"
+        android:title="@string/tools"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>

@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
@@ -18,8 +20,8 @@
     <WebView
         android:id="@+id/serverJS"
         android:layout_width="match_parent"
-        android:layout_marginTop="25dp"
-        android:layout_weight="3"
+        android:layout_marginTop="20dp"
+        android:layout_weight="4"
         android:layout_height="0dp"
         />
 </LinearLayout>

@@ -6,19 +6,20 @@
 
     <uses-sdk
         android:minSdkVersion="21"
-        android:targetSdkVersion="21" />
+        android:targetSdkVersion="22" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WIFI_STATE_CHANGED" />
-    <application
 
+    <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -37,10 +38,16 @@
         </activity>
 
         <activity
-            android:name="net.subsect.subserv.ConnectActivity"
+            android:name=".ConnectActivity"
             android:label="@string/connect"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="true"
+            android:parentActivityName=".MainActivity" >
+        </activity>
+
+        <activity
+            android:name=".ToolsActivity"
+            android:label="@string/tools"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:parentActivityName=".MainActivity" >
         </activity>
     </application>

@@ -8,8 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebChromeClient;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
-import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -24,21 +24,19 @@ public class MainActivity extends Activity {
     private static String hostadd = null;
     private static int hostport = 8080;
     private static TextView androidout;
-    private static Context context;
 
-    //private static WebView serverjs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
-        context = this;
         androidout = (TextView)findViewById(R.id.androidout);
 
         startdb();
         turnServerOn(this);
 
-            WebView serverjs = (WebView) findViewById(R.id.serverJS);
+            WebView serverjs = (WebView)findViewById(R.id.serverJS);
             serverjs.setWebChromeClient(new WebChromeClient());
 
             WebSettings webSettings = serverjs.getSettings();
@@ -46,10 +44,10 @@ public class MainActivity extends Activity {
             webSettings.setAllowFileAccessFromFileURLs(true);
             webSettings.setAllowUniversalAccessFromFileURLs(true);
 
-            serverjs.addJavascriptInterface(this.new JsInterface(), "android");
+      //  serverjs.loadUrl("file:///android_asset/test.html");
 
             serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(this) +
-                    "&subnamesrv=" + Prefs.getNameServer(this));
+                    "&subnamesrv=" + Prefs.getNameServer(this) + "&fullhost="+getHost());
     }
 
 
@@ -68,7 +66,6 @@ public class MainActivity extends Activity {
         super.onResume();
 
         System.out.println("In onResume");
-      //  onCreate(null);
     }
 
 
@@ -103,17 +100,21 @@ public class MainActivity extends Activity {
             return true;
         } else if (id == R.id.connect) {
             Intent intent = new Intent(this, ConnectActivity.class);
-            intent.putExtra(context.getString(R.string.webviewctr), R.string.connect);
+            intent.putExtra(getString(R.string.webviewctr), R.string.connect);
             startActivity(intent);
             return true;
         } else if (id == R.id.subzaar) {
             Intent intent = new Intent(this, ConnectActivity.class);
-            intent.putExtra(context.getString(R.string.webviewctr), R.string.subzaar);
+            intent.putExtra(getString(R.string.webviewctr), R.string.subzaar);
             startActivity(intent);
             return true;
         } else if (id == R.id.installed) {
             Intent intent = new Intent(this, ConnectActivity.class);
-            intent.putExtra(context.getString(R.string.webviewctr), R.string.installed);
+            intent.putExtra(getString(R.string.webviewctr), R.string.installed);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.tools) {
+            Intent intent = new Intent(this, ToolsActivity.class);
             startActivity(intent);
             return true;
         }
@@ -200,22 +201,6 @@ public class MainActivity extends Activity {
             SQLManager.closeAll();
             SubservDb = null;
         }
-    }
-
-
-    //THis could be eliminated but leaving here as example
-    // Pass in as a param to webview
-
-    private final class JsInterface {
-
-        @JavascriptInterface
-        public String localhostaddress(){
-
-            String fullhost = getHost();
-         //   androidout.setText("HOST 2 : " + fullhost);
-            return(fullhost);
-        }
-
     }
 
 }

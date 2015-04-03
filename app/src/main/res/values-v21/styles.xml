@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="android:Theme.Material.Light">
+    <style name="AppTheme" parent="android:Theme.Material.Light.DarkActionBar">
+        <item name="android:colorButtonNormal">#2196f3</item>
+
+        <!-- For the resting Spinner style -->
+        <item name="android:spinnerItemStyle">
+            @style/spinnerItemStyle</item>
+        <item name="android:spinnerDropDownItemStyle">
+            @style/SpinnerItemStyle</item>
     </style>
+
+    <style name="spinnerItemStyle">
+        <item name="android:textColor">#111111</item>
+        <item name="android:background">#CCCCCC</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">25sp</item>
+    </style>
+    <style name="SpinnerItemStyle" parent="@android:style/Widget.Material.DropDownItem.Spinner">
+        <item name="android:textSize">25sp</item>
+    </style>
+
+
 </resources>

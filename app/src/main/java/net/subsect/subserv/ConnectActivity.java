@@ -2,7 +2,6 @@ package net.subsect.subserv;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
@@ -22,19 +21,20 @@ import static net.subsect.subserv.Const.*;
  */
 public class ConnectActivity extends Activity {
 
-    private static ConnectActivity context;
+    private static ConnectActivity conact;
     private static WebView webarg;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        context = this;
+        conact = this;
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
         setContentView(R.layout.activity_connect);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            int value = extras.getInt(context.getString(R.string.webviewctr));
+            int value = extras.getInt(conact.getString(R.string.webviewctr));
             System.out.println("In Bundle received : "+value);
 
             if (value == R.string.connect) {
@@ -105,10 +105,10 @@ public class ConnectActivity extends Activity {
         if (connectto.length() > 0) {
             webarg = (WebView)findViewById(R.id.connectview);
             webarg.setWebChromeClient(new WebChromeClient());
+
             WebSettings webSettings = webarg.getSettings();
             webSettings.setJavaScriptEnabled(true);
 
-           // webarg.addJavascriptInterface(this.new JsInterface(), "android");
             webarg.loadUrl("http://" + connectto + ".subsect.net/app/Menu");
         } else {
             Toast.makeText(getBaseContext(), "No connection entered",
@@ -123,13 +123,14 @@ public class ConnectActivity extends Activity {
 
             webarg = (WebView)findViewById(R.id.connectview);
             webarg.setWebChromeClient(new WebChromeClient());
+
             WebSettings webSettings = webarg.getSettings();
             webSettings.setJavaScriptEnabled(true);
 
             webarg.addJavascriptInterface(this.new JsInterface(), "android");
 
             if (value == R.string.subzaar) {
-               // webarg.loadUrl("http://192.168.1.103:3000/subzaar");
+               // webarg.loadUrl("http://192.168.1.103:3000/subzaar"); //Only program nor download
                 webarg.loadUrl("http://www.subsect.net/subzaar");
             } else {
                 webarg.loadUrl("http://"+MainActivity.getHost()+"/sys/Menu/menu.html");
@@ -172,30 +173,16 @@ public class ConnectActivity extends Activity {
 
     private final class JsInterface {
 
-      //  int progper = 0;
-
         @JavascriptInterface
         public void install(int xid, int filesize){
 
-            new HttpCom(context, filesize).execute("serve/"+xid);
+            new HttpCom(conact, filesize).execute("serve/"+xid);
         }
 
 
         @JavascriptInterface
-        public boolean removeSite(final int siteid) {
-/*
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
+        public boolean removeSite(int siteid) {
 
-                        SQLManager.getSQLHelper(DB_SUBSERV).removeSite(siteid);
-
-                    } catch (Exception ex) {
-                        System.out.println("Select thread exception : " + ex);
-                    }
-                }
-            }).start();
-            */
             return(SQLManager.getSQLHelper(DB_SUBSERV).removeSite(siteid));
         }
     }
