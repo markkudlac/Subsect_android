@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -24,7 +25,8 @@ public class MainActivity extends Activity {
     private static String hostadd = null;
     private static int hostport = 8080;
     private static TextView androidout;
-
+  //  private static WebView poller;
+    private static WebView serverjs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,18 +38,34 @@ public class MainActivity extends Activity {
         startdb();
         turnServerOn(this);
 
-            WebView serverjs = (WebView)findViewById(R.id.serverJS);
+            serverjs = (WebView)findViewById(R.id.serverJS);
             serverjs.setWebChromeClient(new WebChromeClient());
 
             WebSettings webSettings = serverjs.getSettings();
             webSettings.setJavaScriptEnabled(true);
             webSettings.setAllowFileAccessFromFileURLs(true);
             webSettings.setAllowUniversalAccessFromFileURLs(true);
+            serverjs.addJavascriptInterface(this.new JsInterface(this), "android");
 
       //  serverjs.loadUrl("file:///android_asset/test.html");
 
             serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(this) +
                     "&subnamesrv=" + Prefs.getNameServer(this) + "&fullhost="+getHost());
+
+        /*
+        poller = (WebView)findViewById(R.id.poller);
+        poller.setWebChromeClient(new WebChromeClient());
+
+        webSettings = poller.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setAllowUniversalAccessFromFileURLs(true);
+        poller.addJavascriptInterface(this.new JsInterface(this), "android");
+
+     //   poller.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(this) +
+     //           "&subnamesrv=" + Prefs.getNameServer(this) + "&fullhost="+getHost());
+
+       // poller.loadUrl("file:///android_asset/poller.html");
+       */
     }
 
 
@@ -203,4 +221,64 @@ public class MainActivity extends Activity {
         }
     }
 
+    private final class JsInterface {
+
+        private Context contx;
+
+        public JsInterface(Context contx) {
+            this.contx = contx;
+
+        }
+/*
+        @JavascriptInterface
+        public void transferPeer(final String peerstr) {
+
+            System.out.println("Transfer peer : " + peerstr);
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    try {
+
+                //        poller.loadUrl("javascript:setPeer(\""+ peerstr +"\")");
+
+                    } catch (Exception ex) {
+                        System.out.println("Select thread exception : " + ex);
+                    }
+                }
+            });
+
+        }
+*/
+        /*
+        @JavascriptInterface
+        public void callToggle(final int toggle) {
+
+            System.out.println("callToggle peer : " + toggle);
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    try {
+                        WebView tmpvw;
+
+                        if (toggle % 2 == 1) {
+                            System.out.println("callToggle poller");
+                            tmpvw = poller;
+                        } else {
+                            System.out.println("callToggle serverjs");
+                            tmpvw =serverjs;
+                        }
+
+                        tmpvw.loadUrl("javascript:toggleOn("+ toggle + ")");
+                        tmpvw.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(contx) +
+                                "&subnamesrv=" + Prefs.getNameServer(contx) + "&fullhost="+getHost()+
+                                "&toggle="+toggle);
+                    } catch (Exception ex) {
+                        System.out.println("Select thread exception : " + ex);
+                    }
+                }
+            });
+
+        }
+        */
+    }
 }

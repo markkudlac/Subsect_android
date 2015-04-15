@@ -9,10 +9,10 @@
     <TextView
         android:id="@+id/androidout"
         android:layout_width="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:textSize="35sp"
+        android:textSize="20sp"
         android:textColor="#5555FF"
         android:textStyle="bold"
         />
@@ -20,8 +20,17 @@
     <WebView
         android:id="@+id/serverJS"
         android:layout_width="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_weight="4"
+        android:layout_weight="5"
         android:layout_height="0dp"
         />
+
+    <!--
+    <WebView
+        android:id="@+id/poller"
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_weight="5"
+        android:layout_height="0dp"
+        />
+        -->
 </LinearLayout>

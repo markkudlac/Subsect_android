@@ -17,6 +17,6 @@
     <string name="webviewctr">"webviewctr"</string>
     <string name="exportsite">"Site to Export"</string>
     <string name="nosite">"No Sites Avaialable"</string>
-    <string name="installroot">"Install Rootpack"</string>
+    <string name="installroot">"Install Site"</string>
     <string name="tools">"Tools"</string>
 </resources>

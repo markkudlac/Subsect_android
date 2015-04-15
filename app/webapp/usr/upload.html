@@ -19,13 +19,16 @@ enctype="multipart/form-data">
 </form>
 </div>
 
+<!--
 <div style="margin-left:50px">
     <button id="installbut">Install rootpack</button>
 </div>
+-->
 <script>
 
 $(document).ready(function(){
-	
+
+	/*
 	$("#installbut").on("click", function(){
 
 	    $.getJSON("/api/installapp/sys/rootpack.targz/",null,function(data){
@@ -35,7 +38,7 @@ $(document).ready(function(){
 			{ alert("Installfailed")}
 		});
 	})
-
+*/
 	
 	$.getJSON("/api/getuploaddir/",null,function(data){
 			if (data && data.rtn == undefined) { 

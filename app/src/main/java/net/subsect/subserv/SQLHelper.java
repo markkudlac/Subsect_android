@@ -101,7 +101,7 @@ public class SQLHelper extends SQLiteOpenHelper {
         String sqlst;
         String[] schemafls = Util.getSchemaFileNames(context, dbnm);
 
-        System.out.println("In processTables : " + Util.getAppfromDb(dbnm));
+       // System.out.println("In processTables : " + Util.getAppfromDb(dbnm));
         for (int i = 0; i < schemafls.length; i++) {
             sqlst = Util.getSchema(context, dbnm, schemafls[i]);
 
@@ -161,18 +161,15 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         try {
             JSONObject qargs = new JSONObject("{ \"id\": \""+ siteid +"\" }");
-         //   System.out.println("json args : "+ qargs.getInt("id"));
-
             jray = queryDB(TBL_REGISTRY, qargs,
                     new JSONObject(), "1");
 
             if (jray.length() > 1){
-                System.out.println("Print status : " + jray.getJSONObject(1).getString(FLD_STATUS));
 
                 JSONObject vals = new JSONObject("{ \""+FLD_STATUS+"\": \""+ DELETE_STATUS +"\" }");
                 JSONArray tmpary = updateDB(TBL_REGISTRY, vals, "", qargs, "-1");
 
-                System.out.println("Updatr status : "+tmpary.getJSONObject(0).getInt("db"));
+              //  System.out.println("Updatr status : "+tmpary.getJSONObject(0).getInt("db"));
 
                 if (tmpary.getJSONObject(0).getInt("db") > 0){
                     String dbnm =  jray.getJSONObject(1).getString(FLD_TYPE) +
@@ -293,7 +290,7 @@ public class SQLHelper extends SQLiteOpenHelper {
                 }
             }
 
-            System.out.println("query str : "+ qstr + " Limits size: " + jsob_limits.length());
+          //  System.out.println("query str : "+ qstr + " Limits size: " + jsob_limits.length());
             tmpCursor = database.rawQuery(qstr, args);
 
             String[] colnames = tmpCursor.getColumnNames();
@@ -336,7 +333,6 @@ public class SQLHelper extends SQLiteOpenHelper {
         JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
-        //System.out.println("insert sqlpk : "+ sqlpk);
 
         try {
 
@@ -385,7 +381,6 @@ public class SQLHelper extends SQLiteOpenHelper {
         JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
-        //System.out.println("insert sqlpk : "+ sqlpk);
 
             if (qstr == null || qstr == "null" || qstr.isEmpty()) {
                 Iterator<String> itr = jsob_args.keys();
@@ -429,7 +424,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
             JSONArray jray = queryDB(TBL_REGISTRY, qargs,
                 new JSONObject(), "1");
-            System.out.println("het all db count : "+jray.length());
+         //   System.out.println("het all db count : "+jray.length());
 
             for (int i=1; i < jray.length(); i++){
 

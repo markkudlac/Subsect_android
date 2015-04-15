@@ -287,17 +287,15 @@ public class SimpleWebServer extends NanoHTTPD {
         Iterator<String> e = header.keySet().iterator();
         while (e.hasNext()) {
             String value = e.next();
-//            System.out.println("  HDR: '" + value + "' = '" + header.get(value) + "'");
         }
         e = parms.keySet().iterator();
         while (e.hasNext()) {
             String value = e.next();
- //           System.out.println("  PRM: '" + value + "' = '" + parms.get(value) + "'");
             if (value.equals("file")) {
             	filename = parms.get(value);
             } else if (value.equals(QUERY_STRING_PARAMETER)){
             	qryString = parms.get(value);
-            	System.out.println("Param string : "+ qryString);
+            //	System.out.println("Param string : "+ qryString);
             }
         }
         e = files.keySet().iterator();

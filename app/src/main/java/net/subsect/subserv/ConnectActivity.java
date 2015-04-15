@@ -137,7 +137,8 @@ public class ConnectActivity extends Activity {
             }
     }
 
-    public void popConnectDialogue(){
+
+    private void popConnectDialogue(){
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 

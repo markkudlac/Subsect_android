@@ -3,21 +3,16 @@
 <html>
 
 <head>
-    <title>Subsect Server</title>
-
-    <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
-    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <!--
+   <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+  -->
+   <script src="file:///android_asset/peer.0.3.13.js"></script>
+    <script src="file:///android_asset/jquery-2.1.3.min.js"></script>
 </head>
 
 <body>
-
-<h2>Subsect Server</h2>
-
-<div>
-    <input id="peerid" type="text" value="" /> <br/>
-    <input id="servbut" type="button" style="margin-top: 20px" value="Start Server" />
-    <textarea id="messout" rows="10" style="width: 100%; margin-top: 20px"></textarea>
-</div>
+    <input id="servbut" type="button" value="Start Server" />
+    <textarea id="messout" rows="20" style="width: 100%; margin-top: 10px"></textarea>
 
 <script>
 
@@ -28,6 +23,8 @@ var blobbuff = {};
 var connectcnt = 0;
 var lastcontime = 0;
 var timer = null;
+var cycletime = 60000 * 4;
+//var toggler = 0;
 
 var splitsz = 65536;
 
@@ -35,8 +32,25 @@ var splitsz = 65536;
 		messout("localhost : " + getParam("fullhost"));
 
 		initall();
+
+	//	var togg = getParam("toggle");
+
+	//	console.log("In index togg : "+togg);
+	//	if (togg.length > 0 ) {
+	//	    toggler = parseInt(togg);
+	//	    peerStartUp();
+	//	}
+
 	})
 
+/*
+function toggleOn(xtog) {
+
+    console.log("In toggleOn xtog : "+ xtog);
+    toggler = xtog;
+    peerStartUp();
+}
+*/
 
 function peerServerOn() {
 
@@ -44,18 +58,28 @@ function peerServerOn() {
 	// Call XirSys ICE servers
 	$.ajax({
 	  type: "POST",
-	  dataType: "json",
 	  url: "https://api.xirsys.com/getIceServers",
+	  dataType: "json",
 	  data: {
+
 	    ident: "markkudlac",
-	    secret: "1e2822c6-88b3-4e20-8ecf-5bb64475d424",
+	    secret: "10633c0a-fb06-4502-a834-de7d1990c3e6",
 	    domain: "subsect.net",
-	    application: "default",
-	    room: "default",
+	    application: "androidserver",
+		room: "room-1",
+
+	    /*
+	    ident: "rosemaryp",
+	    secret: "ddb1722f-43ca-4a52-9eed-449875634cc9",
+	    domain: "www.adladl.com",
+	    application: "subserv",
+	    room: "room-1",
+	    */
 	    secure: 1
 	  },
-	  success: function (data, status) {
-		messout("Completed XirSys");
+	  success: function (data, dstatus) {
+
+		messout("Completed XirSys 2 : " + data.d.iceServers[0].url + "  status : " + dstatus);
 	    setPeer(data.d);
 	  },
 	  error: function() {
@@ -70,13 +94,15 @@ function setPeer(customConfig){
      connectcnt = 0;
      lastcontime = 0;
 
-	peer = new Peer($('#peerid').val(),
+	//peer = new Peer($('#peerid').val(),
+	peer = new Peer(
 		{key: 'wcf528rijzx8byb9',
 		debug: 3,
-		config: customConfig});
+		config: customConfig
+		});
 
 	peer.on('error', function(err) {
-	  messout('ERROR : ' + err.type);
+	  messout('Peer server ERROR : ' + err.type + " : " + err.message);
 	});
 
 
@@ -85,12 +111,18 @@ function setPeer(customConfig){
 	  messout('My peer ID is: ' + id + " Name server : "+ getParam("subnamesrv"));
 	  messout('My  subHostname is: ' + getParam("subhost"));
 
+      timer = setInterval(function(){
+        messout("sent PING");
+			peer.socket.send({type: "PING", payload: {}});}, cycletime);
+
 	  $.getJSON("http://"+getParam("subnamesrv")+"/api/setrtcid/"+ getParam("subhost") +"/"+id,
 	    function(rtnobj){
 	    messout("server rtn : " + rtnobj.rtn);
 
 	    $("#servbut").val("Close Server")
-	   // timer = setTimeout(peerReset, 60000 * 12);
+	  //  android.transferPeer(id);
+	   // timer = setTimeout(peerReset, cycletime);
+	   // timer = setTimeout(peerStopConnect, cycletime);
 	  })
 	  .fail(function(xhr, text){
 	    messout("server call failed : " + text);
@@ -102,7 +134,6 @@ function setPeer(customConfig){
 
 	peer.on('disconnected', function(){
 		messout('Server has disconnected');
-
 		peerShutDown();
 	});
 
@@ -125,14 +156,10 @@ function setPeer(customConfig){
 		     messout('Data Connection closeded cnt : ' + connectcnt);
 		});
 
-            conn.on('data', function(rcv) {
+        conn.on('data', function(rcv) {
 		   // messout('Received ' + rcv.file);
 
-                if (rcv.file.indexOf("sub_ping") == 0) {
-                    messout('PING : '+rcv.file);
-                } else {
-                    getappfile(rcv, conn);
-                }
+              getappfile(rcv, conn);
 		  });
 
 		 conn.on('error', function(err) {
@@ -159,7 +186,6 @@ function getappfile(rcv, xconn){
         var tblob = blobbuff[rcv.file].slice((rcv.cnt - 1)*splitsz, splitend,
             blobbuff[rcv.file].type);
 
-  //      console.log("Respose size 1 : " +tblob.size + "  type : "+ tblob.type);
         if (tblob.size < splitsz || splitend == blobbuff[rcv.file].size)
         {
             xcnt = -1;
@@ -173,19 +199,16 @@ function getappfile(rcv, xconn){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function(){
 	    if (this.readyState == 4 && this.status == 200){
-            console.log("Respose size 4 : " +this.response.size + "  type : "+this.response.type);
 
             if (this.response.size > splitsz) {
 
                 var yblob = this.response.slice(0, splitsz, this.response.type);
 
                 if (blobbuff[rcv.file] === undefined || blobbuff[rcv.file] === null) {
-                console.log("Putting into blobbuff : " + rcv.file)
                     blobbuff[rcv.file] = this.response.slice(splitsz,
                         this.response.size, this.response.type);
                 }
 
-  //              console.log("Respose size 5 : " +yblob.size + "  type : "+ yblob.type);
                 xconn.send({uri: rcv.file, blobtype: this.response.type, blob: yblob, cnt: 1});
 
             } else {
@@ -222,9 +245,9 @@ function messout(mess){
 
 	function initall() {
 	$('#servbut').on("click",function(){
-//		console.log("destbut: pressed")
 		if ($("#servbut").val().indexOf("St") == 0){
 			peerStartUp();
+	//		toggler = 0;
 		} else {
 			peerShutDown();
 		}
@@ -235,10 +258,18 @@ function messout(mess){
 
 function peerStartUp(){
 
-			shutdown = false;
-			peerServerOn();
+	shutdown = false;
+	peerServerOn();
 }
 
+/*
+function peerStopConnect() {
+
+  //  console.log("In peerStopConnect");
+    timer = setTimeout(peerShutDown, (cycletime * 4) / 5);
+    android.callToggle(toggler+1);
+}
+*/
 
 function peerShutDown(){
 
@@ -247,12 +278,17 @@ function peerShutDown(){
                 clearTimeout(timer);
                 timer = null;
             }
-			 if (peer != null) peer.destroy();
+
+			if (peer != null) {
+			    peer.disconnect();
+			    peer.destroy();
+			}
 			peer = null;
 			$("#servbut").val("Start Server")
 }
 
 
+/*
 function peerReset(){
 
 console.log("In peerRest conectcnt : "+connectcnt);
@@ -263,7 +299,7 @@ console.log("In peerRest conectcnt : "+connectcnt);
         timer = setTimeout(peerReset, 60000);
     }
 }
-
+*/
 
 function getParam(val) {
 

@@ -33,7 +33,7 @@
         android:text="Submit" />
 
     <Button
-        android:id="@+id/btnImport"
+        android:id="@+id/butInstall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp"

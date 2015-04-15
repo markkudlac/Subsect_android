@@ -48,7 +48,7 @@ public class HttpCom extends AsyncTask<String, Integer, String>{
             String xurl = API_PATH + xparam[0];
             System.out.println("HttpCom xurl : "+xurl);
 
-         //   URL url = new URL(HTTP_PROT, SOURCE_ADDRESS, xurl);
+            //URL url = new URL(HTTP_PROT, SOURCE_ADDRESS, xurl);
               		URL url = new URL(HTTP_PROT, "192.168.1.103", 3000, xurl);
             con = (HttpURLConnection) url.openConnection();
 

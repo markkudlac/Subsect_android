@@ -76,7 +76,6 @@ public class Util {
             if (appName.length() == 0) throw new Exception("No name found in targz"); //No name found in taegz
 
             installto = new File(context.getFilesDir(), appdir+"/"+ appName);
-            // System.out.println("HTML DIR is : " + userdir.getAbsolutePath());
 
             if (installto.exists()) DeleteRecursive(installto);
             untarTGzFile(context, installfrom, appdir);

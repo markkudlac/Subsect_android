@@ -24,7 +24,7 @@ public class Routes {
 
         String msg = Util.JSONReturn(false);
 
-        System.out.println("Route : "+uri + " qryString : "+qryString);
+      //  System.out.println("Route : "+uri + " qryString : "+qryString);
 
         uri = trimUri(uri,API_PATH);
 
@@ -33,7 +33,6 @@ public class Routes {
             qryJSON = Util.qryStringToJSON(qryString);
             try {
                 String fullpath = rootdir.getPath()+qryJSON.getString("filename");
-             //   System.out.println("JSON filename : "+ fullpath);
                 msg = Util.savefile(fullpath,
                         Util.decodeJSuriComp(qryJSON.getString("filecontent")));
             } catch (Exception ex) {
@@ -130,7 +129,6 @@ public class Routes {
 
         } else if (uri.indexOf(API_GETUPLOADDIR) == 0){
             msg = Prefs.getuploaddir(context);
-          //  System.out.println("Get Upload dir : " + msg);
         }
 
         return(msg);
