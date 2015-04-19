@@ -76,6 +76,7 @@ public class SQLHelper extends SQLiteOpenHelper {
                         "create table " + TBL_REGISTRY + " ( " +
                                 FLD_ID + " integer primary key autoincrement, " +
                                 FLD_APP + " text, " +
+                                FLD_TITLE + " text, " +
                                 FLD_TYPE + " char(2) default \'"+ DB_USR + "\', " +
                                 FLD_ICON + " text, " +
                                 FLD_SUBSECTID + " integer, " +
@@ -127,11 +128,12 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 
     public static boolean initializeRegistry(SQLiteDatabase db, String app, boolean sys,
-                       String icon, int subsectid) {
+                       String icon, int subsectid, String title) {
         ContentValues values = new ContentValues();
 
         System.out.println(TBL_REGISTRY + " app : "+ app);
                 values.put(FLD_APP, app);
+                values.put(FLD_TITLE, title);
                 values.put(FLD_ICON, icon);
                 values.put(FLD_SUBSECTID, subsectid);
                 if (app.equals(PREINSTALL_1)) {
@@ -207,8 +209,15 @@ public class SQLHelper extends SQLiteOpenHelper {
 
             if (jray.length() > 1) {
                 String tmphref = jray.getJSONObject(1).getString(FLD_HREF);
+                String xport;
+                
                 //   System.out.print("items string 1 : " + items.substring(6500));
-                String rmt = "http://" + Prefs.getHostname(context) + ".subsect.net/app/";
+                if (Prefs.useHeroku(context)) {
+                    xport = "";
+                } else {
+                    xport = ":" + DEMO_PORT;
+                }
+                String rmt = "http://" + Prefs.getHostname(context) + ".subsect.net"+xport+"/pkg/";
                 tmphref = tmphref.replace(SUB_HREF_REMOTE, rmt);
 
                 if (tmphref.indexOf(SUB_HREF_LOCAL) > 0) {

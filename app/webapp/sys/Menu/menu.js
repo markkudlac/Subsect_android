@@ -3,6 +3,14 @@ var menuModule;
 menuModule = angular.module("menuApp", [])
 .config(function(){
 
+    var title = "";
+
+    if (isLocal()) {
+        title = "Installed"
+    } else {
+        title = (window.location.host.split("."))[0];
+    }
+    $(".settitle").text(title);
 });
 
 menuModule.controller("MenuController", ['$scope',
@@ -10,7 +18,7 @@ menuModule.controller("MenuController", ['$scope',
 
     	$scope.findall = function() {
 	 			getMenu(function(jobj){
-				   console.log("In getMenu");
+				 //  console.log("In getMenu");
 
    				    if (jobj[0].rtn && jobj[0].db > 0) {
 						 jobj.shift();
@@ -20,21 +28,28 @@ menuModule.controller("MenuController", ['$scope',
 				 });
 			 }
 
-    $scope.findall();
+        $scope.findall();
 
-    $scope.showitem = function(site){
-        return(site.id != -1);
-    }
+
+        $scope.showitem = function(site){
+            return(site.id != -1);
+        }
+
+        $scope.showremove = function(){
+            return(isLocal());
+        }
+
 
 		$scope.newurl = function(site){
 			location.assign(site.href);
 		}
 
+
 		$scope.delSite = function(site){
 			if (!isLocal()) {
 				alertmodal("Can remove site only from phone");
 			} else {
-			    alertmodal("Continue to delete : " + site.app, function() {
+			    alertmodal("Continue to remove : " + site.app, function() {
 
 				    if (android.removeSite(site.id)){
 					    site.id = -1;
@@ -49,7 +64,13 @@ menuModule.controller("MenuController", ['$scope',
 
 function isLocal(){
 
-    return(typeof android !== "undefined" && typeof android.removeSite === "function")
+    if (typeof android !== "undefined" &&
+        typeof android.removeSite === "function"){
+            var target = window.location.hostname + ":" + window.location.port
+            return(target == android.subsectHost());
+    } else {
+        return(false);
+    }
 }
 
 

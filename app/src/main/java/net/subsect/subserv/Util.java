@@ -54,7 +54,7 @@ public class Util {
 
 
     public static String installApp(Context context, String appdir, String filenm, String icon,
-                                    int subsectid){
+                                    int subsectid, String title){
         String rtn = JSONReturn(false);
 
         try {
@@ -86,7 +86,7 @@ public class Util {
                 // This is a new install db created and log registry
                 System.out.println("New install : "+appName);
                 SQLHelper.initializeRegistry((SQLManager.getSQLHelper(DB_SUBSERV)).getDatabase(),
-                        appName, true, icon, subsectid);
+                        appName, true, icon, subsectid, title);
             } else {
                 System.out.println("Update install : "+appName);
                 // This is an update with db already open tables should be mods only

@@ -88,12 +88,18 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
     }
 
 
-    public static String getNameServer(Context context) {
+    public static boolean useHeroku(Context context){
 
-        if (PreferenceManager
+        return(PreferenceManager
                 .getDefaultSharedPreferences(context).getBoolean(
                         context.getString(R.string.heroku), false)
-                ) {
+                );
+    }
+
+
+    public static String getNameServer(Context context) {
+
+        if (useHeroku(context)) {
             return(context.getString(R.string.defRemoteServer));
         } else {
             return (PreferenceManager

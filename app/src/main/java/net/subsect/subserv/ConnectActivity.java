@@ -108,6 +108,8 @@ public class ConnectActivity extends Activity {
 
             WebSettings webSettings = webarg.getSettings();
             webSettings.setJavaScriptEnabled(true);
+            webSettings.setDomStorageEnabled(true); //added to allow local HTML5 storage
+            webSettings.setDatabaseEnabled(true); //added to allow local HTML5 storage
 
             webarg.loadUrl("http://" + connectto + ".subsect.net/app/Menu");
         } else {
@@ -130,8 +132,12 @@ public class ConnectActivity extends Activity {
             webarg.addJavascriptInterface(this.new JsInterface(), "android");
 
             if (value == R.string.subzaar) {
-               // webarg.loadUrl("http://192.168.1.103:3000/subzaar"); //Only program nor download
-                webarg.loadUrl("http://www.subsect.net/subzaar");
+                if (Prefs.useHeroku(this)) {
+                    webarg.loadUrl("http://www.subsect.net/subzaar");
+                } else {
+                    System.out.println("Use Subzaar local");
+                    webarg.loadUrl("http://"+DEMO_ADDRESS+":"+ DEMO_PORT +"/subzaar");
+                }
             } else {
                 webarg.loadUrl("http://"+MainActivity.getHost()+"/sys/Menu/menu.html");
             }
@@ -185,6 +191,12 @@ public class ConnectActivity extends Activity {
         public boolean removeSite(int siteid) {
 
             return(SQLManager.getSQLHelper(DB_SUBSERV).removeSite(siteid));
+        }
+
+        @JavascriptInterface
+        public String subsectHost() {
+
+            return(MainActivity.getHost());
         }
     }
 

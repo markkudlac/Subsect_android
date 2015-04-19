@@ -25,7 +25,6 @@ public class MainActivity extends Activity {
     private static String hostadd = null;
     private static int hostport = 8080;
     private static TextView androidout;
-  //  private static WebView poller;
     private static WebView serverjs;
 
     @Override
@@ -51,21 +50,6 @@ public class MainActivity extends Activity {
 
             serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(this) +
                     "&subnamesrv=" + Prefs.getNameServer(this) + "&fullhost="+getHost());
-
-        /*
-        poller = (WebView)findViewById(R.id.poller);
-        poller.setWebChromeClient(new WebChromeClient());
-
-        webSettings = poller.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setAllowUniversalAccessFromFileURLs(true);
-        poller.addJavascriptInterface(this.new JsInterface(this), "android");
-
-     //   poller.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(this) +
-     //           "&subnamesrv=" + Prefs.getNameServer(this) + "&fullhost="+getHost());
-
-       // poller.loadUrl("file:///android_asset/poller.html");
-       */
     }
 
 
@@ -74,8 +58,8 @@ public class MainActivity extends Activity {
         super.onDestroy();
 
         System.out.println("In onDestroy");
-        stopHttpdServer();
-        stopDb();
+      //  stopHttpdServer();
+      //  stopDb();
     }
 
 

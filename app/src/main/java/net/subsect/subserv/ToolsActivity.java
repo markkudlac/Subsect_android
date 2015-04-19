@@ -125,7 +125,7 @@ public class ToolsActivity extends Activity {
                         "Installing Site",
                         Toast.LENGTH_SHORT).show();
                 String rtn = Util.installApp(getBaseContext(), SYS_DIR, INSTALL_FILE, "  ",
-                        10000);
+                        10000, "TEST");
 
                 System.out.println("Rtn install "+rtn);
                 if (rtn.indexOf("true") > 0){

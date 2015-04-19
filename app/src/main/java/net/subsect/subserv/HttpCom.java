@@ -43,13 +43,17 @@ public class HttpCom extends AsyncTask<String, Integer, String>{
             int count = 0;
             int progcnt = 0;
             char data[] = new char[BASE_BLOCKSIZE];
-
+            URL url;
 
             String xurl = API_PATH + xparam[0];
             System.out.println("HttpCom xurl : "+xurl);
 
-            //URL url = new URL(HTTP_PROT, SOURCE_ADDRESS, xurl);
-              		URL url = new URL(HTTP_PROT, "192.168.1.103", 3000, xurl);
+            if (Prefs.useHeroku(conact)) {
+                url = new URL(HTTP_PROT, SOURCE_ADDRESS, xurl);
+            } else {
+                url = new URL(HTTP_PROT, DEMO_ADDRESS, DEMO_PORT, xurl);
+            }
+
             con = (HttpURLConnection) url.openConnection();
 
             InputStream xin = (InputStream) con.getInputStream();
@@ -108,7 +112,7 @@ public class HttpCom extends AsyncTask<String, Integer, String>{
                 String installdir = USR_DIR;
 
                 JSONObject jObj =  new JSONObject(result);
-   				System.out.println("Appname : "+ jObj.getString("appname")+"  dbtype : "+
+   				System.out.println("Pkgname : "+ jObj.getString("pkgname")+"  dbtype : "+
                         jObj.getString("dbtype"));
 
                 if (Util.copyBase64(conact, jObj.getString("zipfile"),
@@ -120,7 +124,7 @@ public class HttpCom extends AsyncTask<String, Integer, String>{
                     // when doing json tostring. This is dumb and should be looked at later
                     String nocar_rtn_icon = jObj.getString("icon").replace("\n", "");
                     Util.installApp(conact,installdir ,INSTALL_FILE, nocar_rtn_icon,
-                            jObj.getInt("id"));
+                            jObj.getInt("id"), jObj.getString("title"));
                 }
                 conact.updateProg(-1002);
             }

@@ -10,7 +10,8 @@ public interface Const extends BaseColumns {
     public static final int BASE_BLOCKSIZE = 65536;
 
     public static final String SOURCE_ADDRESS = "www.subsect.net";
-
+    public static final String DEMO_ADDRESS = "192.168.1.103";
+    public static final int DEMO_PORT = 3000;
 
     public static final String HTTP_PROT = "http";
     public static final String SYS_DIR = "sys";;
@@ -49,6 +50,7 @@ public interface Const extends BaseColumns {
 
     public static final String TBL_REGISTRY = "registry";
     public static final String FLD_APP = "app";
+    public static final String FLD_TITLE = "title";
     public static final String FLD_TYPE = "type";
     public static final String FLD_SUBSECTID = "subsectid";
     public static final String FLD_ICON = "icon";

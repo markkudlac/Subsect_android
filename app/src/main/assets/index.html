@@ -3,9 +3,6 @@
 <html>
 
 <head>
-    <!--
-   <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
-  -->
    <script src="file:///android_asset/peer.0.3.13.js"></script>
     <script src="file:///android_asset/jquery-2.1.3.min.js"></script>
 </head>
@@ -21,10 +18,11 @@ var shutdown = false;
 var blobbuff = {};
 
 var connectcnt = 0;
-var lastcontime = 0;
 var timer = null;
 var cycletime = 60000 * 4;
-//var toggler = 0;
+
+var restarttimer = null;
+var restartcnt = 0;
 
 var splitsz = 65536;
 
@@ -32,25 +30,8 @@ var splitsz = 65536;
 		messout("localhost : " + getParam("fullhost"));
 
 		initall();
-
-	//	var togg = getParam("toggle");
-
-	//	console.log("In index togg : "+togg);
-	//	if (togg.length > 0 ) {
-	//	    toggler = parseInt(togg);
-	//	    peerStartUp();
-	//	}
-
 	})
 
-/*
-function toggleOn(xtog) {
-
-    console.log("In toggleOn xtog : "+ xtog);
-    toggler = xtog;
-    peerStartUp();
-}
-*/
 
 function peerServerOn() {
 
@@ -83,7 +64,8 @@ function peerServerOn() {
 	    setPeer(data.d);
 	  },
 	  error: function() {
-	    messout("ERROR  XirSys");
+	    messout("ERROR XirSys: use Google");
+	    setPeer(null);
 	  }
 	});
 }
@@ -92,17 +74,17 @@ function peerServerOn() {
 function setPeer(customConfig){
 
      connectcnt = 0;
-     lastcontime = 0;
 
-	//peer = new Peer($('#peerid').val(),
-	peer = new Peer(
-		{key: 'wcf528rijzx8byb9',
-		debug: 3,
-		config: customConfig
-		});
+    var opts  = {key: 'wcf528rijzx8byb9',
+	//	debug: 3
+		};
+
+	if (customConfig !== null) opts.config = customConfig;
+	peer = new Peer(opts);
 
 	peer.on('error', function(err) {
-	  messout('Peer server ERROR : ' + err.type + " : " + err.message);
+	    peerReStart();
+	    messout('Peer server ERROR : ' + err.type + " : " + err.message);
 	});
 
 
@@ -118,11 +100,8 @@ function setPeer(customConfig){
 	  $.getJSON("http://"+getParam("subnamesrv")+"/api/setrtcid/"+ getParam("subhost") +"/"+id,
 	    function(rtnobj){
 	    messout("server rtn : " + rtnobj.rtn);
-
+        clearReStart();
 	    $("#servbut").val("Close Server")
-	  //  android.transferPeer(id);
-	   // timer = setTimeout(peerReset, cycletime);
-	   // timer = setTimeout(peerStopConnect, cycletime);
 	  })
 	  .fail(function(xhr, text){
 	    messout("server call failed : " + text);
@@ -134,14 +113,13 @@ function setPeer(customConfig){
 
 	peer.on('disconnected', function(){
 		messout('Server has disconnected');
-		peerShutDown();
+		peerReStart();
 	});
 
 
 	peer.on('connection', function(conn) {
 
 	  messout('Data connection started');
-	  lastcontime = new Date().getTime();
 	  ++connectcnt;
 
 		conn.on('open', function() {
@@ -166,7 +144,6 @@ function setPeer(customConfig){
 		    messout('Connection error : ' + err);
 		});
 	});
-
 
 	peer.on('close', function() {
 	  messout('Peer closed');
@@ -243,11 +220,11 @@ function messout(mess){
 }
 
 
-	function initall() {
+function initall() {
 	$('#servbut').on("click",function(){
 		if ($("#servbut").val().indexOf("St") == 0){
+		    clearReStart();
 			peerStartUp();
-	//		toggler = 0;
 		} else {
 			peerShutDown();
 		}
@@ -262,44 +239,58 @@ function peerStartUp(){
 	peerServerOn();
 }
 
-/*
-function peerStopConnect() {
-
-  //  console.log("In peerStopConnect");
-    timer = setTimeout(peerShutDown, (cycletime * 4) / 5);
-    android.callToggle(toggler+1);
-}
-*/
 
 function peerShutDown(){
 
-            shutdown = true;
-            if (timer != null) {
-                clearTimeout(timer);
-                timer = null;
-            }
+    if (!shutdown) serverOffline();
 
-			if (peer != null) {
-			    peer.disconnect();
-			    peer.destroy();
-			}
-			peer = null;
-			$("#servbut").val("Start Server")
+    shutdown = true;
+    if (timer != null) {
+        clearTimeout(timer);
+        timer = null;
+    }
+
+    if (peer != null) {
+        peer.disconnect();
+        peer.destroy();
+    }
+    peer = null;
+    $("#servbut").val("Start Server");
 }
 
 
-/*
-function peerReset(){
+function peerReStart(){
 
-console.log("In peerRest conectcnt : "+connectcnt);
-    if (connectcnt <= 0 || new Date().getTime() - lastcontime > 60000 * 20) {
-        peerShutDown()
-        peerStartUp()
-    } else {
-        timer = setTimeout(peerReset, 60000);
+    if (!shutdown && restartcnt == 0) {
+        restartcnt = 1;
+        restarttimer = setTimeout(loopReStart, restartcnt * 60000);
     }
 }
-*/
+
+
+function loopReStart(){
+
+    peerShutDown();
+
+    if (restartcnt <= 5) {
+        messout("In loopReset : " + restartcnt);
+        ++restartcnt;
+        restarttimer = setTimeout(loopReStart, restartcnt * 60000);
+       peerStartUp();
+    } else {
+        clearReStart();
+    }
+}
+
+function clearReStart(){
+
+    restartcnt = 0;
+    if (restarttimer != null) {
+        clearTimeout(restarttimer);
+        restarttimer = null;
+    }
+}
+
 
 function getParam(val) {
 
@@ -310,6 +301,18 @@ function getParam(val) {
         if (tmp[0] === val) return(tmp[1]);
     }
     return "";
+}
+
+
+function serverOffline(){
+
+    $.getJSON("http://"+getParam("subnamesrv")+"/api/offline/"+ getParam("subhost"),
+	    function(rtnobj){
+	    messout("Offline rtn : " + rtnobj.rtn);
+	  })
+	  .fail(function(xhr, text){
+	    messout("Offline call failed : " + text);
+	  });
 }
 </script>
 

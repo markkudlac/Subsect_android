@@ -125,7 +125,8 @@ public class Routes {
 
         } else if (uri.indexOf(API_INSTALLAPP) == 0){
             uri = trimUri(uri,API_INSTALLAPP);
-            msg = Util.installApp(context, getArg(uri, 0), getArg(uri, 1), "", -1); //rootpack for now
+            msg = Util.installApp(context, getArg(uri, 0), getArg(uri, 1), "", -1,getArg(uri, 1));
+            //rootpack for now
 
         } else if (uri.indexOf(API_GETUPLOADDIR) == 0){
             msg = Prefs.getuploaddir(context);

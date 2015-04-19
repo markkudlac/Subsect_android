@@ -1375,7 +1375,6 @@ Socket.prototype._sendQueuedMessages = function() {
 /** Exposed send for DC & Peer. */
 Socket.prototype.send = function(data) {
 
-messout("In Socket.send 1 : " + data.type);
   if (this.disconnected) {
     return;
   }
