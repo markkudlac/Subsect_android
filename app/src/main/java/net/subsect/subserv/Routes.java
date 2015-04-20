@@ -122,12 +122,12 @@ public class Routes {
             uri = trimUri(uri,API_GETMENU);
             msg = SQLManager.getSQLHelper(DB_SUBSERV).getMenu(getArg(uri, 0)).
                     toString().replace("\\", "");
-
+/*
         } else if (uri.indexOf(API_INSTALLAPP) == 0){
             uri = trimUri(uri,API_INSTALLAPP);
             msg = Util.installApp(context, getArg(uri, 0), getArg(uri, 1), "", -1,getArg(uri, 1));
             //rootpack for now
-
+*/
         } else if (uri.indexOf(API_GETUPLOADDIR) == 0){
             msg = Prefs.getuploaddir(context);
         }

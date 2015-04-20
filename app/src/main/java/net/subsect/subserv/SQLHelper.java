@@ -210,7 +210,7 @@ public class SQLHelper extends SQLiteOpenHelper {
             if (jray.length() > 1) {
                 String tmphref = jray.getJSONObject(1).getString(FLD_HREF);
                 String xport;
-                
+
                 //   System.out.print("items string 1 : " + items.substring(6500));
                 if (Prefs.useHeroku(context)) {
                     xport = "";

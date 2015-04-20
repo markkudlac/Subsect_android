@@ -75,11 +75,17 @@ public class Util {
 
             if (appName.length() == 0) throw new Exception("No name found in targz"); //No name found in taegz
 
+            if (title.length() == 0 ) title = appName;
+
             installto = new File(context.getFilesDir(), appdir+"/"+ appName);
 
             if (installto.exists()) DeleteRecursive(installto);
             untarTGzFile(context, installfrom, appdir);
             installfl.delete();
+
+            if (icon.length() == 0){
+                icon = loadIcon(installto);
+            }
 
             // There could be a problem here because dup app name
             if (SQLManager.createIsOpenDb(DB_SYS+appName, FIXED_DB_VERSION)){
@@ -253,6 +259,44 @@ public class Util {
             return (false);
         }
         return (true);
+    }
+
+
+    static String loadIcon(File sitedir){
+        String icon64 = "";
+        File icondir;
+
+        icondir = new File(sitedir, "icon");
+
+        if (icondir.exists() && icondir.isDirectory()) {
+            File[] icary = icondir.listFiles();
+            byte data[] = new byte[BASE_BLOCKSIZE];
+
+            try {
+                int count;
+                int offst = 0;
+
+                if (icary.length > 0) {
+                    FileInputStream fis = new FileInputStream(icary[0]);
+                    BufferedInputStream bfin = new BufferedInputStream(fis);
+
+                    while (offst < BASE_BLOCKSIZE - 2001 &&
+                            (count = bfin.read(data, offst, 2000)) != -1) {
+                        offst += count;
+                    }
+                    System.out.println("Total offst " + offst);
+                    bfin.close();
+
+                    icon64 = Base64.encodeToString(data, 0, offst, Base64.NO_WRAP);
+                    System.out.println("icon64 : " + icon64);
+                }
+            }
+            catch(Exception e) {
+                System.out.println("File I/O error " + e);
+            }
+        }
+
+        return(icon64);
     }
 
 

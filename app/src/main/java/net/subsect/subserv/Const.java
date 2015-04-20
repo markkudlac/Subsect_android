@@ -27,7 +27,7 @@ public interface Const extends BaseColumns {
     public static final String API_UPDATEDB = "updateDB";
     public static final String API_REMOVEDB = "removeDB";
     public static final String API_GETUPLOADDIR = "getuploaddir/";
-    public static final String API_INSTALLAPP = "installapp/";
+    // public static final String API_INSTALLAPP = "installapp/";
     public static final String API_GETMENU = "getMenu/";
 
     public static final String SUBSERV = "subserv";
