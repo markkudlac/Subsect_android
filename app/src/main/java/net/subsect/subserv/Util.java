@@ -284,11 +284,9 @@ public class Util {
                             (count = bfin.read(data, offst, 2000)) != -1) {
                         offst += count;
                     }
-                    System.out.println("Total offst " + offst);
+                //    System.out.println("Total offst " + offst);
                     bfin.close();
-
                     icon64 = Base64.encodeToString(data, 0, offst, Base64.NO_WRAP);
-                    System.out.println("icon64 : " + icon64);
                 }
             }
             catch(Exception e) {
