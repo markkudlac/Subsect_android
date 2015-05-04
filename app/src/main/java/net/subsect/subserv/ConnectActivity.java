@@ -10,6 +10,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.view.MenuItem;
 import android.view.Menu;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +22,7 @@ import static net.subsect.subserv.Const.*;
  */
 public class ConnectActivity extends Activity {
 
-    private static ConnectActivity conact;
+    private static ConnectActivity conact = null;
     private static WebView webarg;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,16 +107,38 @@ public class ConnectActivity extends Activity {
             webarg = (WebView)findViewById(R.id.connectview);
             webarg.setWebChromeClient(new WebChromeClient());
 
+            webarg.setWebViewClient(new WebViewClient() {
+
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    view.loadUrl(url);
+                    return true;
+                }
+            });
+
             WebSettings webSettings = webarg.getSettings();
             webSettings.setJavaScriptEnabled(true);
             webSettings.setDomStorageEnabled(true); //added to allow local HTML5 storage
             webSettings.setDatabaseEnabled(true); //added to allow local HTML5 storage
+            loadConnect(connectto);
 
-            webarg.loadUrl("http://" + connectto + ".subsect.net/app/Menu");
         } else {
             Toast.makeText(getBaseContext(), "No connection entered",
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+
+    public static void loadConnect(String connectto){
+
+        System.out.println("In LoadConnect");
+
+        webarg.loadUrl("http://" + connectto + ".subsect.net/pkg/Menu");
+    }
+
+
+    public static ConnectActivity getConAct(){
+
+        return conact;
     }
 
 

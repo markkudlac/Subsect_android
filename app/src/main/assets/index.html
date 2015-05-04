@@ -16,6 +16,7 @@
 var peer = null;
 var shutdown = false;
 var blobbuff = {};
+var xirsysConfig = null;
 
 var connectcnt = 0;
 var timer = null;
@@ -30,44 +31,58 @@ var splitsz = 65536;
 		messout("localhost : " + getParam("fullhost"));
 
 		initall();
+		peerServerOn();
 	})
 
 
 function peerServerOn() {
 
+    if(typeof(Storage) !== "undefined") {
+        xirsysConfig = localStorage.getItem("xirsysConfig");    //cache XirSys
+	}
+
 	// and override the original config object
 	// Call XirSys ICE servers
-	$.ajax({
-	  type: "POST",
-	  url: "https://api.xirsys.com/getIceServers",
-	  dataType: "json",
-	  data: {
 
-	    ident: "markkudlac",
-	    secret: "10633c0a-fb06-4502-a834-de7d1990c3e6",
-	    domain: "subsect.net",
-	    application: "androidserver",
-		room: "room-1",
+    $.ajax({
+      type: "POST",
+      url: "https://api.xirsys.com/getIceServers",
+      dataType: "json",
+      data: {
 
-	    /*
-	    ident: "rosemaryp",
-	    secret: "ddb1722f-43ca-4a52-9eed-449875634cc9",
-	    domain: "www.adladl.com",
-	    application: "subserv",
-	    room: "room-1",
-	    */
-	    secure: 1
-	  },
-	  success: function (data, dstatus) {
+        ident: "markkudlac",
+        secret: "10633c0a-fb06-4502-a834-de7d1990c3e6",
+        domain: "subsect.net",
+        application: "androidserver",
+        room: "room-1",
 
-		messout("Completed XirSys 2 : " + data.d.iceServers[0].url + "  status : " + dstatus);
-	    setPeer(data.d);
-	  },
-	  error: function() {
-	    messout("ERROR XirSys: use Google");
-	    setPeer(null);
-	  }
-	});
+        /*
+        ident: "rosemaryp",
+        secret: "ddb1722f-43ca-4a52-9eed-449875634cc9",
+        domain: "www.adladl.com",
+        application: "subserv",
+        room: "room-1",
+        */
+        secure: 1
+      },
+      success: function (data, dstatus) {
+
+        messout("XirSys : " + data.d.iceServers[0].url + "  status : " + dstatus);
+       // messout("XirSys : " + JSON.stringify(data.d) + "  status : " + dstatus);
+        localStorage.setItem("xirsysConfig", JSON.stringify(data.d));
+        setPeer(data.d);
+      },
+      error: function() {
+
+        if (xirsysConfig != null){
+            messout("ERROR XirSys: use backup XirSys");
+            setPeer(JSON.parse(xirsysConfig));
+        } else {
+            messout("ERROR XirSys reset");
+            peerReStart();
+        }
+      }
+    });
 }
 
 

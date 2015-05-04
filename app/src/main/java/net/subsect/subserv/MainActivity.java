@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
     private static TextView androidout;
     private static WebView serverjs;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +45,24 @@ public class MainActivity extends Activity {
             webSettings.setJavaScriptEnabled(true);
             webSettings.setAllowFileAccessFromFileURLs(true);
             webSettings.setAllowUniversalAccessFromFileURLs(true);
-            serverjs.addJavascriptInterface(this.new JsInterface(this), "android");
+            webSettings.setDomStorageEnabled(true); //added to allow local HTML5 storage
+            webSettings.setDatabaseEnabled(true); //added to allow local HTML5 storage
+          //  serverjs.addJavascriptInterface(this.new JsInterface(this), "android");
 
       //  serverjs.loadUrl("file:///android_asset/test.html");
 
-            serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(this) +
-                    "&subnamesrv=" + Prefs.getNameServer(this) + "&fullhost="+getHost());
+      //      serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(this) +
+      //              "&subnamesrv=" + Prefs.getNameServer(this) + "&fullhost="+getHost());
+
+        loadServer(this);
+        if (Prefs.pollServer(this)) statusWatch(this);
+    }
+
+
+    public static void loadServer(MainActivity xthis){
+
+        serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(xthis) +
+                "&subnamesrv=" + Prefs.getNameServer(xthis) + "&fullhost="+getHost());
     }
 
 
@@ -204,6 +217,34 @@ public class MainActivity extends Activity {
             SubservDb = null;
         }
     }
+
+
+    private void statusWatch(final MainActivity mainact){
+        System.out.println("In statusWatch 1");
+
+        new Thread(new Runnable() {
+
+         //   System.out.println("In statusWatch 2");
+
+            @Override
+            public void run() {
+                int cnt = 0;
+                System.out.println("In statusWatch 3");
+                try {
+                    while (true) {
+                        System.out.println("Thread loop : " + cnt);
+
+                        Thread.sleep(30000);
+                        new HttpStat(mainact).execute("control/"+Prefs.getHostname(mainact));
+                        ++cnt;
+                    }
+                } catch (Exception ex) {
+                    System.out.println("Thread exception : " + ex);
+                }
+            }
+        }).start();
+    }
+
 
     private final class JsInterface {
 

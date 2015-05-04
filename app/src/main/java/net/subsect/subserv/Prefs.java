@@ -30,6 +30,8 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
                 this.getString(R.string.hostname));
         setSummary(getPreferenceScreen().getSharedPreferences(),
                 this.getString(R.string.localnameserv));
+        setSummary(getPreferenceScreen().getSharedPreferences(),
+                this.getString(R.string.password));
     }
 
     @Override
@@ -56,9 +58,13 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
      //   System.out.println("In Pref 2 changd : " +key);
             if (key.equals(this.getString(R.string.hostname)) ||
-                    key.equals(this.getString(R.string.localnameserv))) {
+                    key.equals(this.getString(R.string.password))) {
                 Preference pref = findPreference(key);
                 pref.setSummary(sharedPreferences.getString(key, ""));
+            } else if (key.equals(this.getString(R.string.localnameserv))){
+                Preference pref = findPreference(key);
+                pref.setSummary(sharedPreferences.getString(key,
+                        DEMO_ADDRESS + ":" + DEMO_PORT));
             }
     }
 
@@ -88,12 +94,30 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
     }
 
 
+    public static String getPassword(Context context) {
+
+        return( PreferenceManager
+                .getDefaultSharedPreferences(context).getString(
+                        context.getString(R.string.password), "")
+        );
+    }
+
+
     public static boolean useHeroku(Context context){
 
         return(PreferenceManager
                 .getDefaultSharedPreferences(context).getBoolean(
                         context.getString(R.string.heroku), false)
                 );
+    }
+
+
+    public static boolean pollServer(Context context){
+
+        return(PreferenceManager
+                .getDefaultSharedPreferences(context).getBoolean(
+                        context.getString(R.string.pollserver), false)
+        );
     }
 
 
@@ -105,7 +129,7 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
             return (PreferenceManager
                     .getDefaultSharedPreferences(context).getString(
                             context.getString(R.string.localnameserv),
-                            context.getString(R.string.defLocServer))
+                            DEMO_ADDRESS + ":" + DEMO_PORT)
             );
         }
     }

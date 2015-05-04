@@ -16,14 +16,25 @@
         android:summary="%s" />
 
     <EditTextPreference
+        android:key="@string/password"
+        android:title="@string/password"
+        android:defaultValue=""
+        android:summary="%s" />
+
+    <EditTextPreference
         android:key="@string/localnameserv"
         android:title="@string/localnameserv"
-        android:defaultValue="@string/defLocServer"
         android:summary="%s" />
 
     <CheckBoxPreference
         android:key="@string/heroku"
         android:title="@string/heroku"
         android:defaultValue="false"/>
+
+    <CheckBoxPreference
+        android:key="@string/pollserver"
+        android:title="@string/pollserver"
+        android:defaultValue="false"/>
+
 </PreferenceScreen>
 
