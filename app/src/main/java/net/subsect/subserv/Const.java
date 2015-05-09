@@ -34,9 +34,9 @@ public interface Const extends BaseColumns {
     public static final String DB_SYS = "S_";
     public static final String DB_USR = "U_";
     public static final String DB_SUBSERV = DB_SYS + SUBSERV;
-    public static final String PREINSTALL_1 = "AceEdit";
+  //  public static final String PREINSTALL_1 = "AceEdit";
     public static final String SUB_HREF_REMOTE = "Sub_Href_Remote";
-    public static final String SUB_HREF_LOCAL = "Sub_Href_Local";
+ //   public static final String SUB_HREF_LOCAL = "Sub_Href_Local";
     public static final String SKIP_SCHEMA = "#skip";
 
     public static final String FLD_ID = "id";

@@ -136,11 +136,11 @@ public class SQLHelper extends SQLiteOpenHelper {
                 values.put(FLD_TITLE, title);
                 values.put(FLD_ICON, icon);
                 values.put(FLD_SUBSECTID, subsectid);
-                if (app.equals(PREINSTALL_1)) {
-                    values.put(FLD_HREF, SUB_HREF_LOCAL +app+"/"+app.toLowerCase()+".html");
-                } else {
+         //       if (app.equals(PREINSTALL_1)) {
+          //          values.put(FLD_HREF, SUB_HREF_LOCAL +app+"/"+app.toLowerCase()+".html");
+          //      } else {
                     values.put(FLD_HREF, SUB_HREF_REMOTE + app);
-                }
+           //     }
 
         if (sys) {
             values.put(FLD_TYPE, DB_SYS);
@@ -207,8 +207,8 @@ public class SQLHelper extends SQLiteOpenHelper {
             jray = queryDB(TBL_REGISTRY, qargs, new JSONObject(), funcid);
 
 
-            if (jray.length() > 1) {
-                String tmphref = jray.getJSONObject(1).getString(FLD_HREF);
+            for (int i=1; i < jray.length(); i++) {
+                String tmphref = jray.getJSONObject(i).getString(FLD_HREF);
                 String xport;
 
                 //   System.out.print("items string 1 : " + items.substring(6500));
@@ -219,12 +219,14 @@ public class SQLHelper extends SQLiteOpenHelper {
                 }
                 String rmt = "http://" + Prefs.getHostname(context) + ".subsect.net"+xport+"/pkg/";
                 tmphref = tmphref.replace(SUB_HREF_REMOTE, rmt);
-
+/*
                 if (tmphref.indexOf(SUB_HREF_LOCAL) > 0) {
                     rmt = "http://" + MainActivity.getHost() + "/" + SYS_DIR + "/";
                     tmphref = tmphref.replace(SUB_HREF_LOCAL, rmt);
                 }
-                jray.getJSONObject(1).put(FLD_HREF,tmphref);
+                */
+
+                jray.getJSONObject(i).put(FLD_HREF,tmphref);
             }
         }
         catch(JSONException ex) {
