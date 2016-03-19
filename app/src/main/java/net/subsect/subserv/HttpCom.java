@@ -50,7 +50,8 @@ public class HttpCom extends AsyncTask<String, Integer, String>{
             if (Prefs.useHeroku(conact)) {
                 url = new URL(HTTP_PROT, SOURCE_ADDRESS, xurl);
             } else {
-                url = new URL(HTTP_PROT, DEMO_ADDRESS, DEMO_PORT, xurl);
+                String[] hostaddr = Prefs.getNameServer(conact).split(":");
+                url = new URL(HTTP_PROT, hostaddr[0], Integer.parseInt(hostaddr[1]), xurl);
             }
 
             con = (HttpURLConnection) url.openConnection();

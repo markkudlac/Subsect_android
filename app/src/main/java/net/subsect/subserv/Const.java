@@ -10,7 +10,7 @@ public interface Const extends BaseColumns {
     public static final int BASE_BLOCKSIZE = 65536;
 
     public static final String SOURCE_ADDRESS = "www.subsect.net";
-    public static final String DEMO_ADDRESS = "192.168.1.113";
+    public static final String DEMO_ADDRESS = "192.168.1.15";
     public static final int DEMO_PORT = 3000;
 
     public static final String HTTP_PROT = "http";

@@ -159,7 +159,7 @@ public class ConnectActivity extends Activity {
                     webarg.loadUrl("http://www.subsect.net/subzaar");
                 } else {
                     System.out.println("Use Subzaar local");
-                    webarg.loadUrl("http://"+DEMO_ADDRESS+":"+ DEMO_PORT +"/subzaar");
+                    webarg.loadUrl("http://"+ Prefs.getNameServer(this) +"/subzaar");
                 }
             } else {
                 webarg.loadUrl("http://"+MainActivity.getHost()+"/sys/Menu/menu.html");

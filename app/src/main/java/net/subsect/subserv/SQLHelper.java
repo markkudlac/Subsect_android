@@ -136,11 +136,7 @@ public class SQLHelper extends SQLiteOpenHelper {
                 values.put(FLD_TITLE, title);
                 values.put(FLD_ICON, icon);
                 values.put(FLD_SUBSECTID, subsectid);
-         //       if (app.equals(PREINSTALL_1)) {
-          //          values.put(FLD_HREF, SUB_HREF_LOCAL +app+"/"+app.toLowerCase()+".html");
-          //      } else {
-                    values.put(FLD_HREF, SUB_HREF_REMOTE + app);
-           //     }
+                values.put(FLD_HREF, SUB_HREF_REMOTE + app);
 
         if (sys) {
             values.put(FLD_TYPE, DB_SYS);

@@ -16,7 +16,6 @@
 var peer = null;
 var shutdown = false;
 var blobbuff = {};
-var xirsysConfig = null;
 
 var connectcnt = 0;
 var timer = null;
@@ -29,7 +28,6 @@ var splitsz = 65536 * 2;
 
 	$(document).ready(function(){
 		messout("localhost : " + getParam("fullhost"));
-
 		initall();
 		peerServerOn();
 	})
@@ -37,50 +35,38 @@ var splitsz = 65536 * 2;
 
 function peerServerOn() {
 
-    if(typeof(Storage) !== "undefined") {
-        xirsysConfig = localStorage.getItem("xirsysConfig");    //cache XirSys
-	}
-
 	// and override the original config object
 	// Call XirSys ICE servers
 
     $.ajax({
       type: "POST",
-      url: "https://api.xirsys.com/getIceServers",
+      url: "https://service.xirsys.com/ice",
       dataType: "json",
       data: {
 
         ident: "markkudlac",
         secret: "10633c0a-fb06-4502-a834-de7d1990c3e6",
         domain: "subsect.net",
-        application: "androidserver",
-        room: "room-1",
+        application: "subserver",
+        room: "default",
 
         /*
         ident: "rosemaryp",
         secret: "ddb1722f-43ca-4a52-9eed-449875634cc9",
         domain: "www.adladl.com",
-        application: "subserv",
-        room: "room-1",
+        application: "subserver",
+        room: "default",
         */
-        secure: 1
+        secure: 1,
+        timeout: 600
       },
       success: function (data, dstatus) {
-
         messout("XirSys : " + data.d.iceServers[0].url + "  status : " + dstatus);
-       // messout("XirSys : " + JSON.stringify(data.d) + "  status : " + dstatus);
-        localStorage.setItem("xirsysConfig", JSON.stringify(data.d));
         setPeer(data.d);
       },
       error: function() {
-
-        if (xirsysConfig != null){
-            messout("ERROR XirSys: use backup XirSys");
-            setPeer(JSON.parse(xirsysConfig));
-        } else {
             messout("ERROR XirSys reset");
             peerReStart();
-        }
       }
     });
 }
@@ -150,7 +136,7 @@ function setPeer(customConfig){
 		});
 
         conn.on('data', function(rcv) {
-		   // messout('Received ' + rcv.file);
+		    messout('Received ' + rcv.file);
 
               getappfile(rcv, conn);
 		  });
@@ -209,12 +195,28 @@ function getappfile(rcv, xconn){
 
 		 }
 	}
-	xhr.open(rcv.type, 'http://' + fullPath(rcv.file));
+
+	// console.log("Receive type : " + rcv.type + "  Receive args : " + rcv.args);
+
+    var httpfl = 'http://' + fullPath(rcv.file);
+
+    if (rcv.type === "POST") {
+	    xhr.open(rcv.type, httpfl);
+	    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	} else {
+	    xhr.open(rcv.type, httpfl+"?"+rcv.args);
+	}
+
 	xhr.responseType = 'blob';
 	if (rcv.mimetp.length > 0 ) {
 	    xhr.overrideMimeType(rcv.mimetp);
 	}
-	xhr.send();
+
+	if (rcv.type === "POST") {
+	    xhr.send(rcv.args);
+	} else {
+	    xhr.send();
+	}
 }
 
 
