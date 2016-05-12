@@ -19,5 +19,6 @@
     <string name="installroot">"Install Site"</string>
     <string name="tools">"Tools"</string>
     <string name="password">"Password"</string>
+    <string name="token">"Token"</string>
     <string name="pollserver">"Poll Server"</string>
 </resources>

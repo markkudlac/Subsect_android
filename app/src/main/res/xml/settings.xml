@@ -22,6 +22,12 @@
         android:summary="%s" />
 
     <EditTextPreference
+        android:key="@string/token"
+        android:title="@string/token"
+        android:defaultValue="6"
+        android:summary="%s" />
+
+    <EditTextPreference
         android:key="@string/localnameserv"
         android:title="@string/localnameserv"
         android:summary="%s" />

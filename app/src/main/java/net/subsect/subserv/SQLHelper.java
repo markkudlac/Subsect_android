@@ -47,8 +47,8 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        System.out.println("In onCreate db : "+dbname);
-        if(isadmindb(dbname)) {
+        System.out.println("In onCreate db : " + dbname);
+        if (isadmindb(dbname)) {
             Util.installAssets(context);
         }
         createTables(db);
@@ -59,9 +59,9 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         System.out.println("In onUpgrade db old : " + oldVersion + " new : " + newVersion);
 
-      //  if (newVersion > oldVersion && isadmindb(dbname)) {
-      //      Util.installAssets(context);
-      //  }
+        //  if (newVersion > oldVersion && isadmindb(dbname)) {
+        //      Util.installAssets(context);
+        //  }
     }
 
 
@@ -77,47 +77,76 @@ public class SQLHelper extends SQLiteOpenHelper {
                                 FLD_ID + " integer primary key autoincrement, " +
                                 FLD_APP + " text, " +
                                 FLD_TITLE + " text, " +
-                                FLD_TYPE + " char(2) default \'"+ DB_USR + "\', " +
+                                FLD_TYPE + " char(2) default \'" + DB_USR + "\', " +
                                 FLD_ICON + " text, " +
                                 FLD_SUBSECTID + " integer, " +
                                 FLD_HREF + " char(50), " +
-                                FLD_STATUS + " char(1) default \'"+ ACTIVE_STATUS + "\', " +
+                                FLD_STATUS + " char(1) default \'" + ACTIVE_STATUS + "\', " +
                                 FLD_CREATED_AT + " integer default 0, " +
                                 FLD_UPDATED_AT + " integer default 0 " +
                                 ")"
                 );
 
-             //   initializeRegistry(db, PREINSTALL_1, true);
+                System.out.println("Out create admin Tables 1");
+                db.execSQL(
+                        "create table " + TBL_SECURE + " ( " +
+                                FLD_ID + " integer primary key autoincrement, " +
+                                FLD_DBNAME + " text, " +
+                                FLD_TABLENAME + " text, " +
+                                FLD_CREATED_AT + " integer default 0 " +
+                                ")"
+                );
+                System.out.println("Out create admin Tables 2");
+                //   initializeRegistry(db, PREINSTALL_1, true);
             } else {
                 processTables(context, db, dbname, true);
             }
-    //        System.out.println("Out createTables");
+            //        System.out.println("Out createTables");
         } catch (SQLException e) {
-              System.out.println("SQLException create");
+            System.out.println("SQLException create");
         }
     }
 
 
     public static void processTables(Context context, SQLiteDatabase db, String dbnm, boolean sys) {
-        String sqlst;
+        String[] sqlst = new String[2];
         String[] schemafls = Util.getSchemaFileNames(context, dbnm);
 
-       // System.out.println("In processTables : " + Util.getAppfromDb(dbnm));
+        // System.out.println("In processTables : " + Util.getAppfromDb(dbnm));
         for (int i = 0; i < schemafls.length; i++) {
             sqlst = Util.getSchema(context, dbnm, schemafls[i]);
 
-            if (sqlst.length() > 0) db.execSQL(sqlst);
+            if (sqlst[0].length() > 0) db.execSQL(sqlst[0]);
+
+            if (sqlst[1].length() > 0) {    //Insert Secure record for this schema
+                try {
+                    String insertstr = "{ \"" + FLD_DBNAME + "\": \"" +
+                            dbnm +
+                            "\", \"" + FLD_TABLENAME + "\": \"" +
+                            sqlst[1] +
+                            "\" }";
+                    System.out.println("Insertstr : " + insertstr);
+                    JSONObject jsob = new JSONObject(insertstr);
+
+                    JSONArray rtnval = SQLManager.getSQLHelper(DB_SUBSERV).
+                            insertDB(TBL_SECURE, jsob, "-1");
+                    System.out.println("Loaded secure : " + rtnval.get(0).toString());
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
 
-    public SQLiteDatabase getDatabase(){
-        return(database);
+    public SQLiteDatabase getDatabase() {
+        return (database);
     }
 
 
-    private boolean isadmindb(String dbnm){
-        return(dbnm == DB_SUBSERV);
+    private boolean isadmindb(String dbnm) {
+        return (dbnm == DB_SUBSERV);
     }
 
 
@@ -128,15 +157,15 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 
     public static boolean initializeRegistry(SQLiteDatabase db, String app, boolean sys,
-                       String icon, int subsectid, String title) {
+                                             String icon, int subsectid, String title) {
         ContentValues values = new ContentValues();
 
-        System.out.println(TBL_REGISTRY + " app : "+ app);
-                values.put(FLD_APP, app);
-                values.put(FLD_TITLE, title);
-                values.put(FLD_ICON, icon);
-                values.put(FLD_SUBSECTID, subsectid);
-                values.put(FLD_HREF, SUB_HREF_REMOTE + app);
+        System.out.println(TBL_REGISTRY + " app : " + app);
+        values.put(FLD_APP, app);
+        values.put(FLD_TITLE, title);
+        values.put(FLD_ICON, icon);
+        values.put(FLD_SUBSECTID, subsectid);
+        values.put(FLD_HREF, SUB_HREF_REMOTE + app);
 
         if (sys) {
             values.put(FLD_TYPE, DB_SYS);
@@ -147,88 +176,115 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         if (-1 == db.insert(TBL_REGISTRY, null, values)) {
             System.out.println(TBL_REGISTRY + " insert error");
-            return(false);
+            return (false);
         }
 
-        return(true);
+        return (true);
     }
 
 
-    public boolean removeSite(int siteid){
+    public boolean removeSite(int siteid) {
         JSONArray jray;
 
         try {
-            JSONObject qargs = new JSONObject("{ \"id\": \""+ siteid +"\" }");
+            JSONObject qargs = new JSONObject("{ \"" + FLD_ID +"\": \"" + siteid + "\" }");
             jray = queryDB(TBL_REGISTRY, qargs,
                     new JSONObject(), "1");
 
-            if (jray.length() > 1){
+            if (jray.length() > 1) {
 
-                JSONObject vals = new JSONObject("{ \""+FLD_STATUS+"\": \""+ DELETE_STATUS +"\" }");
+                JSONObject vals = new JSONObject("{ \"" + FLD_STATUS + "\": \"" + DELETE_STATUS + "\" }");
                 JSONArray tmpary = updateDB(TBL_REGISTRY, vals, "", qargs, "-1");
 
-              //  System.out.println("Updatr status : "+tmpary.getJSONObject(0).getInt("db"));
+                //  System.out.println("Updatr status : "+tmpary.getJSONObject(0).getInt("db"));
 
-                if (tmpary.getJSONObject(0).getInt("db") > 0){
-                    String dbnm =  jray.getJSONObject(1).getString(FLD_TYPE) +
-                               jray.getJSONObject(1).getString(FLD_APP);
+                if (tmpary.getJSONObject(0).getInt("db") > 0) {
+                    String dbnm = jray.getJSONObject(1).getString(FLD_TYPE) +
+                            jray.getJSONObject(1).getString(FLD_APP);
 
+                    SQLManager.getSQLHelper(dbnm).removeTables();
                     context.deleteDatabase(dbnm);
-                   // System.out.println("DBPath  2 : " + context.getDatabasePath("S_TestApp").getPath());
+                    // System.out.println("DBPath  2 : " + context.getDatabasePath("S_TestApp").getPath());
 
-                    Util.DeleteRecursive(new File(context.getFilesDir().getAbsolutePath()+
-                            "/"+ Util.getDirfromDb(dbnm)+"/" +
+                    Util.DeleteRecursive(new File(context.getFilesDir().getAbsolutePath() +
+                            "/" + Util.getDirfromDb(dbnm) + "/" +
                             jray.getJSONObject(1).getString(FLD_APP)));
 
-                    removeDB(TBL_REGISTRY, "", qargs,"-1");
-                    return(true);
+                    vals = new JSONObject("{ \"" + FLD_DBNAME + "\": \"" + dbnm + "\" }");
+
+                    removeDB(TBL_SECURE, "", vals, "-1");
+                    removeDB(TBL_REGISTRY, "", qargs, "-1");
+                    return (true);
                 }
             }
-        }
-        catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return(false);
+        return (false);
     }
 
 
-    public JSONArray getMenu(String funcid){
+    public JSONArray getMenu(String funcid) {
 
         JSONArray jray = Util.JSONdbReturn(false, -1, "-1");
-
+        System.out.print("Menu called funcid : " + funcid);
         try {
 
-            JSONObject qargs = new JSONObject("{ \""+FLD_STATUS+"\": \""+ ACTIVE_STATUS +"\" }");
-          //  JSONObject qargs = new JSONObject();
+            JSONObject qargs = new JSONObject("{ \"" + FLD_STATUS + "\": \"" + ACTIVE_STATUS + "\" }");
+
             jray = queryDB(TBL_REGISTRY, qargs, new JSONObject(), funcid);
 
-
-            for (int i=1; i < jray.length(); i++) {
+       //     System.out.print("Menu called total items : " + jray.length());
+            for (int i = 1; i < jray.length(); i++) {
                 String tmphref = jray.getJSONObject(i).getString(FLD_HREF);
                 String xport;
 
-                //   System.out.print("items string 1 : " + items.substring(6500));
                 if (Prefs.useHeroku(context)) {
                     xport = "";
                 } else {
                     xport = ":" + DEMO_PORT;
                 }
-                String rmt = "http://" + Prefs.getHostname(context) + ".subsect.net"+xport+"/pkg/";
+                String rmt = "http://" + Prefs.getHostname(context) + ".subsect.net" + xport + "/pkg/";
                 tmphref = tmphref.replace(SUB_HREF_REMOTE, rmt);
-/*
-                if (tmphref.indexOf(SUB_HREF_LOCAL) > 0) {
-                    rmt = "http://" + MainActivity.getHost() + "/" + SYS_DIR + "/";
-                    tmphref = tmphref.replace(SUB_HREF_LOCAL, rmt);
-                }
-                */
 
-                jray.getJSONObject(i).put(FLD_HREF,tmphref);
+                jray.getJSONObject(i).put(FLD_HREF, tmphref);
             }
-        }
-        catch(JSONException ex) {
+        } catch (JSONException ex) {
             ex.printStackTrace();
         }
-        return(jray);
+        return (jray);
+    }
+
+
+    public int checkSecure(String table) {
+
+        int rtn = -1;
+
+        try {
+
+            JSONArray jray;
+            String qstr = "{ \"" + FLD_DBNAME + "\": \"" +
+                    dbname +
+                    "\", \"" + FLD_TABLENAME + "\": \"" +
+                    table +
+                    "\" }";
+
+            System.out.println("checkSecure qstr : " + qstr);
+            JSONObject qargs = new JSONObject(qstr);
+
+            jray = SQLManager.getSQLHelper(DB_SUBSERV).queryDB(TBL_SECURE, qargs, new JSONObject(), "-1");
+
+            if (jray.getJSONObject(0).getBoolean("rtn")) {
+                rtn = jray.getJSONObject(0).getInt("db");
+
+                if (rtn > 1) rtn = -1;
+            }
+
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        System.out.println("checkSecure rtn : " + rtn);
+        return (rtn);
     }
 
 
@@ -243,51 +299,73 @@ public class SQLHelper extends SQLiteOpenHelper {
             Iterator<String> itr = jsob.keys();
             String tmpkey;
 
-            while(itr.hasNext()) {
+            while (itr.hasNext()) {
                 tmpkey = itr.next();
                 values.put(tmpkey, jsob.getString(tmpkey));
             }
             values.put(FLD_CREATED_AT, Util.getTimeNow());
 
             idval = database.insert(table, null, values);
-            if (-1 != idval){
-                jray =  Util.JSONdbReturn(true, idval, funcid);
+            if (-1 != idval) {
+                jray = Util.JSONdbReturn(true, idval, funcid);
             } else {
                 System.out.println("Insert error");
             }
-        }
-          catch(JSONException ex) {
-              ex.printStackTrace();
+        } catch (JSONException ex) {
+            ex.printStackTrace();
         }
         return jray;
     }
 
 
     protected JSONArray queryDB(String qstr, JSONObject jsob_args, JSONObject jsob_limits,
-                                    String funcid) {
+                                String funcid) {
 
         Cursor tmpCursor;
         String[] args = Util.JSONOtoStringArray(jsob_args);
         JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
         JSONObject jsob;
 
+
         try {
 
             if (Util.singleWord(qstr)) {
+
                 qstr = "SELECT * FROM " + qstr + " ";
 
                 Iterator<String> itr = jsob_args.keys();
-                Boolean andflg = false;
-                while(itr.hasNext()) {
+                Boolean logicflg = false;
+                String nextfld = null;
+                String logiccond = " AND ";
+                Boolean orflg = false;
+                //If 2 fields in a row have same name then make all OR's instead of AND's
 
-                    if (andflg) {
-                        qstr = qstr + " AND ";
+                while (itr.hasNext()) {
+
+                    if (logicflg) {
+                        qstr = qstr + logiccond;
                     } else {
-                        andflg = true;
+                        logicflg = true;
                         qstr = qstr + " where ";
                     }
-                    qstr = qstr + itr.next() + " = ? ";
+
+
+                    if (!orflg) {
+                        nextfld = itr.next();
+                    } else {
+                        itr.next();
+                    }
+
+                    if (!orflg && nextfld.endsWith("_OR_0")){
+                        orflg = true;
+                        logiccond = " OR ";
+                        nextfld = nextfld.replaceAll("_OR_0", "");
+                    }
+
+                    qstr = qstr + nextfld + " = ? ";
+
                 }
+              //  System.out.println("query str OR : "+ qstr);
             }
 
             if (jsob_limits.has("limit")) {
@@ -297,19 +375,19 @@ public class SQLHelper extends SQLiteOpenHelper {
                 }
             }
 
-          //  System.out.println("query str : "+ qstr + " Limits size: " + jsob_limits.length());
+            //  System.out.println("query str : "+ qstr + " Limits size: " + jsob_limits.length());
             tmpCursor = database.rawQuery(qstr, args);
 
             String[] colnames = tmpCursor.getColumnNames();
             JSONArray jArray = Util.JSONdbReturn(true, 0, funcid);
 
             int reccnt = 0;
-            if (tmpCursor.moveToFirst()){
+            if (tmpCursor.moveToFirst()) {
 
                 do {
                     jsob = new JSONObject();
 
-                    for (int i=0; i<colnames.length; i++){
+                    for (int i = 0; i < colnames.length; i++) {
                         if (tmpCursor.getType(i) == Cursor.FIELD_TYPE_INTEGER) {
                             jsob.put(colnames[i], tmpCursor.getLong(tmpCursor.getColumnIndex(colnames[i])));
                         } else if (tmpCursor.getType(i) == Cursor.FIELD_TYPE_FLOAT) {
@@ -320,12 +398,11 @@ public class SQLHelper extends SQLiteOpenHelper {
                     }
                     jArray.put(jsob);
                     ++reccnt;
-                } while(tmpCursor.moveToNext());
+                } while (tmpCursor.moveToNext());
             }
             jArray.getJSONObject(0).put("db", reccnt);
             jray = jArray;
-        }
-        catch(JSONException ex) {
+        } catch (JSONException ex) {
             ex.printStackTrace();
         }
         return jray;
@@ -333,7 +410,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 
     protected JSONArray updateDB(String table, JSONObject jsob_values, String qstr, JSONObject jsob_args,
-                                     String funcid) {
+                                 String funcid) {
 
         ContentValues values = new ContentValues();
         String[] args = Util.JSONOtoStringArray(jsob_args);
@@ -346,7 +423,7 @@ public class SQLHelper extends SQLiteOpenHelper {
             Iterator<String> itr = jsob_values.keys();
             String tmpkey;
 
-            while(itr.hasNext()) {
+            while (itr.hasNext()) {
                 tmpkey = itr.next();
                 values.put(tmpkey, jsob_values.getString(tmpkey));
             }
@@ -356,7 +433,7 @@ public class SQLHelper extends SQLiteOpenHelper {
                 qstr = "";
                 itr = jsob_args.keys();
                 Boolean andflg = false;
-                while(itr.hasNext()) {
+                while (itr.hasNext()) {
 
                     if (andflg) {
                         qstr = qstr + " AND ";
@@ -368,13 +445,12 @@ public class SQLHelper extends SQLiteOpenHelper {
             }
             //System.out.println("Update qstr 3 : "+ "x"+qstr+"x");
             idval = database.update(table, values, qstr, args);
-            if (-1 != idval){
-                jray =  Util.JSONdbReturn(true, idval, funcid);
+            if (-1 != idval) {
+                jray = Util.JSONdbReturn(true, idval, funcid);
             } else {
                 System.out.println("Update error");
             }
-        }
-        catch(JSONException ex) {
+        } catch (JSONException ex) {
             ex.printStackTrace();
         }
         return jray;
@@ -382,35 +458,35 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 
     protected JSONArray removeDB(String table, String qstr, JSONObject jsob_args,
-                                     String funcid) {
+                                 String funcid) {
 
         String[] args = Util.JSONOtoStringArray(jsob_args);
         JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
 
         long idval = -1;
 
-            if (qstr == null || qstr == "null" || qstr.isEmpty()) {
-                Iterator<String> itr = jsob_args.keys();
+        if (qstr == null || qstr == "null" || qstr.isEmpty()) {
+            Iterator<String> itr = jsob_args.keys();
 
-                qstr = "";
-                Boolean andflg = false;
-                while(itr.hasNext()) {
+            qstr = "";
+            Boolean andflg = false;
+            while (itr.hasNext()) {
 
-                    if (andflg) {
-                        qstr = qstr + " AND ";
-                    } else {
-                        andflg = true;
-                    }
-                    qstr = qstr + itr.next() + " = ?";
+                if (andflg) {
+                    qstr = qstr + " AND ";
+                } else {
+                    andflg = true;
                 }
+                qstr = qstr + itr.next() + " = ?";
             }
-            //System.out.println("Update qstr 3 : "+ "x"+qstr+"x");
-            idval = database.delete(table, qstr, args);
-            if (-1 != idval){
-                jray =  Util.JSONdbReturn(true, idval, funcid);
-            } else {
-                System.out.println("Delete error");
-            }
+        }
+        //System.out.println("Update qstr 3 : "+ "x"+qstr+"x");
+        idval = database.delete(table, qstr, args);
+        if (-1 != idval) {
+            jray = Util.JSONdbReturn(true, idval, funcid);
+        } else {
+            System.out.println("Delete error");
+        }
 
         return jray;
     }
@@ -425,25 +501,52 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         try {
 
-            JSONObject qargs = new JSONObject("{ \""+FLD_STATUS+"\": \""+ ACTIVE_STATUS +"\" }");
-         //   JSONObject qargs = new JSONObject();
-        //   System.out.println("json args : "+ qargs.getInt("id"));
+            JSONObject qargs = new JSONObject("{ \"" + FLD_STATUS + "\": \"" + ACTIVE_STATUS + "\" }");
+            //   JSONObject qargs = new JSONObject();
+            //   System.out.println("json args : "+ qargs.getInt("id"));
 
             JSONArray jray = queryDB(TBL_REGISTRY, qargs,
-                new JSONObject(), "1");
-         //   System.out.println("het all db count : "+jray.length());
+                    new JSONObject(), "1");
+            //   System.out.println("het all db count : "+jray.length());
 
-            for (int i=1; i < jray.length(); i++){
+            for (int i = 1; i < jray.length(); i++) {
 
-            dbs.put(i, jray.getJSONObject(i).getString(FLD_TYPE)+
-                    jray.getJSONObject(i).getString(FLD_APP));
+                dbs.put(i, jray.getJSONObject(i).getString(FLD_TYPE) +
+                        jray.getJSONObject(i).getString(FLD_APP));
             }
-        }
-        catch(JSONException ex) {
+        } catch (JSONException ex) {
             ex.printStackTrace();
         }
 
         return dbs;
     }
-}
 
+
+    //JSONArray queryDB(String qstr, JSONObject jsob_args, JSONObject jsob_limits,
+   // String funcid)
+
+    private Boolean removeTables(){
+
+        //filter out table name that are not use generated
+        // user files must not start with android or sqlite
+
+        JSONArray jray = queryDB(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND NOT ( name LIKE 'android%' OR name LIKE 'sqlite%' )",
+                new JSONObject(),
+                new JSONObject(),
+                ""
+        );
+
+        try {
+
+            for (int i = 1; i < jray.length(); i++) {
+             //   System.out.println("Table drop : " + jray.getJSONObject(i).getString("name"));
+                getDatabase().execSQL("DROP TABLE " +
+                        jray.getJSONObject(i).getString("name"));
+            }
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return(true);
+    }
+}

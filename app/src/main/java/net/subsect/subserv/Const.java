@@ -14,11 +14,20 @@ public interface Const extends BaseColumns {
     public static final int DEMO_PORT = 3000;
 
     public static final String HTTP_PROT = "http";
-    public static final String SYS_DIR = "sys";;
+    public static final String SYS_DIR = "sys";
     public static final String USR_DIR = "usr";
     public static final String INSTALL_DIR = "install";
     public static final String INSTALL_FILE = "rootpack.targz";
     public static final String FORMUPLOAD = "formupload";
+
+    public static final String ARGS_FUNCID = "funcid";
+    public static final String ARGS_TABLE = "table";
+    public static final String ARGS_SQLPK = "sqlpk";
+    public static final String ARGS_PASSWORD = "password";
+    public static final String ARGS_DB = "db";
+    public static final String ARGS_VALUES = "values";
+    public static final String ARGS_QSTR = "qstr";
+    public static final String ARGS_ARGS = "args";
 
     public static final String API_PATH = "/api/";
     public static final String API_SAVEFILE = "savefile";
@@ -27,17 +36,19 @@ public interface Const extends BaseColumns {
     public static final String API_UPDATEDB = "updateDB";
     public static final String API_REMOVEDB = "removeDB";
     public static final String API_GETUPLOADDIR = "getuploaddir/";
-    // public static final String API_INSTALLAPP = "installapp/";
+    public static final String API_TESTPASSWORD = "testPassword/";
+    public static final String API_GETTOKEN = "getToken/";
+    public static final int FAIL_PASSWORD = -2;
     public static final String API_GETMENU = "getMenu/";
 
     public static final String SUBSERV = "subserv";
     public static final String DB_SYS = "S_";
     public static final String DB_USR = "U_";
     public static final String DB_SUBSERV = DB_SYS + SUBSERV;
-  //  public static final String PREINSTALL_1 = "AceEdit";
     public static final String SUB_HREF_REMOTE = "Sub_Href_Remote";
  //   public static final String SUB_HREF_LOCAL = "Sub_Href_Local";
     public static final String SKIP_SCHEMA = "#skip";
+    public static final String SECURE_ON = "#secure_on";
 
     public static final String FLD_ID = "id";
     public static final String FLD_STATUS = "status";
@@ -55,4 +66,8 @@ public interface Const extends BaseColumns {
     public static final String FLD_SUBSECTID = "subsectid";
     public static final String FLD_ICON = "icon";
     public static final String FLD_HREF = "href";
+
+    public static final String TBL_SECURE = "secure";
+    public static final String FLD_DBNAME = "dbname";
+    public static final String FLD_TABLENAME = "tablename";
 }

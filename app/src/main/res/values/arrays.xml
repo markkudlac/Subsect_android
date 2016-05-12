@@ -3,7 +3,8 @@
     <string-array name="uploadto">
         <item>"install"</item>
         <item>"sys"</item>
-        <item>"sys/TestApp"</item>
+        <item>"sys/TestSite"</item>
+        <item>"sys/TestSite/js"</item>
         <item>"sys/AceEdit"</item>
         <item>"sys/Menu"</item>
         <item>"sys/lib"</item>

@@ -32,6 +32,8 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
                 this.getString(R.string.localnameserv));
         setSummary(getPreferenceScreen().getSharedPreferences(),
                 this.getString(R.string.password));
+        setSummary(getPreferenceScreen().getSharedPreferences(),
+                this.getString(R.string.token));
     }
 
     @Override
@@ -58,6 +60,7 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
      //   System.out.println("In Pref 2 changd : " +key);
             if (key.equals(this.getString(R.string.hostname)) ||
+                    key.equals(this.getString(R.string.token)) ||
                     key.equals(this.getString(R.string.password))) {
                 Preference pref = findPreference(key);
                 pref.setSummary(sharedPreferences.getString(key, ""));
@@ -99,6 +102,15 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
         return( PreferenceManager
                 .getDefaultSharedPreferences(context).getString(
                         context.getString(R.string.password), "")
+        );
+    }
+
+
+    public static String getToken(Context context) {
+
+        return( PreferenceManager
+                .getDefaultSharedPreferences(context).getString(
+                        context.getString(R.string.token), "6")
         );
     }
 

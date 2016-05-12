@@ -329,6 +329,24 @@ public class Util {
     }
 
 
+    static public JSONArray JSONxtraReturn(JSONArray jray, String field, String val){
+
+        try {
+            JSONObject jobj = new JSONObject("{\"" + field + "\":\"" + val +"\"}");
+
+            jray.put(jobj);
+        }
+        catch(JSONException ex) {
+            ex.printStackTrace();
+        }
+        return(jray);
+    }
+
+    static public String stringJA(JSONArray ja){
+        return(ja.toString().replace("\\", ""));
+    }
+
+
     static public String getWifiApIpAddress() {
 
         try {
@@ -417,7 +435,7 @@ public class Util {
             out.close();
             msg = Util.JSONReturn(true);
         } catch (IOException e) {
-            System.out.println( "File I/O error " + e);
+            System.out.println("File I/O error " + e);
         }
 
         return (msg);
@@ -450,9 +468,12 @@ public class Util {
     }
 
 
-    public static String getSchema(Context context, String dbname, String flnme) {
+    public static String[] getSchema(Context context, String dbname, String flnme) {
 
-        String schema ="";
+        String schema = "";
+        String[] sql_table =  new String[2];
+
+        sql_table[1] = "";
 
         try {
             String appname = getAppfromDb(dbname);
@@ -470,6 +491,7 @@ public class Util {
 
             buf.close();
 
+            //System.out.println("Schema: " + schema);
             Pattern ptn = Pattern.compile("^\\s*" + SKIP_SCHEMA, Pattern.CASE_INSENSITIVE);
             Matcher mtcher = ptn.matcher(schema);
 
@@ -477,6 +499,18 @@ public class Util {
                 System.out.println("Table skipped");
                 schema = "";
             } else {
+
+                ptn = Pattern.compile("^\\s*" + SECURE_ON, Pattern.CASE_INSENSITIVE);
+                mtcher = ptn.matcher(schema);
+                if (mtcher.find()) {
+                    schema = schema.replaceAll("^\\s*" + SECURE_ON, "");
+                    schema = schema.trim();
+                    System.out.println("Secure on trim : "+ schema);
+                    String[] words = schema.split("\\s+");
+                    sql_table[1] = words[2];
+                    System.out.println("Secure on tablename : "+ sql_table[1]);
+                }
+
                 ptn = Pattern.compile("^\\s*create", Pattern.CASE_INSENSITIVE);
                 mtcher = ptn.matcher(schema);
                 // Only add id etc if on create table
@@ -492,8 +526,9 @@ public class Util {
             System.out.println("File I/O error " + e);
         }
 
-        System.out.println("Schema SQL: " + schema);
-        return schema;
+        sql_table[0] = schema;
+        System.out.println("Schema SQL: " + sql_table[0] + "  table : " + sql_table[1]);
+        return sql_table;
     }
 
 

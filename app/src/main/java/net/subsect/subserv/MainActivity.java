@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
 
         loadServer(this);
         if (Prefs.pollServer(this)) statusWatch(this);
+
     }
 
 

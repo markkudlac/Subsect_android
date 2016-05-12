@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.File;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.content.Context;
@@ -22,13 +23,16 @@ public class Routes {
 
         JSONObject qryJSON;
 
-        String msg = Util.JSONReturn(false);
+        String msg = Util.stringJA(Util.JSONdbReturn(false, -1, ""));
+
 
       //  System.out.println("Route : "+uri + " qryString : "+qryString);
 
         uri = trimUri(uri,API_PATH);
 
         if (uri.indexOf(API_SAVEFILE) == 0){
+
+            msg = Util.JSONReturn(false);
 
             qryJSON = Util.qryStringToJSON(qryString);
             try {
@@ -43,16 +47,28 @@ public class Routes {
 
             qryJSON = Util.qryStringToJSON(qryString);
 
-            try {
-                String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
+            secureIn: try {
+                String sqlpk = Util.decodeJSuriComp(qryJSON.getString(ARGS_SQLPK));
 
                 JSONObject jsob = new JSONObject(sqlpk);
-                JSONObject jsob_vals = jsob.getJSONObject("values");
+                JSONObject jsob_vals = jsob.getJSONObject(ARGS_VALUES);
 
-                msg = SQLManager.getSQLHelper(jsob.getString("db")).
-                        insertDB(jsob.getString("table"), jsob_vals,
-                                jsob.getString("funcid")).toString().replace("\\", "");
+                String table = jsob.getString(ARGS_TABLE);
+                SQLHelper targetdb = SQLManager.getSQLHelper(jsob.getString(ARGS_DB));
+               // System.out.println("insertDB password : " + jsob.getString("password"));
 
+                int secure = targetdb.checkSecure(table);
+
+                if (secure < 0){
+                    break secureIn;
+                } else if (secure == 0 ||
+                        jsob.getString(ARGS_PASSWORD).equals(Prefs.getPassword(context))){
+                    msg = Util.stringJA(targetdb.
+                            insertDB(table, jsob_vals, jsob.getString(ARGS_FUNCID)));
+                } else {
+                    msg = Util.stringJA(Util.JSONdbReturn(false, FAIL_PASSWORD,
+                            jsob.getString(ARGS_FUNCID)));
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -61,18 +77,16 @@ public class Routes {
             qryJSON = Util.qryStringToJSON(qryString);
 
             try {
-                String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
+                String sqlpk = Util.decodeJSuriComp(qryJSON.getString(ARGS_SQLPK));
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args, jsob_limits;
 
-                jsob_args = jsob.getJSONObject("args");
+                jsob_args = jsob.getJSONObject(ARGS_ARGS);
                 jsob_limits = jsob.getJSONObject("limits");
 
-                // System.out.println("Value db 2 : " + dbase);
-                //jArray.toString().replace("\\", "");
-                msg = SQLManager.getSQLHelper(jsob.getString("db")).
-                        queryDB(jsob.getString("qstr"), jsob_args, jsob_limits,
-                                jsob.getString("funcid")).toString().replace("\\", "");
+                msg = Util.stringJA(SQLManager.getSQLHelper(jsob.getString(ARGS_DB)).
+                        queryDB(jsob.getString(ARGS_QSTR), jsob_args, jsob_limits,
+                                jsob.getString(ARGS_FUNCID)));
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -81,18 +95,30 @@ public class Routes {
 
             qryJSON = Util.qryStringToJSON(qryString);
 
-            try {
-                String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
+            secureUp: try {
+                String sqlpk = Util.decodeJSuriComp(qryJSON.getString(ARGS_SQLPK));
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args, jsob_values;
 
-                jsob_values = jsob.getJSONObject("values");
-                jsob_args = jsob.getJSONObject("args");
+                jsob_values = jsob.getJSONObject(ARGS_VALUES);
+                jsob_args = jsob.getJSONObject(ARGS_ARGS);
+                String table = jsob.getString(ARGS_TABLE);
+                SQLHelper targetdb = SQLManager.getSQLHelper(jsob.getString(ARGS_DB));
 
-                msg = SQLManager.getSQLHelper(jsob.getString("db")).
-                        updateDB(jsob.getString("table"),
-                                jsob_values, jsob.getString("qstr"), jsob_args,
-                                jsob.getString("funcid")).toString().replace("\\", "");
+                int secure = targetdb.checkSecure(table);
+
+                if (secure < 0){
+                    break secureUp;
+                } else if (secure == 0 ||
+                        jsob.getString(ARGS_PASSWORD).equals(Prefs.getPassword(context))){
+
+                    msg = Util.stringJA(targetdb.updateDB(table,
+                                jsob_values, jsob.getString(ARGS_QSTR), jsob_args,
+                                jsob.getString(ARGS_FUNCID)));
+                } else {
+                    msg = Util.stringJA(Util.JSONdbReturn(false, FAIL_PASSWORD,
+                            jsob.getString(ARGS_FUNCID)));
+                }
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -101,18 +127,29 @@ public class Routes {
 
             qryJSON = Util.qryStringToJSON(qryString);
 
-            try {
-                String sqlpk = Util.decodeJSuriComp(qryJSON.getString("sqlpk"));
+            secureRm: try {
+                String sqlpk = Util.decodeJSuriComp(qryJSON.getString(ARGS_SQLPK));
 
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args;
-                String funcid = jsob.getString("funcid");
-                String qstr = jsob.getString("qstr");
+                String funcid = jsob.getString(ARGS_FUNCID);
+                String qstr = jsob.getString(ARGS_QSTR);
 
-                jsob_args = jsob.getJSONObject("args");
-                msg = SQLManager.getSQLHelper(jsob.getString("db"))
-                        .removeDB(jsob.getString("table"),
-                                qstr, jsob_args, funcid).toString().replace("\\", "");
+                jsob_args = jsob.getJSONObject(ARGS_ARGS);
+                String table = jsob.getString(ARGS_TABLE);
+                SQLHelper targetdb = SQLManager.getSQLHelper(jsob.getString(ARGS_DB));
+
+                int secure = targetdb.checkSecure(table);
+
+                if (secure < 0){
+                    break secureRm;
+                } else if (secure == 0 ||
+                        jsob.getString(ARGS_PASSWORD).equals(Prefs.getPassword(context))){
+                msg = Util.stringJA(targetdb.removeDB(table,
+                        qstr, jsob_args, funcid));
+                } else {
+                    msg = Util.stringJA(Util.JSONdbReturn(false, FAIL_PASSWORD, funcid));
+                }
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -120,15 +157,30 @@ public class Routes {
         } else if (uri.indexOf(API_GETMENU) == 0) {
 
             uri = trimUri(uri,API_GETMENU);
-            msg = SQLManager.getSQLHelper(DB_SUBSERV).getMenu(getArg(uri, 0)).
-                    toString().replace("\\", "");
-/*
-        } else if (uri.indexOf(API_INSTALLAPP) == 0){
-            uri = trimUri(uri,API_INSTALLAPP);
-            msg = Util.installApp(context, getArg(uri, 0), getArg(uri, 1), "", -1,getArg(uri, 1));
-            //rootpack for now
-*/
+            msg = Util.stringJA(SQLManager.getSQLHelper(DB_SUBSERV).getMenu(uri));
+        } else if (uri.indexOf(API_TESTPASSWORD) == 0) {
+
+            uri = trimUri(uri, API_TESTPASSWORD);
+            String passwdin = uri.split("/")[0];
+            String token = uri.split("/")[1];
+
+            int eql = 0;  //0 means password not equal 1 is equal
+
+            if ((token.equals("T") && passwdin.equals(Prefs.getToken(context))) ||
+                    passwdin.equals(Prefs.getPassword(context))) eql = 1;
+
+            msg = Util.stringJA(Util.JSONdbReturn(true, eql, uri.split("/")[2]));
+
+        } else if (uri.indexOf(API_GETTOKEN) == 0) {
+
+            uri = trimUri(uri, API_GETTOKEN);
+
+            JSONArray jray = Util.JSONdbReturn(true, 1, uri.split("/")[0]);
+            msg = Util.stringJA(Util.JSONxtraReturn(jray, "token", Prefs.getToken(context)));
+
         } else if (uri.indexOf(API_GETUPLOADDIR) == 0){
+
+            msg = Util.JSONReturn(false);
             msg = Prefs.getuploaddir(context);
         }
 
@@ -148,22 +200,5 @@ public class Routes {
         return(strout);
     }
 
-
-    private static String getArg(String uri, int indx){
-
-        String xx = null;
-        int i = 0;
-        final Matcher matcher = Pattern.compile("(\\w+\\.?\\w+)").matcher(uri);
-
-        while (matcher.find()) {
-            if (i == indx) {
-                xx = matcher.group(0);
-                break;
-            }
-            ++i;
-        }
-
-        return(xx);
-    }
 }
 
