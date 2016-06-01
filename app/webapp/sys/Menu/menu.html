@@ -21,6 +21,10 @@
         .bigtext {
             font-size: 150%;
         }
+
+        .pointeron {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -42,11 +46,12 @@
         </thead>
 
         <tbody>
-        <tr ng-repeat="site in sites" ng-show="showitem(site)">
+        <tr ng-repeat="site in sites" ng-show="showitem(site)" ng-click="newurl(site)"
+                class="pointeron">
             <td class="bigtext">{{site.id}}</td>
-            <td class="bigtext" ng-click="newurl(site)">{{site.title}}</td>
-            <td ng-click="newurl(site)">
-                <img ng-src="data:image/gif;base64,{{site.icon}}">
+            <td class="bigtext">{{site.title}}</td>
+            <td >
+                <img ng-src="{{site.icon}}">
             </td>
             <td ng-show="showremove()"><button class="btn btn-primary"
                         ng-click="delSite(site)">Remove</button></td>
