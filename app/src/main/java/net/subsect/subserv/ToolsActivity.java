@@ -2,6 +2,7 @@ package net.subsect.subserv;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,10 @@ public class ToolsActivity extends Activity {
     private Spinner sitespinner;
     private Button butExport;
     private Button butInstall;
+    private Button butBackup;
+    private Button butRestore;
+
+    private ToolsActivity toolact;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +36,7 @@ public class ToolsActivity extends Activity {
         setContentView(R.layout.activity_tools);
         addItemsOnSiteSpinner();
         addListenerOnButtons();
+        toolact = this;
     }
 
     // add items into spinner dynamically
@@ -78,6 +84,8 @@ public class ToolsActivity extends Activity {
 
         butExport = (Button) findViewById(R.id.butExport);
         butInstall = (Button) findViewById(R.id.butInstall);
+        butBackup = (Button) findViewById(R.id.butBackup);
+        butRestore = (Button) findViewById(R.id.butRestore);
 
         butExport.setOnClickListener(new View.OnClickListener() {
 
@@ -106,8 +114,56 @@ public class ToolsActivity extends Activity {
             }
 
         });
+
+        butBackup.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Util.DbBackup(getBaseContext(), toolact);
+                    } catch (Exception ex) {
+                        System.out.println("Thread exception : " + ex);
+                    }
+                }
+            }).start();
+            }
+
+        });
+
+
+        butRestore.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Util.DbRestore(getBaseContext(), toolact);
+                        } catch (Exception ex) {
+                            System.out.println("Thread exception : " + ex);
+                        }
+                    }
+                }).start();
+            }
+        });
     }
 
+
+    public void postMessage(final String xmess, final int timer) {
+
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getBaseContext(),
+                        xmess,
+                        timer).show();
+            }
+        });
+    }
 
     private void popInstallDialogue(){
 

@@ -40,4 +40,20 @@
         android:textSize="20sp"
         android:text="@string/installroot" />
 
+    <Button
+        android:id="@+id/butBackup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:textSize="20sp"
+        android:text="Back Up" />
+
+    <Button
+        android:id="@+id/butRestore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:textSize="20sp"
+        android:text="Restore" />
+
 </LinearLayout>

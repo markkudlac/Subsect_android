@@ -12,6 +12,7 @@ public interface Const extends BaseColumns {
     public static final String SOURCE_ADDRESS = "www.subsect.net";
     public static final String DEMO_ADDRESS = "192.168.1.15";
     public static final int DEMO_PORT = 3000;
+    public static final int POLLSERVER_TIME = 90000;
 
     public static final String HTTP_PROT = "http";
     public static final String SYS_DIR = "sys";
@@ -19,6 +20,10 @@ public interface Const extends BaseColumns {
     public static final String INSTALL_DIR = "install";
     public static final String INSTALL_FILE = "rootpack.targz";
     public static final String FORMUPLOAD = "formupload";
+    public static final String APP_DBPATH = "/data/net.subsect.subserv/databases/";
+    public static final String BKUP_TAR = "bkup.tar";
+    public static final String BACKUP = "backup";
+    public static final String RESTORE = "restore";
 
     public static final String ARGS_FUNCID = "funcid";
     public static final String ARGS_TABLE = "table";
@@ -31,6 +36,7 @@ public interface Const extends BaseColumns {
 
     public static final String API_PATH = "/api/";
     public static final String API_SAVEFILE = "savefile";
+    public static final String API_DELETEFILE = "deletefile";
     public static final String API_INSERTDB = "insertDB";
     public static final String API_QUERYDB = "queryDB";
     public static final String API_UPDATEDB = "updateDB";
@@ -38,6 +44,8 @@ public interface Const extends BaseColumns {
     public static final String API_GETUPLOADDIR = "getuploaddir/";
     public static final String API_TESTPASSWORD = "testPassword/";
     public static final String API_GETTOKEN = "getToken/";
+    public static final String API_GETIPADD = "getIPadd/";
+
     public static final int FAIL_PASSWORD = -2;
     public static final String API_GETMENU = "getMenu/";
 

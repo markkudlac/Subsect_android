@@ -211,7 +211,7 @@ public class MainActivity extends Activity {
     }
 
 
-    private void stopDb(){
+    static public void stopDb(){
 
         if (SubservDb != null){
             SQLManager.closeAll();
@@ -230,12 +230,12 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 int cnt = 0;
-                System.out.println("In statusWatch 3");
+          //      System.out.println("In statusWatch 3");
                 try {
                     while (true) {
-                        System.out.println("Thread loop : " + cnt);
+             //           System.out.println("Thread loop : " + cnt);
 
-                        Thread.sleep(30000);
+                        Thread.sleep(POLLSERVER_TIME);
                         new HttpStat(mainact).execute("control/"+Prefs.getHostname(mainact));
                         ++cnt;
                     }
@@ -245,6 +245,9 @@ public class MainActivity extends Activity {
             }
         }).start();
     }
+
+
+
 
 
     private final class JsInterface {

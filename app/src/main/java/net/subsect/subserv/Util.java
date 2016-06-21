@@ -20,6 +20,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 
 import java.net.URLDecoder;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,20 +33,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import jtar.TarEntry;
 import jtar.TarInputStream;
+import jtar.TarOutputStream;
 
 import static net.subsect.subserv.Const.*;
 
 import android.content.Context;
 
+import android.os.Environment;
 import android.text.format.Time;
 import android.util.Base64;
+import android.widget.Toast;
 
 
 public class Util {
 
     static void DeleteRecursive(File fileOrDirectory) {
 
-        System.out.println("IN deleteRecursive : " + fileOrDirectory.getAbsolutePath());
         if (fileOrDirectory.isDirectory())
             for (File child : fileOrDirectory.listFiles())
                 DeleteRecursive(child);
@@ -442,6 +446,13 @@ public class Util {
     }
 
 
+    protected static String deletefile(String filename) {
+
+        return (Util.JSONReturn(new File(filename).delete()));
+
+    }
+
+
     public static String[] JSONOtoStringArray(JSONObject jsob){
 
         String[] ary = new String[jsob.length()];
@@ -527,7 +538,7 @@ public class Util {
         }
 
         sql_table[0] = schema;
-        System.out.println("Schema SQL: " + sql_table[0] + "  table : " + sql_table[1]);
+     //   System.out.println("Schema SQL: " + sql_table[0] + "  table : " + sql_table[1]);
         return sql_table;
     }
 
@@ -546,7 +557,7 @@ public class Util {
             if (!schemdir.exists() || !schemdir.isDirectory()) return flnmes;
 
             flnmes = schemdir.list();
-            System.out.println("Got schema files list  " + flnmes.toString() );
+          //  System.out.println("Got schema files list  " + flnmes.toString() );
         } catch (Exception e) {
             System.out.println("File I/O error " + e);
         }
@@ -567,4 +578,172 @@ public class Util {
     public static String getAppfromDb(String dbnm){
         return(dbnm.substring(2));
     }
+
+
+    public static void DbBackup(Context context, ToolsActivity xact){
+
+      //  File data = Environment.getDataDirectory();
+        int count;
+        byte data[] = new byte[BASE_BLOCKSIZE];
+
+        xact.postMessage("Begin Backup", Toast.LENGTH_SHORT);
+
+        MainActivity.stopDb();
+
+        File restdir =  new File(context.getFilesDir().getPath(), RESTORE);   //CLEAN RESTORE
+        if (restdir.exists()) {
+            DeleteRecursive(restdir);
+        }
+        restdir.mkdir();
+
+        File bkupdir =  new File(context.getFilesDir().getPath(), BACKUP);
+        if (bkupdir.exists()) {
+            DeleteRecursive(bkupdir);
+        }
+        bkupdir.mkdir();
+
+        File DBfile = null;
+        File DBbkupfile = null;
+
+        FileChannel source=null;
+        FileChannel destination=null;
+
+        File currentDB = new File(Environment.getDataDirectory(), APP_DBPATH);
+
+        String[] xfiles = currentDB.list();
+
+        for (int i=0; i< xfiles.length; i++ ) {
+            if (!xfiles[i].endsWith("-journal")) {
+          //      System.out.println("Got db files list  " + xfiles[i]);
+
+                DBfile = new File(currentDB, xfiles[i]);
+                DBbkupfile = new File(bkupdir, xfiles[i]);
+
+
+                try {
+                    source = new FileInputStream(DBfile).getChannel();
+                    destination = new FileOutputStream(DBbkupfile).getChannel();
+                    destination.transferFrom(source, 0, source.size());
+                    source.close();
+                    destination.close();
+                    //           System.out.println("db file copied " + xfiles[i]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        String tarflnm = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+        tarflnm = SUBSERV + tarflnm + BKUP_TAR;
+        try {
+
+            File tout = new File(bkupdir, tarflnm);
+            TarOutputStream tarout = new TarOutputStream(new FileOutputStream(tout));
+            FileInputStream datain;
+            File datafl;
+
+            for (int i=0; i< xfiles.length; i++ ) {
+                if (!xfiles[i].endsWith("-journal")) {
+          //          System.out.println("db file tarred " + xfiles[i]);
+                    xact.postMessage("Creating tar file : " + xfiles[i] ,
+                            Toast.LENGTH_SHORT);
+                    datafl = new File(bkupdir, xfiles[i]);
+                    datain = new FileInputStream(datafl);
+
+                    tarout.putNextEntry(new TarEntry(datafl, xfiles[i]));
+
+                    while ((count = datain.read(data)) != -1) {
+                        tarout.write(data, 0, count);
+                    }
+                    datain.close();
+                }
+            }
+            tarout.close();
+
+
+        } catch(IOException e) {
+            e.printStackTrace();
+            xact.postMessage("Back up failed. Reload Subsect App", Toast.LENGTH_LONG);
+        }
+     //   (MainActivity)context.startdb();
+        xact.postMessage("Backup Complete. Reload Subsect App", Toast.LENGTH_LONG);
+    }
+
+
+    public static void DbRestore(Context context, ToolsActivity xact) {
+
+        //  File data = Environment.getDataDirectory();
+        int count;
+        byte data[] = new byte[BASE_BLOCKSIZE];
+
+        xact.postMessage("Begin Restore.",Toast.LENGTH_SHORT);
+
+        MainActivity.stopDb();
+
+        File restdir = new File(context.getFilesDir().getPath(), RESTORE);   //CLEAN RESTORE
+        if (!restdir.exists()) {
+            xact.postMessage("Restore directory missing.Upload again.",Toast.LENGTH_LONG);
+                    restdir.mkdir();
+            return;
+        }
+
+        File DBfile = null;
+        File restorefile = null;
+
+        FileChannel source = null;
+        FileChannel destination = null;
+
+        File currentDB = new File(Environment.getDataDirectory(), APP_DBPATH);
+
+        String[] xfiles = restdir.list();
+
+        TarInputStream tis = null;
+        File tarfl = null;
+
+        try {
+            for (int i = 0; i < xfiles.length; i++) {
+                if (xfiles[i].endsWith(BKUP_TAR)) {
+                    tarfl = new File(restdir, xfiles[i]);
+                    tis = new TarInputStream(new BufferedInputStream(
+                            new FileInputStream(tarfl)));
+                    tis.setDefaultSkip(true);
+                    untar(context, tis, restdir.getAbsolutePath());
+
+                    tis.close();
+                    tarfl.delete();
+
+                    tis = null;
+                    tarfl = null;
+                }
+            }
+
+            xfiles = restdir.list();
+
+            for (int i = 0; i < xfiles.length; i++) {
+
+                if (xfiles[i].startsWith(DB_SYS) ||
+                        xfiles[i].startsWith(DB_USR) ) {
+
+                    DBfile = new File(currentDB, xfiles[i]);
+                    restorefile = new File(restdir, xfiles[i]);
+
+                    source = new FileInputStream(restorefile).getChannel();
+                    destination = new FileOutputStream(DBfile).getChannel();
+                    destination.transferFrom(source, 0, source.size());
+                    source.close();
+                    destination.close();
+                  //  System.out.println("db file copied " + xfiles[i]);
+                    xact.postMessage("Restore file : "+ xfiles[i],Toast.LENGTH_SHORT);
+                    restorefile.delete();
+                }
+            }
+        } catch (IOException e) {
+            xact.postMessage("Restore Failed. Reload Subsect App",Toast.LENGTH_LONG);
+            e.printStackTrace();
+        }
+        xact.postMessage("Restore Complete. Reload Subsect App",Toast.LENGTH_LONG);
+     //   SQLManager.openAll();
+    }
+
+
 }

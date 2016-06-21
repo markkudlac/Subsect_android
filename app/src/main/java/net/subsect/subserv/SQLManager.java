@@ -49,7 +49,7 @@ public class SQLManager {
         Enumeration<SQLHelper> db = dbs.elements();
 
         while(db.hasMoreElements()){
-     //       System.out.println("In closeAll");
+            System.out.println("In closeAll");
             db.nextElement().closeDb();
         }
     }

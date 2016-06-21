@@ -153,25 +153,26 @@ function setPeer(customConfig){
 }
 
 
-
 function getappfile(rcv, xconn){
 
-//console.log("Receive count : " + rcv.cnt + "  Receive mime : " + rcv.mimetp);
+//console.log("Receive count : " + rcv.cnt + "  Receive mime : " + rcv.mimetp +
+//    "Receive rcvkey : " + rcv.rcvkey);
 
     if (rcv.cnt > 0)
     {
         var splitend = rcv.cnt * splitsz
         var xcnt = rcv.cnt + 1
-        var tblob = blobbuff[rcv.file].slice((rcv.cnt - 1)*splitsz, splitend,
-            blobbuff[rcv.file].type);
+        var tblob = blobbuff[rcv.rcvkey].slice((rcv.cnt - 1)*splitsz, splitend,
+            blobbuff[rcv.rcvkey].type);
 
-        if (tblob.size < splitsz || splitend == blobbuff[rcv.file].size)
+        if (tblob.size < splitsz || splitend == blobbuff[rcv.rcvkey].size)
         {
             xcnt = -1;
-     // These caches should be cleaned up and only good for static files
-     //       blobbuff[rcv.file] = null;
+     // These caches cleaned up
+            delete blobbuff[rcv.rcvkey];
+     //       console.log("cleaned buffer : " + rcv.rcvkey);
         }
-        xconn.send({uri: rcv.file, blobtype: tblob.type, blob: tblob, cnt: xcnt});
+        xconn.send({uri: rcv.file, blobtype: tblob.type, blob: tblob, cnt: xcnt, rcvkey: rcv.rcvkey});
         return;
     }
 
@@ -183,15 +184,17 @@ function getappfile(rcv, xconn){
 
                 var yblob = this.response.slice(0, splitsz, this.response.type);
 
-                if (blobbuff[rcv.file] === undefined || blobbuff[rcv.file] === null) {
-                    blobbuff[rcv.file] = this.response.slice(splitsz,
+                if (!blobbuff[rcv.rcvkey]) {
+                    blobbuff[rcv.rcvkey] = this.response.slice(splitsz,
                         this.response.size, this.response.type);
                 }
 
-                xconn.send({uri: rcv.file, blobtype: this.response.type, blob: yblob, cnt: 1});
+                xconn.send({uri: rcv.file, blobtype: this.response.type, blob: yblob,
+                    cnt: 1, rcvkey: rcv.rcvkey});
 
             } else {
-                xconn.send({uri: rcv.file, blobtype: this.response.type, blob: this.response, cnt: 0});
+                xconn.send({uri: rcv.file, blobtype: this.response.type, blob: this.response,
+                    cnt: 0, rcvkey: rcv.rcvkey});
             }
 
 		 }

@@ -43,6 +43,19 @@ public class Routes {
                 ex.printStackTrace();
             }
 
+        } else if (uri.indexOf(API_DELETEFILE) == 0){
+
+            msg = Util.JSONReturn(false);
+
+            qryJSON = Util.qryStringToJSON(qryString);
+            try {
+                String fullpath = rootdir.getPath()+qryJSON.getString("filename");
+                System.out.println("Route : "+uri + " fullpath  2 : "+fullpath);
+                msg = Util.deletefile(fullpath);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
         } else if (uri.indexOf(API_INSERTDB) == 0) {
 
             qryJSON = Util.qryStringToJSON(qryString);
@@ -182,6 +195,14 @@ public class Routes {
 
             msg = Util.JSONReturn(false);
             msg = Prefs.getuploaddir(context);
+
+        } else if (uri.indexOf(API_GETIPADD) == 0) {
+
+            uri = trimUri(uri, API_GETIPADD);
+
+            JSONArray jray = Util.JSONdbReturn(true, 1, uri.split("/")[0]);
+            msg = Util.stringJA(Util.JSONxtraReturn(jray, "ipadd", MainActivity.getHost()));
+
         }
 
         return(msg);
