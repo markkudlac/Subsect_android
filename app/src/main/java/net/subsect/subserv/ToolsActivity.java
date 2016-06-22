@@ -92,10 +92,18 @@ public class ToolsActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(getBaseContext(),
-                        "Listener : " +
-                                "\nSpinner : " + String.valueOf(sitespinner.getSelectedItem()),
-                        Toast.LENGTH_LONG).show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Util.exportPkg(getBaseContext(),
+                                    String.valueOf(sitespinner.getSelectedItem()),
+                                    toolact);
+                        } catch (Exception ex) {
+                            System.out.println("Thread exception : " + ex);
+                        }
+                    }
+                }).start();
             }
 
         });
@@ -106,11 +114,6 @@ public class ToolsActivity extends Activity {
             @Override
             public void onClick(View v) {
                 popInstallDialogue();
-                /*
-                Toast.makeText(getBaseContext(),
-                        "Install pressed",
-                        Toast.LENGTH_LONG).show();
-                        */
             }
 
         });

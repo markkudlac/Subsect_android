@@ -645,7 +645,7 @@ public class Util {
             for (int i=0; i< xfiles.length; i++ ) {
                 if (!xfiles[i].endsWith("-journal")) {
           //          System.out.println("db file tarred " + xfiles[i]);
-                    xact.postMessage("Creating tar file : " + xfiles[i] ,
+                    xact.postMessage("Creating tar file : " + xfiles[i],
                             Toast.LENGTH_SHORT);
                     datafl = new File(bkupdir, xfiles[i]);
                     datain = new FileInputStream(datafl);
@@ -738,12 +738,77 @@ public class Util {
                 }
             }
         } catch (IOException e) {
-            xact.postMessage("Restore Failed. Reload Subsect App",Toast.LENGTH_LONG);
+            xact.postMessage("Restore Failed. Reload Subsect App", Toast.LENGTH_LONG);
             e.printStackTrace();
         }
         xact.postMessage("Restore Complete. Reload Subsect App",Toast.LENGTH_LONG);
-     //   SQLManager.openAll();
     }
 
 
+    public static void exportPkg(Context context, String pkg, ToolsActivity xact) {
+
+        String[] pkgnm = pkg.split("/");
+        String tarflnm = pkgnm[pkgnm.length - 1];
+        String basefl = pkgnm[0];
+
+        System.out.println("Base dir : " + basefl + "  Tar file : " + tarflnm);
+        xact.postMessage("Export : " + tarflnm, Toast.LENGTH_SHORT);
+
+        File bkupdir = new File(context.getFilesDir().getPath(), BACKUP);
+        if (bkupdir.exists()) {
+            DeleteRecursive(bkupdir);
+        }
+        bkupdir.mkdir();
+
+        try {
+            File tout = new File(bkupdir, tarflnm+".tar");
+            TarOutputStream tarout = new TarOutputStream(new FileOutputStream(tout));
+
+            if (!TarRecursive(new File(context.getFilesDir().getPath() + "/" + basefl),
+                    tarflnm, tarout)) {
+                xact.postMessage("Export Failed", Toast.LENGTH_LONG);
+            } else {
+                xact.postMessage("Exported to directory : " + BACKUP, Toast.LENGTH_LONG);
+            }
+            tarout.close();
+
+        } catch(IOException e) {
+            e.printStackTrace();
+            xact.postMessage("Export Failed", Toast.LENGTH_LONG);
+        }
+    }
+
+
+    static boolean TarRecursive(File basefl, String fileOrDir, TarOutputStream tarout) {
+
+        int count;
+        byte data[] = new byte[BASE_BLOCKSIZE];
+
+        System.out.println("fileOrDir is : " + fileOrDir);
+
+        try {
+            File tmpfile = new File(basefl, fileOrDir);
+            tarout.putNextEntry(new TarEntry(tmpfile, fileOrDir));
+
+            if (tmpfile.isDirectory()) {
+                for (String child : tmpfile.list())
+                    if (!TarRecursive(basefl, fileOrDir + "/" + child, tarout)) {
+                        return false;
+                    }
+            } else {
+
+                FileInputStream datain = new FileInputStream(tmpfile);
+
+                while ((count = datain.read(data)) != -1) {
+                    tarout.write(data, 0, count);
+                }
+                datain.close();
+            }
+
+        } catch(IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }
