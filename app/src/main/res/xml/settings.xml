@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>   
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    
+  <!--
     <ListPreference
         android:key="@string/uploadto"
         android:title="@string/uploadto"
@@ -8,6 +8,7 @@
         android:entryValues="@array/uploadto"
         android:defaultValue="@string/installdir"
         android:summary="%s" />
+-->
 
     <EditTextPreference
         android:key="@string/hostname"
@@ -18,8 +19,9 @@
     <EditTextPreference
         android:key="@string/password"
         android:title="@string/password"
+        android:inputType="textPassword"
         android:defaultValue=""
-        android:summary="%s" />
+         />
 
     <EditTextPreference
         android:key="@string/token"

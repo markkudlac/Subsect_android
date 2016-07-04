@@ -3,15 +3,13 @@
 
     <string name="app_name">Subserv</string>
     <string name="action_settings">Settings</string>
-    <string name="uploadto">Upload To</string>
     <string name="hostname">Hostname</string>
     <string name="localnameserv">Local Name Server</string>
     <string name="heroku">Use Heroku</string>
     <string name="connect">Connect To</string>
-    <string name="subzaar">Subzaar</string>
+    <string name="bazaar">Bazaar</string>
     <string name="installed">Installed</string>
     <string name="defRemoteServer">"www.subsect.net"</string>
-    <string name="installdir">"install"</string>
     <string name="defaulthost">"dev"</string>
     <string name="webviewctr">"webviewctr"</string>
     <string name="exportsite">"Site to Export"</string>

@@ -79,6 +79,7 @@ public class SQLHelper extends SQLiteOpenHelper {
                                 FLD_TITLE + " text, " +
                                 FLD_TYPE + " char(2) default \'" + DB_USR + "\', " +
                                 FLD_ICON + " text, " +
+                                FLD_PERMISSIONS + " char(3), " +
                                 FLD_SUBSECTID + " integer, " +
                                 FLD_HREF + " char(50), " +
                                 FLD_STATUS + " char(1) default \'" + ACTIVE_STATUS + "\', " +
@@ -93,6 +94,7 @@ public class SQLHelper extends SQLiteOpenHelper {
                                 FLD_ID + " integer primary key autoincrement, " +
                                 FLD_DBNAME + " text, " +
                                 FLD_TABLENAME + " text, " +
+                                FLD_PERMISSIONS + " char(3), " +
                                 FLD_CREATED_AT + " integer default 0 " +
                                 ")"
                 );
@@ -157,13 +159,15 @@ public class SQLHelper extends SQLiteOpenHelper {
 
 
     public static boolean initializeRegistry(SQLiteDatabase db, String app, boolean sys,
-                                             String icon, int subsectid, String title) {
+                                             String icon, int subsectid, String title,
+                                             String permissions) {
         ContentValues values = new ContentValues();
 
         System.out.println(TBL_REGISTRY + " app : " + app);
         values.put(FLD_APP, app);
         values.put(FLD_TITLE, title);
         values.put(FLD_ICON, icon);
+        values.put(FLD_PERMISSIONS, permissions);
         values.put(FLD_SUBSECTID, subsectid);
         values.put(FLD_HREF, SUB_HREF_REMOTE + app);
 

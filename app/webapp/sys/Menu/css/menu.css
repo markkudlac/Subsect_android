@@ -1,0 +1,37 @@
+
+
+.bodynavpad {
+	padding-top: 55px;
+}
+
+img {
+    height: 50px;
+    width: 50px;
+}
+
+.center {
+    text-align: center;
+}
+
+.bigtext {
+    font-size: 120%;
+}
+
+.pointeron {
+    cursor: pointer;
+}
+
+.navbackbut{
+	margin-left: 7px;
+	cursor: pointer;
+}
+
+
+.navtagbut{
+	cursor: pointer;
+}
+
+
+.filesel:hover {
+	cursor: pointer;
+}

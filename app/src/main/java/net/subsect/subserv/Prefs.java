@@ -31,8 +31,6 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
         setSummary(getPreferenceScreen().getSharedPreferences(),
                 this.getString(R.string.localnameserv));
         setSummary(getPreferenceScreen().getSharedPreferences(),
-                this.getString(R.string.password));
-        setSummary(getPreferenceScreen().getSharedPreferences(),
                 this.getString(R.string.token));
     }
 
@@ -58,33 +56,28 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
     // This is stupid and should be looked at later
     private void setSummary(SharedPreferences sharedPreferences, String key) {
 
-     //   System.out.println("In Pref 2 changd : " +key);
-            if (key.equals(this.getString(R.string.hostname)) ||
-                    key.equals(this.getString(R.string.token)) ||
-                    key.equals(this.getString(R.string.password))) {
-                Preference pref = findPreference(key);
-                pref.setSummary(sharedPreferences.getString(key, ""));
-            } else if (key.equals(this.getString(R.string.localnameserv))){
+        //   System.out.println("In Pref 2 changd : " +key);
+        if (key.equals(this.getString(R.string.hostname)) ||
+                key.equals(this.getString(R.string.token))
+            //     key.equals(this.getString(R.string.password))
+                ) {
+            Preference pref = findPreference(key);
+            pref.setSummary(sharedPreferences.getString(key, ""));
+        } else if (key.equals(this.getString(R.string.password))) {
+         String passwd;
+
+            passwd = sharedPreferences.getString(key,"");
+System.out.println("Got pass word key : " + passwd);
+            if (passwd.length() < 40 ) {
+                System.out.println("Passwd less than 40");
+                passwd = Util.getSha1Hex(passwd);
+                sharedPreferences.edit().putString(key,passwd).commit();
+            }
+        } else if (key.equals(this.getString(R.string.localnameserv))){
                 Preference pref = findPreference(key);
                 pref.setSummary(sharedPreferences.getString(key,
                         DEMO_ADDRESS + ":" + DEMO_PORT));
             }
-    }
-
-
-    public static String getUploadDir(Context context) {
-
-        return( PreferenceManager
-                .getDefaultSharedPreferences(context).getString(
-                        context.getString(R.string.uploadto), INSTALL_DIR)
-        );
-    }
-
-
-    protected static String getuploaddir(Context context){
-
-//		System.out.println("In getuploaddir");
-        return("{\"dir\":\"" + getUploadDir(context) + "\"}");
     }
 
 

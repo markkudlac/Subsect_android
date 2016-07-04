@@ -119,9 +119,9 @@ public class MainActivity extends Activity {
             intent.putExtra(getString(R.string.webviewctr), R.string.connect);
             startActivity(intent);
             return true;
-        } else if (id == R.id.subzaar) {
+        } else if (id == R.id.bazaar) {
             Intent intent = new Intent(this, ConnectActivity.class);
-            intent.putExtra(getString(R.string.webviewctr), R.string.subzaar);
+            intent.putExtra(getString(R.string.webviewctr), R.string.bazaar);
             startActivity(intent);
             return true;
         } else if (id == R.id.installed) {

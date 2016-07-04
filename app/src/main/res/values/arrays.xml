@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
     <string-array name="uploadto">
         <item>"install"</item>
         <item>"restore"</item>
@@ -10,4 +11,5 @@
         <item>"sys/lib"</item>
         <item>"usr"</item>
     </string-array>
+    -->
 </resources>

@@ -20,6 +20,7 @@ public interface Const extends BaseColumns {
     public static final String INSTALL_DIR = "install";
     public static final String INSTALL_FILE = "rootpack.targz";
     public static final String FORMUPLOAD = "formupload";
+    public static final String FORMFILENAME = "subupldfile";
     public static final String APP_DBPATH = "/data/net.subsect.subserv/databases/";
     public static final String BKUP_TAR = "bkup.tar";
     public static final String BACKUP = "backup";
@@ -42,6 +43,7 @@ public interface Const extends BaseColumns {
     public static final String API_UPDATEDB = "updateDB";
     public static final String API_REMOVEDB = "removeDB";
     public static final String API_GETUPLOADDIR = "getuploaddir/";
+    public static final String API_SETUPLOADDIR = "setuploaddir/";
     public static final String API_TESTPASSWORD = "testPassword/";
     public static final String API_GETTOKEN = "getToken/";
     public static final String API_GETIPADD = "getIPadd/";
@@ -56,7 +58,7 @@ public interface Const extends BaseColumns {
     public static final String SUB_HREF_REMOTE = "Sub_Href_Remote";
  //   public static final String SUB_HREF_LOCAL = "Sub_Href_Local";
     public static final String SKIP_SCHEMA = "#skip";
-    public static final String SECURE_ON = "#secure_on";
+//    public static final String SECURE_ON = "#secure_on";
 
     public static final String FLD_ID = "id";
     public static final String FLD_STATUS = "status";
@@ -73,6 +75,7 @@ public interface Const extends BaseColumns {
     public static final String FLD_TYPE = "type";
     public static final String FLD_SUBSECTID = "subsectid";
     public static final String FLD_ICON = "icon";
+    public static final String FLD_PERMISSIONS = "permissions";
     public static final String FLD_HREF = "href";
 
     public static final String TBL_SECURE = "secure";

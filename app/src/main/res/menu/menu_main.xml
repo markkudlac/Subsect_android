@@ -11,8 +11,8 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
 
-    <item android:id="@+id/subzaar"
-        android:title="@string/subzaar"
+    <item android:id="@+id/bazaar"
+        android:title="@string/bazaar"
         android:orderInCategory="100"
         android:showAsAction="never" />
 

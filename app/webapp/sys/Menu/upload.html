@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row text-center">
+            <h2> File Upload</h2>
+        </div>
+        
+        
+        <div style="margin-top: 2em" class="form-horizontal">
+          <div class="form-group">
+            <label for="target" class="col-xs-offset-1 col-xs-2 control-label">Target</label>
+            <div class="col-xs-8">
+              <input type="text" readonly id="target" class="form-control" placeholder="Directory"></p>
+            </div>
+          </div>
+        </div>
+        
+        <form style="margin-top: 2em" class="form-horizontal" method="post" action="" 
+                enctype="multipart/form-data">
+            <div class="form-group">
+                <label  class="col-xs-offset-1 col-xs-2 control-label" for="upldfile">Upload</label>
+                <input class="col-xs-8" type="file" id="upldfile" name="subupldfile">
+            </div>
+  
+            <div class="form-group">
+                <div  class="col-xs-offset-3 col-xs-8">
+                    <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+<script>
+
+$(document).ready(function(){
+
+
+	$.getJSON("/api/getuploaddir/-1",null,function(data){
+			if (data && data[0].rtn) { 
+			    console.log("Dir : " + data[1].path);
+				$('#target').val(data[1].path)
+			} else
+			{ 
+			    alert("getdownload data undefined")
+			    
+			}
+		});
+	
+})
+</script>
+</body>
+</html>

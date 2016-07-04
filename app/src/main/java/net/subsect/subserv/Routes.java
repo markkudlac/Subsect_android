@@ -191,10 +191,23 @@ public class Routes {
             JSONArray jray = Util.JSONdbReturn(true, 1, uri.split("/")[0]);
             msg = Util.stringJA(Util.JSONxtraReturn(jray, "token", Prefs.getToken(context)));
 
-        } else if (uri.indexOf(API_GETUPLOADDIR) == 0){
+        } else if (uri.indexOf(API_SETUPLOADDIR) == 0){
+            String rtnfunc, uploaddir;
 
-            msg = Util.JSONReturn(false);
-            msg = Prefs.getuploaddir(context);
+            uri = trimUri(uri, API_SETUPLOADDIR);
+            rtnfunc = uri.substring(uri.lastIndexOf("/")+1);
+            uploaddir = uri.replaceAll("\\/-*\\w*$", "");
+            Util.setUploadDirectory(uploaddir);
+
+         //   System.out.println("Upload dir : " + uploaddir + " func : " + rtnfunc);
+            msg = Util.stringJA(Util.JSONdbReturn(true, 1, rtnfunc));
+
+        }else if (uri.indexOf(API_GETUPLOADDIR) == 0){
+
+            uri = trimUri(uri, API_GETUPLOADDIR);
+
+            JSONArray jray = Util.JSONdbReturn(true, 1, uri.split("/")[0]);
+            msg = Util.stringJA(Util.JSONxtraReturn(jray, "path", Util.getUploadDirectory()));
 
         } else if (uri.indexOf(API_GETIPADD) == 0) {
 

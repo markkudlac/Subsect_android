@@ -41,7 +41,7 @@ public class ConnectActivity extends Activity {
             if (value == R.string.connect) {
                 popConnectDialogue();
             } else {
-                startSubzaar(value);
+                startBazaar(value);
             }
         } else {
             System.out.println("In Bundle failed");
@@ -142,9 +142,9 @@ public class ConnectActivity extends Activity {
     }
 
 
-    public void startSubzaar(int value) {
+    public void startBazaar(int value) {
 
-        System.out.println("Start Subzaar");
+        System.out.println("Start Bazaar");
 
             webarg = (WebView)findViewById(R.id.connectview);
             webarg.setWebChromeClient(new WebChromeClient());
@@ -154,12 +154,12 @@ public class ConnectActivity extends Activity {
 
             webarg.addJavascriptInterface(this.new JsInterface(), "android");
 
-            if (value == R.string.subzaar) {
+            if (value == R.string.bazaar) {
                 if (Prefs.useHeroku(this)) {
-                    webarg.loadUrl("http://www.subsect.net/subzaar");
+                    webarg.loadUrl("http://www.subsect.net/bazaar");
                 } else {
-                    System.out.println("Use Subzaar local");
-                    webarg.loadUrl("http://"+ Prefs.getNameServer(this) +"/subzaar");
+                    System.out.println("Use Bazaar local");
+                    webarg.loadUrl("http://"+ Prefs.getNameServer(this) +"/bazaar");
                 }
             } else {
                 webarg.loadUrl("http://"+MainActivity.getHost()+"/sys/Menu/menu.html");

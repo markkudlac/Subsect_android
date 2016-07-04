@@ -21,6 +21,7 @@ import java.net.SocketException;
 
 import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
@@ -47,6 +48,19 @@ import android.widget.Toast;
 
 public class Util {
 
+    private static String uploadDirectory = "";
+
+
+    public static void setUploadDirectory(String dir){
+        uploadDirectory = dir;
+    }
+
+
+    public static String getUploadDirectory() {
+        return uploadDirectory;
+    }
+
+
     static void DeleteRecursive(File fileOrDirectory) {
 
         if (fileOrDirectory.isDirectory())
@@ -58,12 +72,14 @@ public class Util {
 
 
     public static String installApp(Context context, String appdir, String filenm, String icon,
-                                    int subsectid, String title){
+                                    int subsectid, String title, String permissions){
         String rtn = JSONReturn(false);
 
         try {
 
-          //  System.out.println("In installapp appdir : "+appdir + "  filenm : " + filenm);
+            System.out.println("In installapp appdir : "+appdir + "  filenm : " + filenm +
+                    "  permissions : " + permissions);
+
             String appName;
             File installto;
             File installfl;
@@ -96,7 +112,7 @@ public class Util {
                 // This is a new install db created and log registry
                 System.out.println("New install : "+appName);
                 SQLHelper.initializeRegistry((SQLManager.getSQLHelper(DB_SUBSERV)).getDatabase(),
-                        appName, true, icon, subsectid, title);
+                        appName, true, icon, subsectid, title, permissions);
             } else {
                 System.out.println("Update install : "+appName);
                 // This is an update with db already open tables should be mods only
@@ -511,13 +527,14 @@ public class Util {
                 schema = "";
             } else {
 
-                ptn = Pattern.compile("^\\s*" + SECURE_ON, Pattern.CASE_INSENSITIVE);
+                ptn = Pattern.compile("^\\s*#" + FLD_PERMISSIONS + ".*$", Pattern.CASE_INSENSITIVE);
                 mtcher = ptn.matcher(schema);
                 if (mtcher.find()) {
-                    schema = schema.replaceAll("^\\s*" + SECURE_ON, "");
+                    System.out.println("Secure permissions : "+ mtcher.group());
+                    schema = schema.replaceAll("^\\s*#" + FLD_PERMISSIONS + ".*$", "");
                     schema = schema.trim();
-                    System.out.println("Secure on trim : "+ schema);
-                    String[] words = schema.split("\\s+");
+
+                    String[] words = schema.split("\\s+", 4);
                     sql_table[1] = words[2];
                     System.out.println("Secure on tablename : "+ sql_table[1]);
                 }
@@ -810,5 +827,26 @@ public class Util {
             return false;
         }
         return true;
+    }
+
+    public static String getSha1Hex(String clearString)
+    {
+        try
+        {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+            messageDigest.update(clearString.getBytes("UTF-8"));
+            byte[] bytes = messageDigest.digest();
+            StringBuilder buffer = new StringBuilder();
+            for (byte b : bytes)
+            {
+                buffer.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+            }
+            return buffer.toString();
+        }
+        catch (Exception ignored)
+        {
+            ignored.printStackTrace();
+            return null;
+        }
     }
 }

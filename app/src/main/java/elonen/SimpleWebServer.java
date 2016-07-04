@@ -3,7 +3,7 @@ package elonen;
 
 import android.content.Context;
 
-import net.subsect.subserv.Prefs;
+import net.subsect.subserv.Util;
 import net.subsect.subserv.Routes;
 
 import java.io.File;
@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 import static net.subsect.subserv.Const.API_PATH;
 import static net.subsect.subserv.Const.BASE_BLOCKSIZE;
 import static net.subsect.subserv.Const.FORMUPLOAD;
+import static net.subsect.subserv.Const.FORMFILENAME;
 
 
 public class SimpleWebServer extends NanoHTTPD {
@@ -291,7 +292,7 @@ public class SimpleWebServer extends NanoHTTPD {
         e = parms.keySet().iterator();
         while (e.hasNext()) {
             String value = e.next();
-            if (value.equals("file")) {
+            if (value.equals(FORMFILENAME)) {
             	filename = parms.get(value);
             } else if (value.equals(QUERY_STRING_PARAMETER)){
             	qryString = parms.get(value);
@@ -304,8 +305,9 @@ public class SimpleWebServer extends NanoHTTPD {
  //           System.out.println("  UPLOADED: '" + value + "' = '" + files.get(value) + "'");
             
       //Added for transfer of upload files. This should be reviewed later
-            
-            if (value.equals("file") && filename.length() > 0) {
+      // There is no error handling here
+
+            if (value.equals(FORMFILENAME) && filename.length() > 0) {
             	copyFile(files.get(value), filename);
             }
         }
@@ -324,12 +326,12 @@ public class SimpleWebServer extends NanoHTTPD {
     		File fl_dest;
     		String upld;
     		
-    		fl_dest = new File(rootDir, Prefs.getUploadDir(context));
+    		fl_dest = new File(rootDir, Util.getUploadDirectory());
     		if (!fl_dest.exists()) {
     			fl_dest.mkdirs();
-    		}
+            }
     		
-    		upld = Prefs.getUploadDir(context) + "/" + dest;
+    		upld = Util.getUploadDirectory() + "/" + dest;
 //System.out.println("Dest path : "+upld);
     		
     		fl_dest = new File(rootDir, upld);

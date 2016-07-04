@@ -124,7 +124,7 @@ public class HttpCom extends AsyncTask<String, Integer, String>{
                     // when doing json tostring. This is dumb and should be looked at later
                     String nocar_rtn_icon = jObj.getString("icon").replace("\n", "");
                     Util.installApp(conact,installdir ,INSTALL_FILE, nocar_rtn_icon,
-                            jObj.getInt("id"), jObj.getString("title"));
+                            jObj.getInt("id"), jObj.getString("title"), jObj.getString("permissions"));
                 }
                 conact.updateProg(-1002);
             }
