@@ -56,9 +56,15 @@ public interface Const extends BaseColumns {
     public static final String DB_USR = "U_";
     public static final String DB_SUBSERV = DB_SYS + SUBSERV;
     public static final String SUB_HREF_REMOTE = "Sub_Href_Remote";
- //   public static final String SUB_HREF_LOCAL = "Sub_Href_Local";
     public static final String SKIP_SCHEMA = "#skip";
-//    public static final String SECURE_ON = "#secure_on";
+
+    public static final int PERM_SUPER = 0;
+    public static final int PERM_GROUP = 1;
+    public static final int PERM_USER = 2;
+    public static final int PERM_CR = 8;
+    public static final int PERM_RE = 4;
+    public static final int PERM_UP = 2;
+    public static final int PERM_DE = 1;
 
     public static final String FLD_ID = "id";
     public static final String FLD_STATUS = "status";

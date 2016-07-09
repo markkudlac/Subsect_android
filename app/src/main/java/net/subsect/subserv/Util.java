@@ -498,9 +498,10 @@ public class Util {
     public static String[] getSchema(Context context, String dbname, String flnme) {
 
         String schema = "";
-        String[] sql_table =  new String[2];
+        String[] sql_table =  new String[3];
 
         sql_table[1] = "";
+        sql_table[2] = "FFF";
 
         try {
             String appname = getAppfromDb(dbname);
@@ -526,17 +527,21 @@ public class Util {
                 System.out.println("Table skipped");
                 schema = "";
             } else {
-
-                ptn = Pattern.compile("^\\s*#" + FLD_PERMISSIONS + ".*$", Pattern.CASE_INSENSITIVE);
+                String perms;
+                ptn = Pattern.compile("^\\s*#" + FLD_PERMISSIONS + "\\s*\\w*", Pattern.CASE_INSENSITIVE);
                 mtcher = ptn.matcher(schema);
                 if (mtcher.find()) {
-                    System.out.println("Secure permissions : "+ mtcher.group());
-                    schema = schema.replaceAll("^\\s*#" + FLD_PERMISSIONS + ".*$", "");
-                    schema = schema.trim();
 
-                    String[] words = schema.split("\\s+", 4);
-                    sql_table[1] = words[2];
-                    System.out.println("Secure on tablename : "+ sql_table[1]);
+                    perms = mtcher.group();
+
+                    schema = schema.replaceAll(perms, "").trim();
+
+                    //System.out.println("Schema after replace 2 : " + schema);
+                    sql_table[2] = perms.trim().split("\\s+", 3)[1];
+                    sql_table[1] = schema.split("\\s+", 4)[2];
+
+                  //  System.out.println("Secure on tablename : "+ sql_table[1] + "  Perms : " +
+                  //  sql_table[2]);
                 }
 
                 ptn = Pattern.compile("^\\s*create", Pattern.CASE_INSENSITIVE);
@@ -801,7 +806,7 @@ public class Util {
         int count;
         byte data[] = new byte[BASE_BLOCKSIZE];
 
-        System.out.println("fileOrDir is : " + fileOrDir);
+      //  System.out.println("fileOrDir is : " + fileOrDir);
 
         try {
             File tmpfile = new File(basefl, fileOrDir);
@@ -848,5 +853,26 @@ public class Util {
             ignored.printStackTrace();
             return null;
         }
+    }
+
+    public static boolean testPerm(int operation, String perm, String passwd, Context context){
+
+        perm = perm.trim();
+        System.out.println("testPerm perm : " + perm + "  Passwd : " + passwd);
+        int num = Integer.parseInt(perm.split("", 5)[PERM_USER+1], 16);
+
+        System.out.println("testPerm num 1 : " + num);
+        if ((num & operation) > 0) {
+            return true;
+        }
+
+        System.out.println("testPerm split : " + perm.split("", 5)[PERM_SUPER+1]);
+        num = Integer.parseInt(perm.split("", 5)[PERM_SUPER+1], 16);
+
+        System.out.println("testPerm num 2 : " + num);
+        return (passwd.equals(Prefs.getPassword(context)) &&
+                (num & operation) > 0);
+
+
     }
 }

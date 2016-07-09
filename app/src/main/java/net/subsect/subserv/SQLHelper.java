@@ -126,6 +126,8 @@ public class SQLHelper extends SQLiteOpenHelper {
                             dbnm +
                             "\", \"" + FLD_TABLENAME + "\": \"" +
                             sqlst[1] +
+                            "\", \"" + FLD_PERMISSIONS + "\": \"" +
+                            sqlst[2] +
                             "\" }";
                     System.out.println("Insertstr : " + insertstr);
                     JSONObject jsob = new JSONObject(insertstr);
@@ -231,7 +233,7 @@ public class SQLHelper extends SQLiteOpenHelper {
     public JSONArray getMenu(String funcid) {
 
         JSONArray jray = Util.JSONdbReturn(false, -1, "-1");
-        System.out.print("Menu called funcid : " + funcid);
+
         try {
 
             JSONObject qargs = new JSONObject("{ \"" + FLD_STATUS + "\": \"" + ACTIVE_STATUS + "\" }");
@@ -260,9 +262,31 @@ public class SQLHelper extends SQLiteOpenHelper {
     }
 
 
-    public int checkSecure(String table) {
+    public String getPermission(String pkgName){
 
-        int rtn = -1;
+        String rtnperm = "FFF";     //This needs to be all for Menu
+
+        JSONArray jray = getMenu("-1");
+
+ //       System.out.println("Menu array size : " + jray.length());
+        try {
+            for (int i = 1; i < jray.length(); i++) {
+ //               System.out.println("Menu app : " + jray.getJSONObject(i).getString(FLD_APP));
+                if (pkgName.equals(jray.getJSONObject(i).getString(FLD_APP))) {
+                    rtnperm = jray.getJSONObject(i).getString(FLD_PERMISSIONS);
+                    break;
+                }
+            }
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+
+        return rtnperm;
+    }
+
+    public String checkSecure(String table) {
+
+        String rtn = "FFF";
 
         try {
 
@@ -278,10 +302,10 @@ public class SQLHelper extends SQLiteOpenHelper {
 
             jray = SQLManager.getSQLHelper(DB_SUBSERV).queryDB(TBL_SECURE, qargs, new JSONObject(), "-1");
 
-            if (jray.getJSONObject(0).getBoolean("rtn")) {
-                rtn = jray.getJSONObject(0).getInt("db");
+            if (jray.getJSONObject(0).getBoolean("rtn") &&
+                jray.getJSONObject(0).getInt("db") == 1) {
 
-                if (rtn > 1) rtn = -1;
+                rtn = jray.getJSONObject(1).getString(FLD_PERMISSIONS);
             }
 
         } catch (JSONException ex) {

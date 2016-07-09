@@ -60,7 +60,7 @@ public class Routes {
 
             qryJSON = Util.qryStringToJSON(qryString);
 
-            secureIn: try {
+            try {
                 String sqlpk = Util.decodeJSuriComp(qryJSON.getString(ARGS_SQLPK));
 
                 JSONObject jsob = new JSONObject(sqlpk);
@@ -70,12 +70,8 @@ public class Routes {
                 SQLHelper targetdb = SQLManager.getSQLHelper(jsob.getString(ARGS_DB));
                // System.out.println("insertDB password : " + jsob.getString("password"));
 
-                int secure = targetdb.checkSecure(table);
-
-                if (secure < 0){
-                    break secureIn;
-                } else if (secure == 0 ||
-                        jsob.getString(ARGS_PASSWORD).equals(Prefs.getPassword(context))){
+                if (Util.testPerm(PERM_CR, targetdb.checkSecure(table),
+                        jsob.getString(ARGS_PASSWORD), context)){
                     msg = Util.stringJA(targetdb.
                             insertDB(table, jsob_vals, jsob.getString(ARGS_FUNCID)));
                 } else {
@@ -97,9 +93,18 @@ public class Routes {
                 jsob_args = jsob.getJSONObject(ARGS_ARGS);
                 jsob_limits = jsob.getJSONObject("limits");
 
-                msg = Util.stringJA(SQLManager.getSQLHelper(jsob.getString(ARGS_DB)).
-                        queryDB(jsob.getString(ARGS_QSTR), jsob_args, jsob_limits,
-                                jsob.getString(ARGS_FUNCID)));
+                String table = jsob.getString(ARGS_TABLE);
+                SQLHelper targetdb = SQLManager.getSQLHelper(jsob.getString(ARGS_DB));
+
+                if (Util.testPerm(PERM_CR, targetdb.checkSecure(table),
+                        jsob.getString(ARGS_PASSWORD), context)) {
+                    msg = Util.stringJA(SQLManager.getSQLHelper(jsob.getString(ARGS_DB)).
+                            queryDB(jsob.getString(ARGS_QSTR), jsob_args, jsob_limits,
+                                    jsob.getString(ARGS_FUNCID)));
+                } else {
+                    msg = Util.stringJA(Util.JSONdbReturn(false, FAIL_PASSWORD,
+                            jsob.getString(ARGS_FUNCID)));
+                }
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -108,7 +113,7 @@ public class Routes {
 
             qryJSON = Util.qryStringToJSON(qryString);
 
-            secureUp: try {
+            try {
                 String sqlpk = Util.decodeJSuriComp(qryJSON.getString(ARGS_SQLPK));
                 JSONObject jsob = new JSONObject(sqlpk);
                 JSONObject jsob_args, jsob_values;
@@ -118,12 +123,8 @@ public class Routes {
                 String table = jsob.getString(ARGS_TABLE);
                 SQLHelper targetdb = SQLManager.getSQLHelper(jsob.getString(ARGS_DB));
 
-                int secure = targetdb.checkSecure(table);
-
-                if (secure < 0){
-                    break secureUp;
-                } else if (secure == 0 ||
-                        jsob.getString(ARGS_PASSWORD).equals(Prefs.getPassword(context))){
+                if (Util.testPerm(PERM_UP, targetdb.checkSecure(table),
+                        jsob.getString(ARGS_PASSWORD), context)){
 
                     msg = Util.stringJA(targetdb.updateDB(table,
                                 jsob_values, jsob.getString(ARGS_QSTR), jsob_args,
@@ -140,7 +141,7 @@ public class Routes {
 
             qryJSON = Util.qryStringToJSON(qryString);
 
-            secureRm: try {
+            try {
                 String sqlpk = Util.decodeJSuriComp(qryJSON.getString(ARGS_SQLPK));
 
                 JSONObject jsob = new JSONObject(sqlpk);
@@ -152,13 +153,9 @@ public class Routes {
                 String table = jsob.getString(ARGS_TABLE);
                 SQLHelper targetdb = SQLManager.getSQLHelper(jsob.getString(ARGS_DB));
 
-                int secure = targetdb.checkSecure(table);
-
-                if (secure < 0){
-                    break secureRm;
-                } else if (secure == 0 ||
-                        jsob.getString(ARGS_PASSWORD).equals(Prefs.getPassword(context))){
-                msg = Util.stringJA(targetdb.removeDB(table,
+                if (Util.testPerm(PERM_DE, targetdb.checkSecure(table),
+                        jsob.getString(ARGS_PASSWORD), context)){
+                    msg = Util.stringJA(targetdb.removeDB(table,
                         qstr, jsob_args, funcid));
                 } else {
                     msg = Util.stringJA(Util.JSONdbReturn(false, FAIL_PASSWORD, funcid));

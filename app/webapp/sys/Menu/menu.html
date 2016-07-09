@@ -6,6 +6,7 @@
     <title class="settitle"></title>
 
     <script src="http://www.subsect.net/lib/dev_subsect.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.1.0/sha1.js"></script>
     <script src="js/menu.js"></script>
 
     <link rel="stylesheet" type="text/css" href="css/menu.css">
@@ -35,7 +36,7 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a ng-click="toLogin()">Login</a></li>
                         <li class="divider"></li>
-                        <li><a>Logout</a></li>
+                        <li><a ng-click="Logout()">Logout</a></li>
                         <li class="divider"></li>
                         <li><a ng-click="toDownload()">Download</a></li>
                         <li class="divider"></li>

@@ -67,10 +67,10 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
          String passwd;
 
             passwd = sharedPreferences.getString(key,"");
-System.out.println("Got pass word key : " + passwd);
+
             if (passwd.length() < 40 ) {
-                System.out.println("Passwd less than 40");
-                passwd = Util.getSha1Hex(passwd);
+//                System.out.println("Passwd less than 40 host : " + sharedPreferences.getString("Hostname",""));
+                passwd = Util.getSha1Hex(sharedPreferences.getString("Hostname","") + passwd);
                 sharedPreferences.edit().putString(key,passwd).commit();
             }
         } else if (key.equals(this.getString(R.string.localnameserv))){

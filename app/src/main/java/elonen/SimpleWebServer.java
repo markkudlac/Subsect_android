@@ -3,6 +3,8 @@ package elonen;
 
 import android.content.Context;
 
+import net.subsect.subserv.Prefs;
+import net.subsect.subserv.SQLManager;
 import net.subsect.subserv.Util;
 import net.subsect.subserv.Routes;
 
@@ -22,6 +24,7 @@ import java.util.StringTokenizer;
 
 import static net.subsect.subserv.Const.API_PATH;
 import static net.subsect.subserv.Const.BASE_BLOCKSIZE;
+import static net.subsect.subserv.Const.DB_SUBSERV;
 import static net.subsect.subserv.Const.FORMUPLOAD;
 import static net.subsect.subserv.Const.FORMFILENAME;
 
@@ -102,7 +105,7 @@ public class SimpleWebServer extends NanoHTTPD {
     public Response serveFile(String uri, Map<String, String> header, String qryString, File homeDir) {
         Response res = null;
 
- //       System.out.println("uri in serveFile : "+uri);
+ //       System.out.println("uri in serveFile 2 : "+uri + "  qry : " + qryString);
         
         if (uri.indexOf(API_PATH) == 0 || uri.endsWith(FORMUPLOAD)){
         	String msg;
@@ -124,6 +127,33 @@ public class SimpleWebServer extends NanoHTTPD {
             // Prohibit getting out of current directory
             if (uri.startsWith("src/main") || uri.endsWith("src/main") || uri.contains("../"))
                 res = new Response(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: Won't serve ../ for security reasons.");
+        }
+
+        /******* Added to check passwords *****/
+        if (uri.endsWith(".html")){
+
+            String pkgName = uri.split("/")[2];
+
+ //           System.out.println("uri has .html  pkgName : " + pkgName);
+            if (uri.endsWith(pkgName.toLowerCase() + ".html")) {
+
+                String perm = SQLManager.getSQLHelper(DB_SUBSERV).getPermission(pkgName);
+                String[] passwd = qryString.split("=");
+         //       System.out.println("Permission : " + perm );
+
+                String[] permary = perm.split("");
+                if (!(permary[3].equals("F")
+                        || (passwd.length == 2 && passwd[0].equals("SUBSECT_passwd") &&
+                        passwd[1].length() == 40 && passwd[1].equals(Prefs.getPassword(context))))){
+                 //   System.out.println("Login is required 3");
+
+                    res = new Response(Response.Status.OK, "text/html",
+                        "<html><head></head><body><div>LOGIN REQUIRED</div><script>" +
+                        "window.location.hash=\"login/"+ pkgName +"\"; " +   //Must set anchor 1st
+                        "window.location.pathname=\"/pkg/Menu\"; " +
+                        "</script></body></html>");
+                }
+            }
         }
 
         File f = new File(homeDir, uri);

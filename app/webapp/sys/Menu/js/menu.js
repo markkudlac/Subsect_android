@@ -1,4 +1,25 @@
 
+ function loggedIn() {
+    	
+    	if (isLocal()) return true;
+    	
+    	var passwd = getPassword();
+    
+    	return(passwd && passwd.length == 40);
+    }
+
+
+ function isLocal(){
+  
+        if (typeof android !== "undefined" &&
+            typeof android.removeSite === "function"){
+                var target = window.location.hostname + ":" + window.location.port
+                return(target == android.subsectHost());
+        } else {
+            return(false);
+        }
+    }
+
 
 angular.module("menuApp", ['ngRoute'])
 
@@ -48,18 +69,6 @@ angular.module("menuApp", ['ngRoute'])
     }
 
 
-    function isLocal(){
-  
-        if (typeof android !== "undefined" &&
-            typeof android.removeSite === "function"){
-                var target = window.location.hostname + ":" + window.location.port
-                return(target == android.subsectHost());
-        } else {
-            return(false);
-        }
-    }
-
-
     function findall() {
  		getMenu(function(jobj){
 		 //  console.log("In getMenu");
@@ -74,7 +83,8 @@ angular.module("menuApp", ['ngRoute'])
 
     
     $scope.showitem = function(site){
-        return(site.id != -1 && site.permissions.charAt(2) == 'F');
+        return(site.id != -1 && 
+        (site.permissions.charAt(2) == 'F' || loggedIn()));
     }
 
     $scope.showremove = function(){
@@ -83,7 +93,9 @@ angular.module("menuApp", ['ngRoute'])
 
 
 	$scope.newurl = function(site){
+	  if (!isLocal()) {
 		location.assign(site.href);
+	  }
 	}
 
 
@@ -102,7 +114,13 @@ angular.module("menuApp", ['ngRoute'])
 	}
 	
 	$scope.toLogin = function() {
-	    $location.path("/login");
+	    $location.path("/login/back");
+	}
+	
+	
+	$scope.Logout = function() {
+	    deleteCookie(SUB_GLB.passtag, location.host.split(".")[0]);
+	    console.log("logged out");
 	}
 	
 	
@@ -127,10 +145,13 @@ angular.module("menuApp", ['ngRoute'])
 
 	function manageLogin(target, loc){	
 
-		if (!loggedIn()) {
+		if (loggedIn()) {
 	//		loc.path("/" + target);
-			$scope.$apply();
-		} 
+	//		$scope.$apply();
+	console.log("I am loggedIn");
+		} else {
+		    console.log("Not loggedIn");
+		}
 	}
 	
 	
@@ -145,13 +166,21 @@ angular.module("menuApp", ['ngRoute'])
 	$scope.loginpass = function(passwd){
 		
 		if ($scope.passValid(passwd)){
+		    if (passwd.length < 1){
+			        alertmodal("Password blank");
+			        return;
+			    }
+			
+			var subdom = location.host.split(".")[0];
+			var shaObj = new jsSHA("SHA-1", "TEXT");
+			shaObj.update(subdom + passwd);
+			passwd = shaObj.getHash("HEX");
+			
     		testPassword(passwd, false, function(rcv){
 //        		console.log("testPassword return :" + rcv[0].db);
 
-				if (passwd.length < 1){
-			        alertmodal("Password blank");
-			    } else if (rcv[0].rtn && rcv[0].db == 1) {
-//					loggedIn = passwd;
+				if (rcv[0].rtn && rcv[0].db == 1) {
+                    setCookie(SUB_GLB.passtag, passwd, 7, subdom);
 					manageLogin($routeParams.target, $location);
 				} else  {
 					alertmodal("Incorrect Password");
@@ -326,7 +355,10 @@ angular.module("menuApp", ['ngRoute'])
 		$window.history.back();
 	}
 	
+	
 	setDirectory("restore");
+	
+	
 	
 }]);
 
