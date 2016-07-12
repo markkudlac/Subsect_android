@@ -1,32 +1,10 @@
 
- function loggedIn() {
-    	
-    	if (isLocal()) return true;
-    	
-    	var passwd = getPassword();
-    
-    	return(passwd && passwd.length == 40);
-    }
 
-
- function isLocal(){
-  
-        if (typeof android !== "undefined" &&
-            typeof android.removeSite === "function"){
-                var target = window.location.hostname + ":" + window.location.port
-                return(target == android.subsectHost());
-        } else {
-            return(false);
-        }
-    }
-
-
-angular.module("menuApp", ['ngRoute'])
+angular.module("Menu", ['ngRoute'])
 
 .config(function($routeProvider){
-    $routeProvider.when("/login/:target", {
+    $routeProvider.when("/login", {
         templateUrl: "login.html",
-		controller: "LoginController"
     }).when("/download", {
         templateUrl: "download.html",
 		controller: "DownloadController"
@@ -55,17 +33,11 @@ angular.module("menuApp", ['ngRoute'])
 .controller("MenuController", ['$scope', '$location',
     function($scope, $location){
 
+    $scope.sites = [];
+    
     function setTitle(){
         
-        var title = "";
-    
-        if (isLocal()) {
-            title = "Installed"
-            $("body").removeClass("bodynavpad");
-        } else {
-            title = (window.location.host.split("."))[0];
-        }
-        $(".settitle").text(title);
+        $(".settitle").text(window.location.host.split(".")[0]);
     }
 
 
@@ -87,40 +59,27 @@ angular.module("menuApp", ['ngRoute'])
         (site.permissions.charAt(2) == 'F' || loggedIn()));
     }
 
-    $scope.showremove = function(){
-        return(isLocal());
+
+    $scope.showlog = function(){
+        return(loggedIn());
     }
-
-
+    
+    
 	$scope.newurl = function(site){
-	  if (!isLocal()) {
 		location.assign(site.href);
-	  }
-	}
-
-
-	$scope.delSite = function(site) {
-		if (!isLocal()) {
-			alertmodal("Can remove site only from phone");
-		} else {
-		    alertmodal("Continue to remove : " + site.app, function() {
-
-			    if (android.removeSite(site.id)){
-				    site.id = -1;
-				    $scope.$apply();
-			    }
-		    });
-		}
 	}
 	
+	
 	$scope.toLogin = function() {
-	    $location.path("/login/back");
+	    $location.path("/login");
 	}
 	
 	
 	$scope.Logout = function() {
-	    deleteCookie(SUB_GLB.passtag, location.host.split(".")[0]);
-	    console.log("logged out");
+	    remotecall(null, "sys/Menu", "logout", 
+	    	null, function(){
+	        console.log("logged out");
+	    	});
 	}
 	
 	
@@ -135,78 +94,6 @@ angular.module("menuApp", ['ngRoute'])
 	
 	setTitle();
     findall();
-}])
-
-/**************************************/
-.controller("LoginController", ['$scope', '$routeParams', '$location', '$window',
-	function($scope, $routeParams, $location, $window){	
-		
-	$scope.passwdbuf=""
-
-	function manageLogin(target, loc){	
-
-		if (loggedIn()) {
-	//		loc.path("/" + target);
-	//		$scope.$apply();
-	console.log("I am loggedIn");
-		} else {
-		    console.log("Not loggedIn");
-		}
-	}
-	
-	
-    $scope.rtnpasswd = function(event){
-        if ( event.which == 13 ) { //Look for return
-            event.preventDefault();
-            $scope.loginpass($(event.target).val());
-         }
-    }  
-	
-	
-	$scope.loginpass = function(passwd){
-		
-		if ($scope.passValid(passwd)){
-		    if (passwd.length < 1){
-			        alertmodal("Password blank");
-			        return;
-			    }
-			
-			var subdom = location.host.split(".")[0];
-			var shaObj = new jsSHA("SHA-1", "TEXT");
-			shaObj.update(subdom + passwd);
-			passwd = shaObj.getHash("HEX");
-			
-    		testPassword(passwd, false, function(rcv){
-//        		console.log("testPassword return :" + rcv[0].db);
-
-				if (rcv[0].rtn && rcv[0].db == 1) {
-                    setCookie(SUB_GLB.passtag, passwd, 7, subdom);
-					manageLogin($routeParams.target, $location);
-				} else  {
-					alertmodal("Incorrect Password");
-				}
-	    	});
-		}
-	}
-	
-	
-	$scope.passValid = function(val){
-		
-		if (tmpstr = val.match(/\W/)) {
-			alertmodal("Password has only letters, numbers, or _. No : ' " + tmpstr +" '");
-			$scope.passwdbuf = $scope.passwdbuf.replace(/\W/g, '')
-			return false
-		} else {
-			return true
-		}
-	}
-	
-	
-	$scope.loginCancel = function(){
-		$window.history.back();
-	}
-	
-	manageLogin($routeParams.target, $location);
 }])
 
 /**************************************/

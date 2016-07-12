@@ -162,7 +162,7 @@ public class ConnectActivity extends Activity {
                     webarg.loadUrl("http://"+ Prefs.getNameServer(this) +"/bazaar");
                 }
             } else {
-                webarg.loadUrl("http://"+MainActivity.getHost()+"/sys/Menu/menu.html");
+                webarg.loadUrl("http://"+MainActivity.getHost()+"/sys/Menu/installed.html");
             }
     }
 

@@ -1,0 +1,117 @@
+{ 
+    "loggedIn" : function(){
+	    
+	    var passwd = getPassword();
+	    return(passwd && passwd.length == 40);
+	},
+	
+	"loadlogin" : function(modulenm, rtnfnc, subrtc){
+
+        var self = this;
+        
+		angular.module(modulenm)
+		.directive('login', ['$compile', '$location', '$window',
+		    function($compile, $location, $window) {
+		        return {
+		            restrict: 'E',
+					template: '<nav class="navbar navbar-default navbar-fixed-top">' +
+                	'<ul class="nav navbar-nav">' +
+                	'<li><a ng-click="loginCancel()" class="navbackbut">Back</a></li></ul></nav>'+
+                	'<div class="container"><div class="row" style="margin-top: 3em">'+		
+                	'<div class="col-xs-6 col-xs-offset-3"><div class="input-group">'+
+                	'<input ng-keypress="rtnpasswd($event)" ng-model="passwdbuf"'+
+                	    ' ng-change="passValid(passwdbuf)" type="password" class="form-control"'+
+                	    ' placeholder="Password"/><span class="input-group-btn">'+
+                	    '<button ng-click="loginpass(passwdbuf)" type="button"' +
+                		' class="btn btn-primary">Login</button></span>' +
+                		'</div></div></div></div>',
+                					
+					 link: function(scope, element, attrs) {
+
+						scope.passwdbuf=""
+
+                    	function manageLogin(){	
+                    
+                    console.log("Target is : " + attrs.target + "  Back : " + attrs.back);
+                    		if (self.loggedIn()) {
+                            	$location.replace();
+                            	$location.path(attrs.target)
+                            	scope.$apply();
+                    	
+                    		}
+                    	}
+                    	
+                    	
+                        scope.rtnpasswd = function(event){
+                            if ( event.which == 13 ) { //Look for return
+                                event.preventDefault();
+                                scope.loginpass($(event.target).val());
+                             }
+                        }  
+                    	
+                    	
+                    	scope.loginpass = function(passwd){
+                    		
+                    		if (scope.passValid(passwd)){
+                    		    if (passwd.length < 1){
+                    			        alertmodal("Password blank");
+                    			        return;
+                    			    }
+                    			
+                    			var subdom = location.host.split(".")[0];
+                    			var shaObj = new jsSHA("SHA-1", "TEXT");
+                    			shaObj.update(subdom + passwd);
+                    			passwd = shaObj.getHash("HEX");
+                    			
+                        		testPassword(passwd, false, function(rcv){
+                    //        		console.log("testPassword return :" + rcv[0].db);
+                    
+                    				if (rcv[0].rtn && rcv[0].db == 1) {
+                                        setCookie(SUB_GLB.passtag, passwd, 7, subdom);
+                    					manageLogin();
+                    				} else  {
+                    					alertmodal("Incorrect Password");
+                    				}
+                    	    	});
+                    		}
+                    	}
+                    	
+                    	
+                    	scope.passValid = function(val){
+                    		
+                    		if (tmpstr = val.match(/\W/)) {
+                    			alertmodal("Password has only letters, numbers, or _. No : ' " + tmpstr +" '");
+                    			scope.passwdbuf = scope.passwdbuf.replace(/\W/g, '')
+                    			return false
+                    		} else {
+                    			return true
+                    		}
+                    	}
+                    	
+                    	
+                    	scope.loginCancel = function(){
+                        	$location.replace();
+                        	$location.path(attrs.back);
+                    	}
+                    	
+                    	manageLogin();
+					 }
+		        }
+		    }
+		        
+		]);
+		
+		if (rtnfnc !== null) rtnfnc(self.loggedIn);
+	},
+	
+	"logout" : function(args, rtnfnc, subrtc){
+	    
+	    deleteCookie(SUB_GLB.passtag, location.host.split(".")[0]);
+	    
+	    if (rtnfnc !== null) rtnfnc();
+	},
+	
+	
+	
+	
+}

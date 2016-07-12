@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html ng-app="Installed">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+
+    <title>Installed</title>
+
+    <script src="http://www.subsect.net/lib/dev_subsect.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.1.0/sha1.js"></script>
+    <script src="js/installed.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/menu.css">
+</head>
+
+<body ng-controller="InstalledController">
+	
+    <div class="container-fluid">
+        <div class="row center">
+            <h2>Installed</h2>
+        </div>
+    
+        <div class="row">
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                    <tr>
+                        <th>Site</th>
+                        <th>Icon</th>
+                        <th colspan="1"></th>
+                    </tr>
+                    </thead>
+            
+                    <tbody>
+                    <tr ng-repeat="site in sites" ng-show="showitem(site)"
+                            class="pointeron">
+                        <td class="bigtext">{{site.title}}</td>
+                        <td><img ng-src="{{site.icon}}"></td>
+                        <td><button class="btn btn-sm btn-primary"
+                                    ng-click="delSite(site)">Remove</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

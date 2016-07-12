@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="menuApp">
+<html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
 
@@ -15,7 +15,7 @@
 <body class="bodynavpad">
 <script type="text/ng-template" id="main.html">
 
-	<nav ng-show="!showremove()" class="navbar navbar-default navbar-fixed-top">
+	<nav class="navbar navbar-default navbar-fixed-top">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" 
@@ -34,13 +34,13 @@
                     <a class="dropdown-toggle" data-toggle="dropdown" 
 						role="button">Go To <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a ng-click="toLogin()">Login</a></li>
-                        <li class="divider"></li>
-                        <li><a ng-click="Logout()">Logout</a></li>
-                        <li class="divider"></li>
-                        <li><a ng-click="toDownload()">Download</a></li>
-                        <li class="divider"></li>
-                        <li><a ng-click="toUpload()">Upload</a></li>
+                        <li><a ng-show="!showlog()" ng-click="toLogin()">Login</a></li>
+                        
+                        <li><a ng-show="showlog()" ng-click="Logout()">Logout</a></li>
+                        <li class="divider" ng-show="showlog()"></li>
+                        <li><a ng-click="toDownload()" ng-show="showlog()">Download</a></li>
+                        <li class="divider" ng-show="showlog()"></li>
+                        <li><a ng-click="toUpload()" ng-show="showlog()">Upload</a></li>
                     </ul>
                 </li>
             </ul>
@@ -59,7 +59,6 @@
                     <tr>
                         <th>Site</th>
                         <th>Icon</th>
-                        <th ng-show="showremove()" colspan="1"></th>
                     </tr>
                     </thead>
             
@@ -68,8 +67,6 @@
                             class="pointeron">
                         <td class="bigtext">{{site.title}}</td>
                         <td><img ng-src="{{site.icon}}"></td>
-                        <td ng-show="showremove()"><button class="btn btn-sm btn-primary"
-                                    ng-click="delSite(site)">Remove</button></td>
                     </tr>
                     </tbody>
                 </table>
@@ -78,29 +75,12 @@
     </div>
 </script>
 
+
 <!-- LOGIN -->		
     <script type="text/ng-template" id="login.html">
-	<nav class="navbar navbar-default navbar-fixed-top">
-		<ul class="nav navbar-nav">
-			<li><a ng-click="loginCancel()" class="navbackbut">Back</a></li>
-		</ul>
-	</nav>
-	<div class="container">
-	    <div class="row"  style="margin-top: 3em">		
-	       <div class="col-xs-6 col-xs-offset-3">
-	            <div class="input-group">
-	                <input ng-keypress="rtnpasswd($event)" ng-model="passwdbuf"
-							ng-change="passValid(passwdbuf)" type="text" class="form-control"
-	                        placeholder="Password"/>
-					<span class="input-group-btn">
-	                 <button ng-click="loginpass(passwdbuf)" type="button" 
-					 	class="btn btn-primary">Login</button>
-	            	</span>
-				</div><!-- input group -->
-			</div>
-	    </div><!-- row -->
-	</div> <!-- container -->
+    <login target="/" back="/"></login>
     </script>
+    
 
 <!-- DOWNLOAD FROM BACKUP -->		
     <script type="text/ng-template" id="download.html">
@@ -159,5 +139,19 @@
     </script>
 <ng-view> </ng-view>
 
+<script>
+
+    var loggedIn;
+    
+	$(document).ready(function(){
+	
+    	remotecall(null, "sys/Menu", "loadlogin", 
+	    	"Menu", function(loginfunc){
+	    	    loggedIn = loginfunc;
+				angular.bootstrap(document, ['Menu']);
+	    })
+	})
+</script>
+    
 </body>
 </html>

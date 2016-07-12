@@ -149,7 +149,7 @@ public class SimpleWebServer extends NanoHTTPD {
 
                     res = new Response(Response.Status.OK, "text/html",
                         "<html><head></head><body><div>LOGIN REQUIRED</div><script>" +
-                        "window.location.hash=\"login/"+ pkgName +"\"; " +   //Must set anchor 1st
+                        "window.location.hash=\"login\"; " +   //Must set anchor 1st
                         "window.location.pathname=\"/pkg/Menu\"; " +
                         "</script></body></html>");
                 }
