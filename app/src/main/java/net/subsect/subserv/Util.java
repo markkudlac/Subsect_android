@@ -834,6 +834,7 @@ public class Util {
         return true;
     }
 
+
     public static String getSha1Hex(String clearString)
     {
         try
@@ -855,24 +856,34 @@ public class Util {
         }
     }
 
+
     public static boolean testPerm(int operation, String perm, String passwd, Context context){
 
         perm = perm.trim();
-        System.out.println("testPerm perm : " + perm + "  Passwd : " + passwd);
+
         int num = Integer.parseInt(perm.split("", 5)[PERM_USER+1], 16);
 
-        System.out.println("testPerm num 1 : " + num);
         if ((num & operation) > 0) {
             return true;
         }
 
-        System.out.println("testPerm split : " + perm.split("", 5)[PERM_SUPER+1]);
+   //     System.out.println("testPerm split : " + perm.split("", 5)[PERM_SUPER+1]);
         num = Integer.parseInt(perm.split("", 5)[PERM_SUPER+1], 16);
 
-        System.out.println("testPerm num 2 : " + num);
         return (passwd.equals(Prefs.getPassword(context)) &&
                 (num & operation) > 0);
 
+    }
 
+
+    public static String generateToken(Context context){
+
+        String toke = Prefs.getToken(context);
+
+        toke = toke + Prefs.getPassword(context) + getTimeNow();
+        toke = getSha1Hex(toke);
+        Prefs.setToken(context, toke);
+        System.out.println("Token generated : " + toke);
+        return(toke);
     }
 }

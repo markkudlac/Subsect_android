@@ -36,11 +36,7 @@ public class HttpStat extends AsyncTask<String, Void, String> {
             String xurl = API_PATH + xparam[0];
             System.out.println("HttpCom xurl : "+xurl);
 
-            if (Prefs.useHeroku(mainact)) {
-                url = new URL(HTTP_PROT, SOURCE_ADDRESS, xurl);
-            } else {
-                url = new URL(HTTP_PROT, DEMO_ADDRESS, DEMO_PORT, xurl);
-            }
+            url = new URL(HTTP_PROT, SOURCE_ADDRESS, xurl);
 
             con = (HttpURLConnection) url.openConnection();
 
@@ -83,11 +79,14 @@ public class HttpStat extends AsyncTask<String, Void, String> {
                     if (action.equals("reset")) {
                         System.out.println("RESET server");
                         mainact.loadServer(mainact);
-                    } else {
+                    }
+                    /*
+                    else {
                         if (ConnectActivity.getConAct() != null){
                             ConnectActivity.getConAct().loadConnect(action);
                         }
                     }
+                    */
                 }
             }
             catch(JSONException ex) {

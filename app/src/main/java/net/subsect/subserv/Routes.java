@@ -186,7 +186,7 @@ public class Routes {
             uri = trimUri(uri, API_GETTOKEN);
 
             JSONArray jray = Util.JSONdbReturn(true, 1, uri.split("/")[0]);
-            msg = Util.stringJA(Util.JSONxtraReturn(jray, "token", Prefs.getToken(context)));
+            msg = Util.stringJA(Util.JSONxtraReturn(jray, "token", Util.generateToken(context)));
 
         } else if (uri.indexOf(API_SETUPLOADDIR) == 0){
             String rtnfunc, uploaddir;

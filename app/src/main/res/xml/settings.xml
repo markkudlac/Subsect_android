@@ -8,7 +8,6 @@
         android:entryValues="@array/uploadto"
         android:defaultValue="@string/installdir"
         android:summary="%s" />
--->
 
     <EditTextPreference
         android:key="@string/hostname"
@@ -17,32 +16,45 @@
         android:summary="%s" />
 
     <EditTextPreference
-        android:key="@string/password"
+        android:key="@string/passdisp"
         android:title="@string/password"
         android:inputType="textPassword"
         android:defaultValue=""
          />
 
     <EditTextPreference
+        android:key="@string/email"
+        android:title="@string/email"
+        android:inputType="textEmailAddress"
+        android:defaultValue=""
+        android:summary="%s" />
+
+
+    <EditTextPreference
         android:key="@string/token"
         android:title="@string/token"
         android:defaultValue="6"
         android:summary="%s" />
+-->
+
+    <CheckBoxPreference
+        android:key="@string/connectserv"
+        android:title="@string/connectserv"
+        android:defaultValue="true"/>
+
 
     <EditTextPreference
         android:key="@string/localnameserv"
         android:title="@string/localnameserv"
+        android:defaultValue="192.168.1.xxx:3000"
         android:summary="%s" />
 
-    <CheckBoxPreference
-        android:key="@string/heroku"
-        android:title="@string/heroku"
-        android:defaultValue="false"/>
-
+    <!--
     <CheckBoxPreference
         android:key="@string/pollserver"
         android:title="@string/pollserver"
         android:defaultValue="false"/>
+-->
 
 </PreferenceScreen>
 

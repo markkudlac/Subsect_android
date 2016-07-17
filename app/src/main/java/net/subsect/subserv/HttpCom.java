@@ -47,7 +47,7 @@ public class HttpCom extends AsyncTask<String, Integer, String>{
             String xurl = API_PATH + xparam[0];
             System.out.println("HttpCom xurl : "+xurl);
 
-            if (Prefs.useHeroku(conact)) {
+            if (Prefs.connectSubsect(conact)) {
                 url = new URL(HTTP_PROT, SOURCE_ADDRESS, xurl);
             } else {
                 String[] hostaddr = Prefs.getNameServer(conact).split(":");

@@ -10,9 +10,21 @@ public interface Const extends BaseColumns {
     public static final int BASE_BLOCKSIZE = 65536;
 
     public static final String SOURCE_ADDRESS = "www.subsect.net";
-    public static final String DEMO_ADDRESS = "192.168.1.15";
-    public static final int DEMO_PORT = 3000;
+   // public static final String ALT_ADDRESS = "192.168.1.xxx";
+   //public static final int ALT_PORT = 3000;
+    public static final int INTERNAL_PORT = 8080;
+    public static final String DEMO_NAME = "demo";
+    public static final String HOSTAVAILABLE = "hostavailable";
+    public static final String HOSTSUBMIT = "hostsubmit";
+    public static final String SERVEREMAIL = "serveremail";
+    public static final String BAZAAR_NAME = "bazaar";
+    public static final String INSTALLED_PATH = "/sys/Menu/installed.html";
     public static final int POLLSERVER_TIME = 90000;
+    public static final String PREF_PASSWORD = "Password";
+    public static final String PREF_HOSTNAME = "hostname";
+    public static final String PREF_PASSLENGTH = "Passlength";
+    public static final String PREF_TOKEN = "Token";
+    public static final int HASH_LENGTH = 40;
 
     public static final String HTTP_PROT = "http";
     public static final String SYS_DIR = "sys";

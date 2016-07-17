@@ -36,13 +36,9 @@ public class ConnectActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             int value = extras.getInt(conact.getString(R.string.webviewctr));
-            System.out.println("In Bundle received : "+value);
+      //      System.out.println("In Bundle received : "+value);
 
-            if (value == R.string.connect) {
-                popConnectDialogue();
-            } else {
-                startBazaar(value);
-            }
+            startBazaar(value);
         } else {
             System.out.println("In Bundle failed");
         }
@@ -99,6 +95,7 @@ public class ConnectActivity extends Activity {
     }
 
 
+    /*
     public void startConnect(String connectto) {
 
         System.out.println("Load "+connectto+".subsect.net");
@@ -130,12 +127,10 @@ public class ConnectActivity extends Activity {
 
     public static void loadConnect(String connectto){
 
-        System.out.println("In LoadConnect");
-
         webarg.loadUrl("http://" + connectto + ".subsect.net/pkg/Menu");
     }
 
-
+*/
     public static ConnectActivity getConAct(){
 
         return conact;
@@ -155,18 +150,18 @@ public class ConnectActivity extends Activity {
             webarg.addJavascriptInterface(this.new JsInterface(), "android");
 
             if (value == R.string.bazaar) {
-                if (Prefs.useHeroku(this)) {
-                    webarg.loadUrl("http://www.subsect.net/bazaar");
+                if (Prefs.connectSubsect(this)) {
+                    webarg.loadUrl("http://" + SOURCE_ADDRESS + "/" + BAZAAR_NAME);
                 } else {
                     System.out.println("Use Bazaar local");
-                    webarg.loadUrl("http://"+ Prefs.getNameServer(this) +"/bazaar");
+                    webarg.loadUrl("http://"+ Prefs.getNameServer(this) +"/" + BAZAAR_NAME);
                 }
             } else {
-                webarg.loadUrl("http://"+MainActivity.getHost()+"/sys/Menu/installed.html");
+                webarg.loadUrl("http://"+MainActivity.getHost() + INSTALLED_PATH);
             }
     }
 
-
+/*
     private void popConnectDialogue(){
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -194,7 +189,7 @@ public class ConnectActivity extends Activity {
 
         alert.show();
     }
-
+*/
 
     public static void updateProg(int percent){
         webarg.loadUrl("javascript:updateProg("+percent+")");

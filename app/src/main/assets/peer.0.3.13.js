@@ -1393,10 +1393,10 @@ Socket.prototype.send = function(data) {
 
   var message = JSON.stringify(data);
   if (this._wsOpen()) {
-  messout("In Socket.send SOCKET 2 : " + data.type);
+ // messout("In Socket.send SOCKET 2 : " + data.type);
     this._socket.send(message);
   } else {
-  messout("In Socket.send HTTP 3 : " + data.type);
+ // messout("In Socket.send HTTP 3 : " + data.type);
     var http = new XMLHttpRequest();
     var url = this._httpUrl + '/' + data.type.toLowerCase();
     http.open('post', url, true);

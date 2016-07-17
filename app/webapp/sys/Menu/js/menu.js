@@ -128,7 +128,7 @@ angular.module("Menu", ['ngRoute'])
 			
     		 },
     	error: function(err,texts){
-			alertmodal("Load error : " + texts);
+			alertmodal("Load error or no backup generated: " + texts);
     		 }
         });
 	}

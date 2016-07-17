@@ -96,7 +96,7 @@ function setPeer(customConfig){
 	  messout('My  subHostname is: ' + getParam("subhost"));
 
       timer = setInterval(function(){
-        messout("sent PING");
+       // messout("sent PING");
 			peer.socket.send({type: "PING", payload: {}});}, cycletime);
 
 	  $.getJSON("http://"+getParam("subnamesrv")+"/api/setrtcid/"+ getParam("subhost") +"/"+id,

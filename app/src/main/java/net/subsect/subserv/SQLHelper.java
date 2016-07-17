@@ -245,10 +245,10 @@ public class SQLHelper extends SQLiteOpenHelper {
                 String tmphref = jray.getJSONObject(i).getString(FLD_HREF);
                 String xport;
 
-                if (Prefs.useHeroku(context)) {
+                if (Prefs.connectSubsect(context)) {
                     xport = "";
                 } else {
-                    xport = ":" + DEMO_PORT;
+                    xport = ":" + Prefs.getNameServer(context).split(":")[1];
                 }
                 String rmt = "http://" + Prefs.getHostname(context) + ".subsect.net" + xport + "/pkg/";
                 tmphref = tmphref.replace(SUB_HREF_REMOTE, rmt);

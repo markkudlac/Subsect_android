@@ -12,6 +12,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import java.util.prefs.Preferences;
 
@@ -20,6 +21,10 @@ import static net.subsect.subserv.Const.*;
 
 public class Prefs extends PreferenceFragment implements OnSharedPreferenceChangeListener{
 
+
+    private static String newhost = "";
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,11 +32,8 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
         addPreferencesFromResource(R.xml.settings);
 
         setSummary(getPreferenceScreen().getSharedPreferences(),
-                this.getString(R.string.hostname));
-        setSummary(getPreferenceScreen().getSharedPreferences(),
                 this.getString(R.string.localnameserv));
-        setSummary(getPreferenceScreen().getSharedPreferences(),
-                this.getString(R.string.token));
+
     }
 
     @Override
@@ -57,27 +59,12 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
     private void setSummary(SharedPreferences sharedPreferences, String key) {
 
         //   System.out.println("In Pref 2 changd : " +key);
-        if (key.equals(this.getString(R.string.hostname)) ||
-                key.equals(this.getString(R.string.token))
-            //     key.equals(this.getString(R.string.password))
-                ) {
-            Preference pref = findPreference(key);
-            pref.setSummary(sharedPreferences.getString(key, ""));
-        } else if (key.equals(this.getString(R.string.password))) {
-         String passwd;
-
-            passwd = sharedPreferences.getString(key,"");
-
-            if (passwd.length() < 40 ) {
-//                System.out.println("Passwd less than 40 host : " + sharedPreferences.getString("Hostname",""));
-                passwd = Util.getSha1Hex(sharedPreferences.getString("Hostname","") + passwd);
-                sharedPreferences.edit().putString(key,passwd).commit();
-            }
-        } else if (key.equals(this.getString(R.string.localnameserv))){
+        if (key.equals(this.getString(R.string.localnameserv))){
                 Preference pref = findPreference(key);
-                pref.setSummary(sharedPreferences.getString(key,
-                        DEMO_ADDRESS + ":" + DEMO_PORT));
-            }
+                pref.setSummary(sharedPreferences.getString(key,""));
+        }
+
+
     }
 
 
@@ -85,8 +72,16 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
         return( PreferenceManager
                 .getDefaultSharedPreferences(context).getString(
-                        context.getString(R.string.hostname), context.getString(R.string.defaulthost))
+                        PREF_HOSTNAME, context.getString(R.string.defaulthost))
         );
+    }
+
+
+    public static void setHostName(Context context, String hostnm) {
+
+        PreferenceManager.getDefaultSharedPreferences(context).
+                edit().putString(PREF_HOSTNAME, hostnm).commit();
+
     }
 
 
@@ -94,49 +89,80 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
         return( PreferenceManager
                 .getDefaultSharedPreferences(context).getString(
-                        context.getString(R.string.password), "")
+                        PREF_PASSWORD, "")
         );
     }
+
+
+    public static void setPassword(Context context, String passwd) {
+
+        PreferenceManager.getDefaultSharedPreferences(context).
+                edit().putString(PREF_PASSWORD, passwd).commit();
+
+    }
+
+
+    public static int getPassLength(Context context) {
+
+        return( PreferenceManager
+                .getDefaultSharedPreferences(context).getInt(
+                        PREF_PASSLENGTH, 0)
+        );
+    }
+
+    public static void setPassLength(Context context, int passlength) {
+
+        PreferenceManager.getDefaultSharedPreferences(context).
+                edit().putInt(PREF_PASSLENGTH, passlength).commit();
+
+    }
+
 
 
     public static String getToken(Context context) {
 
         return( PreferenceManager
                 .getDefaultSharedPreferences(context).getString(
-                        context.getString(R.string.token), "6")
+                        PREF_TOKEN, "6")
         );
     }
 
 
-    public static boolean useHeroku(Context context){
+    public static void setToken(Context context, String token) {
+
+        PreferenceManager.getDefaultSharedPreferences(context).
+                edit().putString(PREF_TOKEN, token).commit();
+
+    }
+
+
+
+    public static boolean connectSubsect(Context context){
 
         return(PreferenceManager
                 .getDefaultSharedPreferences(context).getBoolean(
-                        context.getString(R.string.heroku), false)
+                        context.getString(R.string.connectserv), false)
                 );
     }
 
 
     public static boolean pollServer(Context context){
 
-        return(PreferenceManager
-                .getDefaultSharedPreferences(context).getBoolean(
-                        context.getString(R.string.pollserver), false)
-        );
+        return(getHostname(context).equals(DEMO_NAME));
     }
-
 
 
     public static String getNameServer(Context context) {
 
-        if (useHeroku(context)) {
+        if (connectSubsect(context)) {
             return(context.getString(R.string.defRemoteServer));
         } else {
             return (PreferenceManager
                     .getDefaultSharedPreferences(context).getString(
                             context.getString(R.string.localnameserv),
-                            DEMO_ADDRESS + ":" + DEMO_PORT)
+                            "")
             );
         }
     }
+
 }
