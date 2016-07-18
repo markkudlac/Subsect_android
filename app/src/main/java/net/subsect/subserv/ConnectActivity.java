@@ -199,23 +199,25 @@ public class ConnectActivity extends Activity {
     private final class JsInterface {
 
         @JavascriptInterface
-        public void install(int xid, int filesize){
+        public void install(int xid, int filesize) {
 
-            new HttpCom(conact, filesize).execute("serve/"+xid);
+            new HttpCom(conact, filesize).execute("serve/" + xid);
         }
 
 
         @JavascriptInterface
         public boolean removeSite(int siteid) {
 
-            return(SQLManager.getSQLHelper(DB_SUBSERV).removeSite(siteid));
+            return (SQLManager.getSQLHelper(DB_SUBSERV).removeSite(siteid));
         }
+
 
         @JavascriptInterface
         public String subsectHost() {
 
-            return(MainActivity.getHost());
+            return (MainActivity.getHost());
         }
+
     }
 
 }

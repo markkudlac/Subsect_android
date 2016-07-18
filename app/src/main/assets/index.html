@@ -28,6 +28,7 @@ var splitsz = 65536 * 2;
 
 	$(document).ready(function(){
 		messout("localhost : " + getParam("fullhost"));
+	//	messout("passwd : " + getParam("passwd"));
 		initall();
 		peerServerOn();
 	})
@@ -99,7 +100,8 @@ function setPeer(customConfig){
        // messout("sent PING");
 			peer.socket.send({type: "PING", payload: {}});}, cycletime);
 
-	  $.getJSON("http://"+getParam("subnamesrv")+"/api/setrtcid/"+ getParam("subhost") +"/"+id,
+	  $.getJSON("http://"+getParam("subnamesrv")+"/api/setrtcid/"+ getParam("subhost") +
+	            "/" + getParam("passwd") + "/" + id,
 	    function(rtnobj){
 	    messout("server rtn : " + rtnobj.rtn);
         clearReStart();
@@ -327,7 +329,8 @@ function getParam(val) {
 
 function serverOffline(){
 
-    $.getJSON("http://"+getParam("subnamesrv")+"/api/offline/"+ getParam("subhost"),
+    $.getJSON("http://"+getParam("subnamesrv")+"/api/offline/"+ getParam("subhost") +
+            "/" + getParam("passwd"),
 	    function(rtnobj){
 	    messout("Offline rtn : " + rtnobj.rtn);
 	  })

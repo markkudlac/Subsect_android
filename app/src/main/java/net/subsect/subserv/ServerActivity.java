@@ -58,8 +58,10 @@ public class ServerActivity extends Activity {
 
                 if (validate()) {
 
+                    String opasswd = Prefs.getPassword(serveract);
+
                     if (passwordText.getText().toString().contains("-")) {
-                        passHash = Prefs.getPassword(serveract);
+                        passHash = opasswd;
                     } else {
                         passHash = Util.getSha1Hex(hostText.getText().toString() +
                                 passwordText.getText().toString());
@@ -72,11 +74,18 @@ public class ServerActivity extends Activity {
                     String deviceId = Settings.Secure.getString(serveract.getContentResolver(),
                             Settings.Secure.ANDROID_ID);
 
+                    if (opasswd.length() < HASH_LENGTH &&
+                            Prefs.getHostname(serveract).length() == 0){
+
+                        opasswd = passHash;
+                        System.out.println("Set opasswd : " + opasswd);
+                    }
+
                     //   System.out.println("Submit Button : " + passwd);
                     new HttpSetup(HOSTSUBMIT).
                             execute(HOSTSUBMIT + "/" + hostText.getText().toString() +
                                     "/" + passHash + "?contact=" + emailText.getText().toString() +
-                                    "&deviceid=" + deviceId);
+                                    "&deviceid=" + deviceId + "&opasswd=" + opasswd);
                 }
             }
 

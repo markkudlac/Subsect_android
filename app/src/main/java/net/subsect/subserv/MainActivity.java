@@ -60,8 +60,11 @@ public class MainActivity extends Activity {
 
     public static void loadServer(MainActivity xthis){
 
+        System.out.println("Password passed  : " + Prefs.getPassword(globalactivity));
+
         serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(xthis) +
-                "&subnamesrv=" + Prefs.getNameServer(xthis) + "&fullhost="+getHost());
+                "&subnamesrv=" + Prefs.getNameServer(xthis) + "&fullhost="+getHost() +
+        "&passwd=" + Prefs.getPassword(globalactivity));
     }
 
 
@@ -233,7 +236,8 @@ public class MainActivity extends Activity {
 
                         //This only polls subsect.net server
                         Thread.sleep(POLLSERVER_TIME);
-                        new HttpStat(mainact).execute("control/"+Prefs.getHostname(mainact));
+                        new HttpStat(mainact).execute("control/"+Prefs.getHostname(mainact) +
+                                "/" + Prefs.getPassword(mainact));
                         ++cnt;
                     }
                 } catch (Exception ex) {

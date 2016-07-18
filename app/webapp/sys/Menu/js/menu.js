@@ -97,8 +97,8 @@ angular.module("Menu", ['ngRoute'])
 }])
 
 /**************************************/
-.controller("DownloadController", ['$scope', 'utility', '$location', '$window', '$sce',
-	function($scope, utility, $location, $window, $sce){	
+.controller("DownloadController", ['$scope', 'utility', '$location', '$sce',
+	function($scope, utility, $location, $sce){
 	
 	$scope.dirfiles = [];
 	
@@ -137,7 +137,8 @@ angular.module("Menu", ['ngRoute'])
 	
 	$scope.downloadCancel = function(){
 		
-		$window.history.back();
+		$location.replace();
+        $location.path('/');
 	}
 	
 	
@@ -148,8 +149,8 @@ angular.module("Menu", ['ngRoute'])
 }])
 
 /**************************************/
-.controller("UploadController", ['$scope', 'utility', '$location', '$window', '$sce',
-	function($scope, utility, $location, $window, $sce){	
+.controller("UploadController", ['$scope', 'utility', '$location', '$sce',
+	function($scope, utility, $location, $sce){
 	
 	$scope.open = {directory: "/", dirfiles: []};
 	$scope.ipadd = null;
@@ -239,7 +240,8 @@ angular.module("Menu", ['ngRoute'])
 	
 	$scope.uploadCancel = function(){
 		
-		$window.history.back();
+		$location.replace();
+        $location.path('/');
 	}
 	
 	
