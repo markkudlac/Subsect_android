@@ -3,13 +3,70 @@
 <html>
 
 <head>
-   <script src="file:///android_asset/peer.0.3.13.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="file:///android_asset/peer.0.3.13.js"></script>
     <script src="file:///android_asset/jquery-2.1.3.min.js"></script>
+    <script src="file:///android_asset/bootstrap_3.3.6.min.js"></script>
+    <link rel="stylesheet" href="file:///android_asset/bootstrap_3.3.6.min.css">
 </head>
 
-<body>
-    <input id="servbut" type="button" value="Start Server" />
-    <textarea id="messout" rows="20" style="width: 100%; margin-top: 10px"></textarea>
+<style>
+    .logbox {
+    overflow-y: scroll;
+    height: calc(100vh - 6em);
+    padding: 3px 3px;
+    border: 2px solid gray;
+    }
+
+</style>
+
+<body style="height: 100%;">
+
+    <div class="container-fluid">
+        <div class="row" style="margin-top: .5em">
+            <div class="col-xs-3 col-sm-3 col-md-offset-1 col-md-3">
+                <button id="serverstart" type="button" class="btn btn-primary">Start</button>
+                <button id="serverstop" type="button" class="btn btn-primary hidden">Stop</button>
+            </div>
+
+            <div class="col-xs-5 col-sm-5 col-md-4">
+                <span id="datetime" style="font-size: 120%; font-weight: bold;"></span>
+            </div>
+
+            <div class="col-xs-offset-1 col-xs-2 col-sm-offset-1 col-sm-2 col-md-offset-1 col-md-2">
+                    <button id="statsbut" type="button" class="btn btn-primary hidden">Stats</button>
+                    <button id="logbut" type="button" class="btn btn-primary">Log</button>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: .5em">
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+                <div id="logoutput" class="logbox hidden"></div>
+
+                <div id="statsoutput" class="row" style="margin-top: 2em">
+
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-xs-9 col-sm-9 control-label">Current Contections</label>
+                            <div class="col-xs-2 col-sm-2">
+                                <div id="connectcnt" class="form-control-static">0</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-xs-9 col-sm-9 control-label">Total Contections</label>
+                            <div class="col-xs-2 col-sm-2">
+                                <div id="connecttot" class="form-control-static">0</div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
 
@@ -18,6 +75,8 @@ var shutdown = false;
 var blobbuff = {};
 
 var connectcnt = 0;
+var connecttot = 0;
+
 var timer = null;
 var cycletime = 60000 * 4;
 
@@ -93,7 +152,8 @@ function setPeer(customConfig){
 
 	peer.on('open', function(id) {
 
-	  messout('My peer ID is: ' + id + " Name server : "+ getParam("subnamesrv"));
+	  messout('My peer ID is: ' + id);
+	  messout(" Name server : "+ getParam("subnamesrv"));
 	  messout('My  subHostname is: ' + getParam("subhost"));
 
       timer = setInterval(function(){
@@ -105,7 +165,7 @@ function setPeer(customConfig){
 	    function(rtnobj){
 	    messout("server rtn : " + rtnobj.rtn);
         clearReStart();
-	    $("#servbut").val("Close Server")
+        serverButtonStop()
 	  })
 	  .fail(function(xhr, text){
 	    messout("server call failed : " + text);
@@ -124,17 +184,17 @@ function setPeer(customConfig){
 	peer.on('connection', function(conn) {
 
 	  messout('Data connection started');
-	  ++connectcnt;
+
 
 		conn.on('open', function() {
 		  // Receive messages
-
+            updateStats(1);
 		     messout('Data Connection openned cnt : ' + connectcnt);
 		});
 
         conn.on('close', function() {
 		  // Receive messages
-		  --connectcnt;
+		  updateStats(-1);
 		     messout('Data Connection closeded cnt : ' + connectcnt);
 		});
 
@@ -232,27 +292,91 @@ return(getParam("fullhost") + '/' + file);
 }
 
 
-function messout(mess){
+function messout(message){
 
-	var xstr;
-
-	xstr = $("#messout").val()
-	$("#messout").val(xstr+'\\\n'+mess)
-	$("textarea").scrollTop(99999)
+	$("#logoutput").append("</br>"+message).scrollTop(99999);
 
 }
 
 
 function initall() {
-	$('#servbut').on("click",function(){
-		if ($("#servbut").val().indexOf("St") == 0){
-		    clearReStart();
-			peerStartUp();
-		} else {
-			peerShutDown();
-		}
+
+    $('#serverstart').on("click",function(){
+        clearReStart();
+		peerStartUp();
 	})
 
+    $('#serverstop').on("click",function(){
+		peerShutDown();
+	})
+
+    $('#logbut').on("click",function(){
+           $('#logbut').addClass("hidden");
+           $('#statsbut').removeClass("hidden");
+
+           $('#logoutput').removeClass("hidden");
+           $('#statsoutput').addClass("hidden");
+     })
+
+     $('#statsbut').on("click",function(){
+            $('#statsbut').addClass("hidden");
+           $('#logbut').removeClass("hidden");
+
+           $('#logoutput').addClass("hidden");
+           $('#statsoutput').removeClass("hidden");
+
+     })
+}
+
+
+function setStartDateTime(){
+
+    var dt = new Date();
+
+	var dtstr = leadzero(dt.getFullYear()) + "/" + leadzero(dt.getMonth() + 1) + "/" +
+	        leadzero(dt.getDate()) + " " + leadzero(dt.getHours())+ ":" +
+	        leadzero(dt.getMinutes());
+
+	$("#datetime").text(dtstr);
+}
+
+
+
+function leadzero(dt){
+
+    return( ("0" + dt).slice(-2) );
+}
+
+
+
+function clearStartDateTime() {
+
+    $("#datetime").text("Server Off");
+}
+
+
+function serverButtonStop() {
+    $('#serverstart').addClass('hidden');
+    $('#serverstop').removeClass('hidden');
+    setStartDateTime();
+}
+
+
+function serverButtonStart() {
+    $('#serverstart').removeClass('hidden');
+    $('#serverstop').addClass('hidden');
+    clearStartDateTime();
+}
+
+
+function updateStats(cntchng) {
+
+    connectcnt = connectcnt + cntchng;
+
+    if (cntchng > 0 ) { ++connecttot; }
+
+    $("#connectcnt").text(connectcnt);
+    $("#connecttot").text(connecttot);
 }
 
 
@@ -278,7 +402,8 @@ function peerShutDown(){
         peer.destroy();
     }
     peer = null;
-    $("#servbut").val("Start Server");
+
+    serverButtonStart();
 }
 
 

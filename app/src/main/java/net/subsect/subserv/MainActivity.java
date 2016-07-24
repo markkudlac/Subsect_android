@@ -55,6 +55,7 @@ public class MainActivity extends Activity {
         loadServer(this);
         if (Prefs.pollServer(this)) statusWatch(this);
 
+        if (Prefs.getHostname(this).length() == 0) serverAct();
     }
 
 
@@ -63,8 +64,8 @@ public class MainActivity extends Activity {
         System.out.println("Password passed  : " + Prefs.getPassword(globalactivity));
 
         serverjs.loadUrl("file:///android_asset/index.html?subhost=" + Prefs.getHostname(xthis) +
-                "&subnamesrv=" + Prefs.getNameServer(xthis) + "&fullhost="+getHost() +
-        "&passwd=" + Prefs.getPassword(globalactivity));
+                "&subnamesrv=" + Prefs.getNameServer(xthis) + "&fullhost=" + getHost() +
+                "&passwd=" + Prefs.getPassword(globalactivity));
     }
 
 
@@ -130,12 +131,17 @@ public class MainActivity extends Activity {
             startActivity(intent);
             return true;
         } else if (id == R.id.server) {
-            Intent intent = new Intent(this, ServerActivity.class);
-            startActivity(intent);
+            serverAct();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void serverAct(){
+        Intent intent = new Intent(this, ServerActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -175,7 +181,12 @@ public class MainActivity extends Activity {
         stopHttpdServer();
         hostadd = Util.getHTTPAddress(ctx);
 
-        androidout.setText("HOST : " + getHost());
+       // androidout.setText("HOST : " + getHost());
+        if (Prefs.getHostname(ctx).length() > 0) {
+            androidout.setText(Prefs.getHostname(ctx));
+        } else {
+            androidout.setText(R.string.confighost);
+        }
 
         new Thread(new Runnable() {
             public void run() {

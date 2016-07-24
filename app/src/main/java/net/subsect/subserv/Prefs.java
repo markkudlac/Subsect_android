@@ -141,7 +141,7 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
         return(PreferenceManager
                 .getDefaultSharedPreferences(context).getBoolean(
-                        context.getString(R.string.connectserv), false)
+                        context.getString(R.string.connectserv), true)
                 );
     }
 
