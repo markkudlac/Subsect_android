@@ -18,7 +18,7 @@
     <string name="nosite">"No Sites Avaialable"</string>
     <string name="installroot">"Install Site"</string>
     <string name="tools">"Tools"</string>
-    <string name="server">"Configure Server"</string>
+    <string name="admin">"Administration"</string>
     <string name="confighost">"!! Host Name not set !!"</string>
-
+    <string name="help">"Help"</string>
 </resources>

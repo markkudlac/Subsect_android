@@ -130,8 +130,13 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(this, ToolsActivity.class);
             startActivity(intent);
             return true;
-        } else if (id == R.id.server) {
+        } else if (id == R.id.admin) {
             serverAct();
+            return true;
+        }  else if (id == R.id.help) {
+            Intent intent = new Intent(this, ConnectActivity.class);
+            intent.putExtra(getString(R.string.webviewctr), R.string.help);
+            startActivity(intent);
             return true;
         }
 

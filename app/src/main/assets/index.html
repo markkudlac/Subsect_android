@@ -3,13 +3,38 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <script src="file:///android_asset/peer.0.3.13.js"></script>
-    <script src="file:///android_asset/jquery-2.1.3.min.js"></script>
-    <script src="file:///android_asset/bootstrap_3.3.6.min.js"></script>
-    <link rel="stylesheet" href="file:///android_asset/bootstrap_3.3.6.min.css">
+
+
+    <script type='text/javascript'>
+
+    function getParam(val) {
+
+        tmp = [];
+        var items = location.search.substr(1).split("&");
+        for (var index = 0; index < items.length; index++) {
+            tmp = items[index].split("=");
+            if (tmp[0] === val) return(tmp[1]);
+        }
+        return "";
+    }
+
+    var sublochost = getParam("fullhost");
+    console.log("PATH : " + sublochost);
+
+    document.writeln('<scr' +'ipt src="http://' + sublochost +
+            '/sys/lib/jquery-2.1.3.min.js"></scr'+'ipt>');
+
+    document.writeln('<scr' +'ipt src="http://' + sublochost +
+    '/sys/lib/bootstrap_3.3.6.min.js"></scr'+'ipt>');
+
+    document.writeln('<link rel="stylesheet" href="http://' + sublochost +
+        '/sys/lib/bootstrap_3.3.6.min.css">');
+    </script>
 </head>
+
 
 <style>
     .logbox {
@@ -55,11 +80,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-xs-9 col-sm-9 control-label">Current Max</label>
+                            <div class="col-xs-2 col-sm-2">
+                                <div id="connectmax" class="form-control-static">0</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-xs-9 col-sm-9 control-label">Total Contections</label>
                             <div class="col-xs-2 col-sm-2">
                                 <div id="connecttot" class="form-control-static">0</div>
                             </div>
-
                         </div>
                     </form>
 
@@ -68,6 +99,7 @@
         </div>
     </div>
 
+
 <script>
 
 var peer = null;
@@ -75,6 +107,7 @@ var shutdown = false;
 var blobbuff = {};
 
 var connectcnt = 0;
+var connectmax = 0;
 var connecttot = 0;
 
 var timer = null;
@@ -286,10 +319,6 @@ function getappfile(rcv, xconn){
 }
 
 
-function fullPath(file) {
-
-return(getParam("fullhost") + '/' + file);
-}
 
 
 function messout(message){
@@ -328,6 +357,12 @@ function initall() {
      })
 }
 
+
+
+    function fullPath(file) {
+
+        return(getParam("fullhost") + '/' + file);
+    }
 
 function setStartDateTime(){
 
@@ -374,8 +409,10 @@ function updateStats(cntchng) {
     connectcnt = connectcnt + cntchng;
 
     if (cntchng > 0 ) { ++connecttot; }
+    if (connectcnt > connectmax ) { connectmax = connectcnt; }
 
     $("#connectcnt").text(connectcnt);
+    $("#connectmax").text(connectmax);
     $("#connecttot").text(connecttot);
 }
 
@@ -439,17 +476,6 @@ function clearReStart(){
     }
 }
 
-
-function getParam(val) {
-
-    tmp = [];
-    var items = location.search.substr(1).split("&");
-    for (var index = 0; index < items.length; index++) {
-        tmp = items[index].split("=");
-        if (tmp[0] === val) return(tmp[1]);
-    }
-    return "";
-}
 
 
 function serverOffline(){

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
 
     <title class="settitle"></title>
 
@@ -30,19 +29,13 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="main-collapse">
             <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" 
-						role="button">Go To <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a ng-show="!showlog()" ng-click="toLogin()">Login</a></li>
-                        
-                        <li><a ng-show="showlog()" ng-click="Logout()">Logout</a></li>
-                        <li class="divider" ng-show="showlog()"></li>
-                        <li><a ng-click="toDownload()" ng-show="showlog()">Download</a></li>
-                        <li class="divider" ng-show="showlog()"></li>
-                        <li><a ng-click="toUpload()" ng-show="showlog()">Upload</a></li>
-                    </ul>
-                </li>
+                <li><a ng-show="!showlog()" ng-click="toLogin()">Login</a></li>
+                <li><a ng-show="showlog()" ng-click="Logout()">Logout</a></li>
+                <li class="divider" ng-show="showlog()"></li>
+                <li><a ng-click="toDownload()" ng-show="showlog()">Download</a></li>
+                <li class="divider" ng-show="showlog()"></li>
+                <li><a ng-click="toUpload()" ng-show="showlog()">Upload</a></li>
+
             </ul>
         </div><!-- /.navbar-collapse -->
 	</nav>
@@ -103,13 +96,25 @@
 <!-- UPLOAD TO RESTORE -->		
     <script type="text/ng-template" id="upload.html">
 	<nav class="navbar navbar-default navbar-fixed-top">
-		<ul class="nav navbar-nav">
-			<li><a ng-click="uploadCancel()" class="navbackbut">Back</a></li>
-		</ul>
-		<ul class="nav navbar-nav">
-			<li><a ng-click="dirfile()" class="navbackbut">Directories</a></li>
-		</ul>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#upload-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="upload-collapse">
+            <ul class="nav navbar-nav">
+                <li><a ng-click="uploadCancel()" class="navbackbut">Back</a></li>
+                <li class="divider"></li>
+                <li><a ng-click="dirfile()" class="navbackbut">Directories</a></li>
+            </ul>
+        </div>
 	</nav>
+
 	<div class="container-fluid">
 	    <div class="row"  style="margin-top: 3em">		
 	       <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2">

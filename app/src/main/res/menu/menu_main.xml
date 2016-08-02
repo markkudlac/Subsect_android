@@ -22,8 +22,13 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
 
-    <item android:id="@+id/server"
-        android:title="@string/server"
+    <item android:id="@+id/admin"
+        android:title="@string/admin"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+
+    <item android:id="@+id/help"
+        android:title="@string/help"
         android:orderInCategory="100"
         android:showAsAction="never" />
 

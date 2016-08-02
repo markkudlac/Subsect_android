@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="21"
-        android:targetSdkVersion="22" />
+        android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -53,7 +53,7 @@
 
         <activity
             android:name=".ServerActivity"
-            android:label="@string/server"
+            android:label="@string/admin"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:parentActivityName=".MainActivity" >
         </activity>

@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "19.1.0"
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "net.subsect.subserv"
         minSdkVersion 21
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
