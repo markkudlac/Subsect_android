@@ -8,7 +8,7 @@
     <string name="email">Email (Optional)</string>
     <string name="localnameserv">Alternate Connection Server</string>
     <string name="connectserv">Connection Server : subsect.net</string>
-    <string name="connect">Web Apps</string>
+    <string name="connect">Server</string>
     <string name="bazaar">Bazaar</string>
     <string name="installed">Installed</string>
     <string name="defRemoteServer">"www.subsect.net"</string>

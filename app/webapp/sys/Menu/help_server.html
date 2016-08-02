@@ -1,0 +1,100 @@
+<h3>Intro</h3>
+<div class="bigtext" >
+    <p>
+        This is alpha software and assumes that the current group of users will be tolerant of rough edges
+        in all aspects of this product. There are a number of limitations in this software that need to be
+        addressed. As this is an open source project you may be the answer.
+    </p>
+
+    <p>
+        Subsect uses the WebRTC protocol and the hosted sites can only be accessed by a browser that
+        supports WebRTC data channel. This would include more recent versions of Chrome, Firefox,
+        and Opera on desk/lap tops including OSX or Android. There is no browser support on iOS.
+    </p>
+
+</div>
+
+<h3>Getting Started</h3>
+<div class="bigtext" >
+    <p>
+        Upon installing the app the <em>Administration</em> page opens. The Host Name is the unique name of the server which
+        will become the subdomain of <b>subsect.net</b> that will be used to access sites by users. It needs
+        to be at least four alphanumeric (plus _ ) characters long. A password is required which is also
+        at least four alphanumeric (plus _ ) characters long. Email is optional and is currently not used but
+        is planned to be for contacting hosts if needed.
+    </p>
+    <p>
+        Once the host name is submitted and accepted it can not currently be updated. The password and email can be
+        changed. This can only be done through the app and on the device the server is running on.
+        You do not need to know the current password to change it.
+    </p>
+    <p>
+        On exiting <em>Administration</em> to the Subsect Server main page the server should start within a few seconds.
+        The server is running when the <b>Start/Stop</b> button is labled <b>Stop</b> and the start date time is to he right of it.
+        If it is not running close the app out with the task switcher and relaunch it. Tapping <b>Stop</b> will stop the
+        server sites on the device will not be reachable. Tap <b>Start</b> to restart the server. Always stop the
+        server before exiting the app so users will be alerted the erver is not available.
+    </p>
+    <p>
+        The log button to the right shows a console screen which dumps some debug currently.
+    </p>
+</div>
+
+<h3>Bazaar</h3>
+<div class="bigtext" >
+    <p>
+        With the server running it is now time to load a site. Subsect has the equivalent of an <em>App/Play Store</em>
+        which is called the <em>Bazaar</em>. It is early days in thee Bazaar with minimal functionality. After selecting
+        the <em>Bazaar</em> option from the menu a list of available sites/services should appear. It is recommend
+        that the <b>TestSite</b> be installed first. Tap the icon and accept install. This should only take a few
+        seconds. After install completes return to main page and select <em>Installed</em> from Menu. TestSite
+        should be listed.
+    </p>
+    <p>
+        If all is good, open an WebRTC compliant browser and enter the url <em>yourhostname</em>.subsect.net .
+        A page with the tile <b>Menu</b> should open and TestSite should show. Tap/click item and it should
+        open the site installed on your device. Try to add/edit a name entry. TestSite is largely just to confirm
+        your server/database is operational.
+    </p>
+</div>
+
+<h3>Tools</h3>
+<div class="bigtext" >
+    <p>
+        The <em>Tools</em> menu option supports four functions. EXPORT allows an individual site to be packaged
+        for installation on another device or for backup. No data is exported only site logic and resources.
+        Select from the list of current packages then tap EXPORT.
+        IMPORT is the opposite. This is largely to support a side loading type function. You can download/upload the export
+        using the the appropriate option in the <b>Menu</b> page when you access <em>yourhostname</em>.subsect.net in
+        the browser.
+        You will need to login in Menu (in browser) to get these options. The password is the one setup in
+        <em>Administration</em>.
+    </p>
+
+    <p>
+        BACKUP DB and RESTORE DB allow for the backup and export of datafiles. The BACKUP DB function will coppy
+        the DB of each installed site and make a tar of all into one file. Again download to the browser using the
+        <b>Menu</b> page. When uploading and downloading your browsing device needs to be on the same network (WiFi router
+        for example) as your Android device. You can use the browser on your device to download and then
+        copy that off as this is always on the same network.
+    </p>
+</div>
+
+<h3>Settings</h3>
+<div class="bigtext" >
+    <p>
+        The options here are for using an alternative connection server. If developing a site it is more convenient
+        to use a local server. The setup of a development environment is beyond the scope of this help. Just keep
+        the "Connection Server : subsect.net" option checked.
+    </p>
+</div>
+
+<h3>Other</h3>
+<div class="bigtext" >
+    <p>
+        To remove an installed site, go to the <em>Installed</em> menu option and tap "Remove"
+        button next to the icon the site to be removed. All data associated with this site will also be removed.
+        After removing a package it is recommended that the server be closed and
+        the <b>Subsect app closed with the task manager</b> and then restarted.
+    </p>
+</div>

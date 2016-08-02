@@ -139,7 +139,7 @@ public class ConnectActivity extends Activity {
 
     public void startBazaar(int value) {
 
-        System.out.println("Start Bazaar");
+      //  System.out.println("Start Bazaar");
 
             webarg = (WebView)findViewById(R.id.connectview);
             webarg.setWebChromeClient(new WebChromeClient());
@@ -153,9 +153,11 @@ public class ConnectActivity extends Activity {
                 if (Prefs.connectSubsect(this)) {
                     webarg.loadUrl("http://" + SOURCE_ADDRESS + "/" + BAZAAR_NAME);
                 } else {
-                    System.out.println("Use Bazaar local");
+                  //  System.out.println("Use Bazaar local");
                     webarg.loadUrl("http://"+ Prefs.getNameServer(this) +"/" + BAZAAR_NAME);
                 }
+            } else if (value == R.string.help){
+                webarg.loadUrl("http://"+MainActivity.getHost() + "/sys/Menu/help.html");
             } else {
                 webarg.loadUrl("http://"+MainActivity.getHost() + INSTALLED_PATH);
             }
