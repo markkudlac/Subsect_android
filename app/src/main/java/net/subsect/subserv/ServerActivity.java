@@ -132,6 +132,8 @@ public class ServerActivity extends Activity {
 
         if (hostbuf.length() == 0) return;
 
+        ((TextView) findViewById(R.id.help_host)).setVisibility(View.GONE);
+
         if (Prefs.getPassLength(serveract) > 0 &&
                 Prefs.getPassword(serveract).length() == HASH_LENGTH) {
             passbuf = new String(new char[Prefs.getPassLength(serveract)]).replace("\0", "-");

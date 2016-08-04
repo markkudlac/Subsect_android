@@ -35,6 +35,8 @@
                 <li><a ng-click="toDownload()" ng-show="showlog()">Download</a></li>
                 <li class="divider" ng-show="showlog()"></li>
                 <li><a ng-click="toUpload()" ng-show="showlog()">Upload</a></li>
+                <li class="divider"></li>
+                <li><a ng-click="toHelp()">Server Help</a></li>
 
             </ul>
         </div><!-- /.navbar-collapse -->
@@ -48,17 +50,18 @@
         <div class="row">
             <div class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
                 <table class="table table-condensed table-hover">
+                    <!--
                     <thead>
                     <tr>
                         <th>Site</th>
                         <th>Icon</th>
                     </tr>
                     </thead>
-            
+            -->
                     <tbody>
                     <tr ng-repeat="site in sites" ng-show="showitem(site)" ng-click="newurl(site)"
                             class="pointeron">
-                        <td class="bigtext">{{site.title}}</td>
+                        <td><h4 style="margin-left: 2em;">{{site.title}}</h4></td>
                         <td><img ng-src="{{site.icon}}"></td>
                     </tr>
                     </tbody>
@@ -142,6 +145,27 @@
 	</div>
 	
     </script>
+
+<!-- HELP -->
+<script type="text/ng-template" id="help_menu.html">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <ul class="nav navbar-nav">
+            <li><a ng-click="helpCancel()" class="navbackbut">Back</a></li>
+        </ul>
+    </nav>
+    <div class="container-fluid">
+        <div class="row center">
+            <h3>Server Help</h3>
+        </div>
+
+        <div class="row"  style="margin-top: 3em">
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-sm-8">
+                <div ng-bind-html="loadhelp"></div>
+            </div>
+        </div><!-- row -->
+    </div> <!-- container -->
+</script>
+
 <ng-view> </ng-view>
 
 <script>

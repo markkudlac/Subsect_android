@@ -11,6 +11,9 @@ angular.module("Menu", ['ngRoute'])
     }).when("/upload", {
         templateUrl: "upload.html",
 		controller: "UploadController"
+	}).when("/help", {
+            templateUrl: "help_menu.html",
+    		controller: "HelpController"
     }).otherwise( {
         templateUrl: "main.html",
 		controller: "MenuController"
@@ -91,6 +94,10 @@ angular.module("Menu", ['ngRoute'])
 	$scope.toUpload = function() {
 	    $location.path("/upload");
 	}
+
+	$scope.toHelp = function() {
+    	    $location.path("/help");
+    	}
 	
 	setTitle();
     findall();
@@ -183,10 +190,10 @@ angular.module("Menu", ['ngRoute'])
         	success: function(rcv){
 				var jqobj = $(rcv);
 				var litext;
-//	alert("Got : " + rcv)			
+
 				$scope.open.directory = jqobj.filter('h1').text().split(" ")[1];
 				$scope.open.dirfiles = [];
-	console.log("Directory : " + $scope.open.directory);		
+//	console.log("Directory : " + $scope.open.directory);
 				jqobj.find('a').add(jqobj.filter('a')).each(function(){
 						console.log ("Get the ancs1 : " + $(this).text());
 						litext = $(this).text() == ".." ? "<-BACK" : $(this).text();
@@ -247,8 +254,27 @@ angular.module("Menu", ['ngRoute'])
 	
 	setDirectory("restore");
 	
-	
-	
-}]);
+}])
 
+/**************************************/
+.controller("HelpController", ['$scope', 'utility', '$location', '$sce',
+	function($scope, utility, $location, $sce){
+
+	$scope.loadhelp = null;
+
+		function sethelp(){
+            getsubFile("help_server.html", function(xfle){
+                $scope.loadhelp = $sce.trustAsHtml(xfle);
+                utility.testApply($scope);
+            });
+
+    	}
+
+	$scope.helpCancel = function(){
+    		$location.replace();
+            $location.path('/');
+    	}
+
+	sethelp();
+}]);
 

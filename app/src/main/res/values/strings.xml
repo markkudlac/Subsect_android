@@ -21,4 +21,6 @@
     <string name="admin">"Administration"</string>
     <string name="confighost">"!! Host Name not set !!"</string>
     <string name="help">"Help"</string>
+    <string name="hosthelp">"<b>Host Name</b> is the unique server name which
+        will be your subdomain <i>yourhostname</i>.<b>subsect.net</b>. It is 4 - 20 lower case alphanumeric characters long."</string>
 </resources>

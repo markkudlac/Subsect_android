@@ -17,10 +17,11 @@
 <h3>Getting Started</h3>
 <div class="bigtext" >
     <p>
-        Upon installing the app the <em>Administration</em> page opens. The Host Name is the unique name of the server which
-        will become the subdomain of <b>subsect.net</b> that will be used to access sites by users. It needs
-        to be at least four alphanumeric (plus _ ) characters long. A password is required which is also
-        at least four alphanumeric (plus _ ) characters long. Email is optional and is currently not used but
+        Upon installing the app the <em>Administration</em> page opens. Host Name is the unique server name which
+        will be your subdomain, <i>yourhostname</i>.<b>subsect.net</b>. This will become the host part of your
+        sites URLs'. It is 4 - 20
+        lower case alphanumeric characters long. A password is required which is 4 - 20
+        upper/lower case alphanumeric (plus _ ) characters long. Email is optional and is currently not used but
         is planned to be for contacting hosts if needed.
     </p>
     <p>
@@ -43,7 +44,7 @@
 <h3>Bazaar</h3>
 <div class="bigtext" >
     <p>
-        With the server running it is now time to load a site. Subsect has the equivalent of an <em>App/Play Store</em>
+        With the server running it is now time to load a site. Subsect has the equivalent of an "App/Play Store"
         which is called the <em>Bazaar</em>. It is early days in thee Bazaar with minimal functionality. After selecting
         the <em>Bazaar</em> option from the menu a list of available sites/services should appear. It is recommend
         that the <b>TestSite</b> be installed first. Tap the icon and accept install. This should only take a few
@@ -51,7 +52,7 @@
         should be listed.
     </p>
     <p>
-        If all is good, open an WebRTC compliant browser and enter the url <em>yourhostname</em>.subsect.net .
+        If all is good, open an WebRTC compliant browser and enter the url <em>yourhostname</em>.<b>subsect.net</b> .
         A page with the tile <b>Menu</b> should open and TestSite should show. Tap/click item and it should
         open the site installed on your device. Try to add/edit a name entry. TestSite is largely just to confirm
         your server/database is operational.
@@ -61,11 +62,21 @@
 <h3>Tools</h3>
 <div class="bigtext" >
     <p>
+        <b>Before using any tools STOP the server.</b>
+    </p>
+    <p>
         The <em>Tools</em> menu option supports four functions. EXPORT allows an individual site to be packaged
         for installation on another device or for backup. No data is exported only site logic and resources.
         Select from the list of current packages then tap EXPORT.
-        IMPORT is the opposite. This is largely to support a side loading type function. You can download/upload the export
-        using the the appropriate option in the <b>Menu</b> page when you access <em>yourhostname</em>.subsect.net in
+        IMPORT is the opposite. This is largely to support a side loading type function.
+    </p>
+    <p>
+        <b>!! After using EXPORT or BACKUP DB you must close Subsect with the task manager
+            and relaunch before doing any other operations !!</b>
+    </p>
+    <p>
+        You can download/upload the export
+        using the the appropriate option in the <b>Menu</b> page when you access <em>yourhostname</em>.<b>subsect.net</b> in
         the browser.
         You will need to login in Menu (in browser) to get these options. The password is the one setup in
         <em>Administration</em>.
@@ -92,7 +103,7 @@
 <h3>Other</h3>
 <div class="bigtext" >
     <p>
-        To remove an installed site, go to the <em>Installed</em> menu option and tap "Remove"
+        To remove an installed site, go to the <em>Installed</em> menu option and tap the "Remove"
         button next to the icon the site to be removed. All data associated with this site will also be removed.
         After removing a package it is recommended that the server be closed and
         the <b>Subsect app closed with the task manager</b> and then restarted.
