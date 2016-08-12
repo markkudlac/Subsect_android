@@ -116,6 +116,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
         // System.out.println("In processTables : " + Util.getAppfromDb(dbnm));
         for (int i = 0; i < schemafls.length; i++) {
+            System.out.println("In processTables Schema : " + schemafls[i]);
             sqlst = Util.getSchema(context, dbnm, schemafls[i]);
 
             if (sqlst[0].length() > 0) db.execSQL(sqlst[0]);
@@ -139,6 +140,33 @@ public class SQLHelper extends SQLiteOpenHelper {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+            }
+
+            if (sqlst[3].length() > 0){
+
+                String[] recs = sqlst[3].split("\\}, \\{");
+
+                if (recs.length > 1) {
+                    for (i=0; i < recs.length-1; i++){
+                        recs[i] = recs[i] + "}";
+                        recs[i+1] = "{" + recs[i+1];
+                    }
+                }
+                try {
+                    JSONObject jsob;
+                    JSONArray rtnval;
+
+                    for (i=0; i < recs.length; i++) {
+                  //      System.out.println("Insertstr : " + recs[i]);
+                        jsob = new JSONObject(recs[i]);
+
+                        rtnval = inserttoDB(sqlst[1], jsob, "-1", db);
+                 //       System.out.println("Loaded loadfile : " + rtnval.get(0).toString());
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
             }
         }
     }
@@ -318,6 +346,13 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     protected JSONArray insertDB(String table, JSONObject jsob, String funcid) {
 
+        return inserttoDB( table, jsob, funcid, database);
+    }
+
+
+    protected static JSONArray inserttoDB(String table, JSONObject jsob, String funcid,
+                                          SQLiteDatabase db) {
+
         ContentValues values = new ContentValues();
         JSONArray jray = Util.JSONdbReturn(false, -1, funcid);
 
@@ -333,7 +368,7 @@ public class SQLHelper extends SQLiteOpenHelper {
             }
             values.put(FLD_CREATED_AT, Util.getTimeNow());
 
-            idval = database.insert(table, null, values);
+            idval = db.insert(table, null, values);
             if (-1 != idval) {
                 jray = Util.JSONdbReturn(true, idval, funcid);
             } else {

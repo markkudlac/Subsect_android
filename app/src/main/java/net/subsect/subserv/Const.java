@@ -37,6 +37,7 @@ public interface Const extends BaseColumns {
     public static final String BKUP_TAR = "bkup.tar";
     public static final String BACKUP = "backup";
     public static final String RESTORE = "restore";
+    public static final String LOADFILE_EXT = ".ld";
 
     public static final String ARGS_FUNCID = "funcid";
     public static final String ARGS_TABLE = "table";

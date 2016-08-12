@@ -11,6 +11,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 import java.io.InputStream;
@@ -499,28 +500,36 @@ public class Util {
     public static String[] getSchema(Context context, String dbname, String flnme) {
 
         String schema = "";
-        String[] sql_table =  new String[3];
+        String[] sql_table =  new String[4];
 
         sql_table[1] = "";
-        sql_table[2] = "FFF";
+        sql_table[2] = "FFF";   //permissions
+        sql_table[3] = "";      //Data Loadfile for schema
 
         try {
             String appname = getAppfromDb(dbname);
-            File schemfl;
+            File readfl;
             String schemapath = context.getFilesDir().getPath();
             String readbuf;
             schemapath = schemapath + "/" + getDirfromDb(dbname) +"/"+appname+"/schemas";
          //    System.out.println("Scemas DIR is : " + schemapath);
-            schemfl = new File(schemapath, flnme);
 
-            BufferedReader buf = new BufferedReader(new FileReader(schemfl));
+            readfl = new File(schemapath, flnme);
+            BufferedReader buf = new BufferedReader(new FileReader(readfl));
             while ((readbuf = buf.readLine()) != null){
                 schema = schema + " " + readbuf;
             }
-
             buf.close();
 
-            //System.out.println("Schema: " + schema);
+            readfl = new File(schemapath, flnme + LOADFILE_EXT);
+            if (readfl.exists()) {
+                buf = new BufferedReader(new FileReader(readfl));
+                while ((readbuf = buf.readLine()) != null) {
+                    sql_table[3] = sql_table[3] + " " + readbuf;
+                }
+                buf.close();
+            }
+
             Pattern ptn = Pattern.compile("^\\s*" + SKIP_SCHEMA, Pattern.CASE_INSENSITIVE);
             Matcher mtcher = ptn.matcher(schema);
 
@@ -579,7 +588,13 @@ public class Util {
 
             if (!schemdir.exists() || !schemdir.isDirectory()) return flnmes;
 
-            flnmes = schemdir.list();
+            flnmes = schemdir.list(
+                    new FilenameFilter() {
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            return ! name.endsWith(LOADFILE_EXT);
+                        }}
+            );
           //  System.out.println("Got schema files list  " + flnmes.toString() );
         } catch (Exception e) {
             System.out.println("File I/O error " + e);
@@ -587,6 +602,7 @@ public class Util {
 
         return(flnmes);
     }
+
 
 
     public static String getDirfromDb(String dbnm){
