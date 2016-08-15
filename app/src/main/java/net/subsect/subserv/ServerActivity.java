@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Patterns;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -30,7 +32,7 @@ public class ServerActivity extends Activity {
     private static EditText passwordText;
     private static EditText emailText;
     private static String passHash = "";
-
+    private static boolean newInstall = false;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +80,7 @@ public class ServerActivity extends Activity {
                             Prefs.getHostname(serveract).length() == 0){
 
                         opasswd = passHash;
-                        System.out.println("Set opasswd : " + opasswd);
+                      //  System.out.println("Set opasswd : " + opasswd);
                     }
 
                     //   System.out.println("Submit Button : " + passwd);
@@ -90,6 +92,34 @@ public class ServerActivity extends Activity {
             }
 
         });
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (newInstall) {
+                    onBackPressed();
+                    return true;
+                } else {
+                    finish();   //Will not reset server
+                    return true;
+                }
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (newInstall) {
+            int[] pack = {R.string.bazaar, INSTALL_PROMPT_ON};
+            Intent intent = new Intent(MainActivity.globalactivity, ConnectActivity.class);
+            intent.putExtra(MainActivity.globalactivity.getString(R.string.webviewctr), pack);
+            MainActivity.globalactivity.startActivity(intent);
+        }
+        finish();
     }
 
 
@@ -130,7 +160,11 @@ public class ServerActivity extends Activity {
         String hostbuf = Prefs.getHostname(serveract);
         String passbuf;
 
-        if (hostbuf.length() == 0) return;
+        if (hostbuf.length() == 0){
+            newInstall = true;
+            return;
+        }
+        newInstall = false;
 
         ((TextView) findViewById(R.id.help_host)).setVisibility(View.GONE);
 
@@ -151,7 +185,7 @@ public class ServerActivity extends Activity {
 
     public static void hostavailable(boolean isavail) {
 
-        System.out.println("Available : " + isavail);
+      //  System.out.println("Available : " + isavail);
 
         if (isavail) {
             hostText.setError(null);
@@ -174,6 +208,9 @@ public class ServerActivity extends Activity {
 
             Prefs.setPassword(serveract, passHash);
             Prefs.setPassLength(serveract, passwordText.getText().toString().length());
+            if (newInstall) {
+                serveract.toBazaar();
+            }
         } else {
             poperrorDialogue("Submit failed : retry");
         }
@@ -245,6 +282,34 @@ public class ServerActivity extends Activity {
         });
 
         alert.show();
+    }
+
+
+    private void toBazaar() {
+
+      //  System.out.println("In toBazaar");
+
+        if (newInstall) {
+            new Thread() {
+                public void run() {
+
+                    try {
+                        Thread.sleep(1500);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                onBackPressed();
+                            }
+                        });
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }.start();
+        }
     }
 
 }

@@ -3,7 +3,9 @@ package net.subsect.subserv;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -15,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Method;
+
 import static net.subsect.subserv.Const.*;
 
 /**
@@ -24,6 +28,7 @@ public class ConnectActivity extends Activity {
 
     private static ConnectActivity conact = null;
     private static WebView webarg;
+    private static boolean newInstall = false;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +40,7 @@ public class ConnectActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            int value = extras.getInt(conact.getString(R.string.webviewctr));
+            int[] value = extras.getIntArray(conact.getString(R.string.webviewctr));
       //      System.out.println("In Bundle received : "+value);
 
             startBazaar(value);
@@ -59,7 +64,7 @@ public class ConnectActivity extends Activity {
     public void onResume() {
         super.onResume();
 
-        System.out.println("In onResume Connect");
+       // System.out.println("In onResume Connect");
         //  onCreate(null);
     }
 
@@ -68,26 +73,49 @@ public class ConnectActivity extends Activity {
     public void onRestart() {
         super.onRestart();
 
-        System.out.println("In onRestart Connect");
-
+       // System.out.println("In onRestart Connect");
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id==android.R.id.home) {
-            finish();
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (newInstall) {
+                    onBackPressed();
+                    return true;
+                } else {
+                    finish();
+                    return true;
+                }
         }
-
         return super.onOptionsItemSelected(item);
     }
+
+
+    private void mainIntent(){
+        super.onBackPressed();
+
+        Intent intent = new Intent(MainActivity.globalactivity, MainActivity.class);
+        MainActivity.globalactivity.startActivity(intent);
+
+        finish();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        if (newInstall) {
+            popConnectDialogue(1);
+        } else {
+            super.onBackPressed();
+            finish();
+        }
+
+    }
+
+
 
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -137,7 +165,7 @@ public class ConnectActivity extends Activity {
     }
 
 
-    public void startBazaar(int value) {
+    public void startBazaar(int[] value) {
 
       //  System.out.println("Start Bazaar");
 
@@ -149,49 +177,70 @@ public class ConnectActivity extends Activity {
 
             webarg.addJavascriptInterface(this.new JsInterface(), "android");
 
-            if (value == R.string.bazaar) {
+            if (value[0] == R.string.bazaar) {
+
                 if (Prefs.connectSubsect(this)) {
                     webarg.loadUrl("http://" + SOURCE_ADDRESS + "/" + BAZAAR_NAME);
+
+                    if (value[1] == INSTALL_PROMPT_ON){
+                        newInstall = true;
+                        popConnectDialogue(0);
+                    }
                 } else {
                   //  System.out.println("Use Bazaar local");
                     webarg.loadUrl("http://"+ Prefs.getNameServer(this) +"/" + BAZAAR_NAME);
+                    if (value[1] == INSTALL_PROMPT_ON) {
+                        newInstall = true;
+                        popConnectDialogue(0);
+                    }
                 }
-            } else if (value == R.string.help){
-                webarg.loadUrl("http://"+MainActivity.getHost() + "/sys/Menu/help.html");
+            } else if (value[0] == R.string.help){
+                webarg.loadUrl("http://"+MainActivity.getHost() + MENU_HELP);
             } else {
                 webarg.loadUrl("http://"+MainActivity.getHost() + INSTALLED_PATH);
             }
+
     }
 
-/*
-    private void popConnectDialogue(){
+
+
+    private void popConnectDialogue(final int mode){
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-        final EditText edittext= new EditText(this);
-        alert.setMessage("Enter Host");
-        alert.setTitle("Connect To");
+  //      final EditText edittext= new EditText(this);
 
-        alert.setView(edittext);
+        if (mode == 0) {
+            alert.setTitle(R.string.installtitle);
+            alert.setMessage(R.string.installprompt);
+        } else {
+            newInstall = false;
+            alert.setTitle("Access Sites");
+            alert.setMessage(Html.fromHtml(conact.getString(R.string.urlprompt_1) +
+                    "<b>" + Prefs.getHostname(MainActivity.globalactivity) +
+                    ".subsect.net</b> " + conact.getString(R.string.urlprompt_2)));
+        }
+   //     alert.setView(edittext);
 
-        alert.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
+  /*      alert.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //What ever you want to do with the value
                 startConnect((((TextView)edittext).getText()).toString());
             }
         });
-
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+*/
+        alert.setNegativeButton("Continue", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // what ever you want to do with No option.
-                Toast.makeText(getBaseContext(), "Cancelled",
-                        Toast.LENGTH_LONG).show();
+                if (mode == 1){
+                   mainIntent();
+                }
             }
         });
 
         alert.show();
     }
-*/
+
 
     public static void updateProg(int percent){
         webarg.loadUrl("javascript:updateProg("+percent+")");

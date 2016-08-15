@@ -39,7 +39,12 @@ public class MainActivity extends Activity {
         androidout = (TextView)findViewById(R.id.androidout);
 
         startdb();
-        turnServerOn(this);
+
+        if (Prefs.getHostname(this).length() == 0) {
+            serverAct();
+        } else {
+
+            turnServerOn(this);
 
             serverjs = (WebView)findViewById(R.id.serverJS);
             serverjs.setWebChromeClient(new WebChromeClient());
@@ -50,12 +55,12 @@ public class MainActivity extends Activity {
             webSettings.setAllowUniversalAccessFromFileURLs(true);
             webSettings.setDomStorageEnabled(true); //added to allow local HTML5 storage
             webSettings.setDatabaseEnabled(true); //added to allow local HTML5 storage
-          //  serverjs.addJavascriptInterface(this.new JsInterface(this), "android");
+            //  serverjs.addJavascriptInterface(this.new JsInterface(this), "android");
 
-        loadServer(this);
-        if (Prefs.pollServer(this)) statusWatch(this);
+            loadServer(this);
+            if (Prefs.pollServer(this)) statusWatch(this);
 
-        if (Prefs.getHostname(this).length() == 0) serverAct();
+        }
     }
 
 
@@ -117,13 +122,17 @@ public class MainActivity extends Activity {
             startActivity(intent);
             return true;
         } else if (id == R.id.bazaar) {
+            int[] pack = {R.string.bazaar, INSTALL_PROMPT_OFF};
+
             Intent intent = new Intent(this, ConnectActivity.class);
-            intent.putExtra(getString(R.string.webviewctr), R.string.bazaar);
+            intent.putExtra(getString(R.string.webviewctr), pack);
             startActivity(intent);
             return true;
         } else if (id == R.id.installed) {
+            int[] pack ={R.string.installed};
+
             Intent intent = new Intent(this, ConnectActivity.class);
-            intent.putExtra(getString(R.string.webviewctr), R.string.installed);
+            intent.putExtra(getString(R.string.webviewctr), pack);
             startActivity(intent);
             return true;
         } else if (id == R.id.tools) {
@@ -134,8 +143,10 @@ public class MainActivity extends Activity {
             serverAct();
             return true;
         }  else if (id == R.id.help) {
+            int[] pack ={R.string.help};
+
             Intent intent = new Intent(this, ConnectActivity.class);
-            intent.putExtra(getString(R.string.webviewctr), R.string.help);
+            intent.putExtra(getString(R.string.webviewctr), pack);
             startActivity(intent);
             return true;
         }
@@ -221,9 +232,27 @@ public class MainActivity extends Activity {
 
 
     private void startdb(){
+
         stopDb();
-        SubservDb = new SQLManager(this);
+        SubservDb = new SQLManager(globalactivity);
         SQLManager.openAll();
+
+        /*
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+
+        stopDb();
+     //   SubservDb = new SQLManager(this);
+                    SubservDb = new SQLManager(globalactivity);
+        SQLManager.openAll();
+
+            } catch (Exception ex) {
+                System.out.println("Select thread exception : " + ex);
+            }
+        }
+    }).start();
+    */
     }
 
 
@@ -263,16 +292,5 @@ public class MainActivity extends Activity {
         }).start();
     }
 
-/*
-    private final class JsInterface {
-
-        private Context contx;
-
-        public JsInterface(Context contx) {
-            this.contx = contx;
-
-        }
-    }
-    */
 
 }

@@ -10,6 +10,7 @@
     <string name="connectserv">Connection Server : subsect.net</string>
     <string name="connect">Server</string>
     <string name="bazaar">Bazaar</string>
+    <string name="bazaarprompt">prompt</string>
     <string name="installed">Installed</string>
     <string name="defRemoteServer">"www.subsect.net"</string>
     <string name="defaulthost">""</string>
@@ -23,4 +24,8 @@
     <string name="help">"Help"</string>
     <string name="hosthelp">"<b>Host Name</b> is the unique server name which
         will be your subdomain <i>yourhostname</i>.<b>subsect.net</b>. It is 4 - 20 lower case alphanumeric characters long."</string>
+    <string name="installtitle">"Install Sites"</string>
+    <string name="installprompt">"The Bazaar is the Susbsect App/Play Store. Tap the name for a description of a site or the icon to install it."</string>
+    <string name="urlprompt_1">"After tapping CONTINUE, open a WebRTC compliant browser (Chrome, Firefox, Opera) and enter the url "</string>
+    <string name="urlprompt_2">". Click Menu item to access installed site."</string>
 </resources>

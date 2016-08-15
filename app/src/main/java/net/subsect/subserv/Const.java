@@ -38,6 +38,10 @@ public interface Const extends BaseColumns {
     public static final String BACKUP = "backup";
     public static final String RESTORE = "restore";
     public static final String LOADFILE_EXT = ".ld";
+    public static final String MENU_HELP = "/sys/Menu/help.html";
+    public static final int INSTALL_PROMPT_ON = 1;
+    public static final int INSTALL_PROMPT_OFF = 0;
+
 
     public static final String ARGS_FUNCID = "funcid";
     public static final String ARGS_TABLE = "table";

@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteException;
 import android.database.SQLException;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
