@@ -1,41 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>   
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-  <!--
-    <ListPreference
-        android:key="@string/uploadto"
-        android:title="@string/uploadto"
-        android:entries="@array/uploadto"
-        android:entryValues="@array/uploadto"
-        android:defaultValue="@string/installdir"
-        android:summary="%s" />
-
-    <EditTextPreference
-        android:key="@string/hostname"
-        android:title="@string/hostname"
-        android:defaultValue="@string/defaulthost"
-        android:summary="%s" />
-
-    <EditTextPreference
-        android:key="@string/passdisp"
-        android:title="@string/password"
-        android:inputType="textPassword"
-        android:defaultValue=""
-         />
-
-    <EditTextPreference
-        android:key="@string/email"
-        android:title="@string/email"
-        android:inputType="textEmailAddress"
-        android:defaultValue=""
-        android:summary="%s" />
-
-
-    <EditTextPreference
-        android:key="@string/token"
-        android:title="@string/token"
-        android:defaultValue="6"
-        android:summary="%s" />
--->
 
     <CheckBoxPreference
         android:key="@string/connectserv"
@@ -49,12 +13,6 @@
         android:defaultValue="192.168.1.xxx:3000"
         android:summary="%s" />
 
-    <!--
-    <CheckBoxPreference
-        android:key="@string/pollserver"
-        android:title="@string/pollserver"
-        android:defaultValue="false"/>
--->
 
 </PreferenceScreen>
 

@@ -33,6 +33,13 @@
         android:inputType="textPassword"
         android:hint="@string/password"/>
 
+    <CheckBox android:id="@+id/checkbox_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Show Password"
+        />
+
     <EditText android:id="@+id/input_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
