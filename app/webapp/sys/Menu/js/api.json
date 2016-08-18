@@ -32,7 +32,7 @@
 
                     	function manageLogin(){	
                     
-                    console.log("Target is : " + attrs.target + "  Back : " + attrs.back);
+             //       console.log("Target is : " + attrs.target + "  Back : " + attrs.back);
                     		if (self.loggedIn()) {
                             	$location.replace();
                             	$location.path(attrs.target)
@@ -112,6 +112,46 @@
 	},
 	
 	
-	
+	"help" : function(modulenm, rtnfnc, subrtc){
+
+        var self = this;
+        
+		angular.module(modulenm)
+		.directive('help', ['$compile', '$location', '$window', '$sce',
+		    function($compile, $location, $window, $sce) {
+		        return {
+		            restrict: 'E',
+					template: '<nav class="navbar navbar-default navbar-fixed-top">' +
+			        '<ul class="nav navbar-nav">' +
+				    '<li><a ng-click="helpCancel()" class="navbackbut">Back</a></li></ul></nav>'+
+				    '<div class="container-fluid"><div class="row text-center">' +
+				    '<h3 id="helptitle">Help</h3></div><div class="row" style="margin-top: 3em">' +
+				    '<div class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-sm-8">' +
+				    '<div ng-bind-html="loadhelp"></div></div></div></div>',
+                					
+					 link: function(scope, element, attrs) {
+					 
+						scope.loadhelp = null;
+
+						function sethelp(){
+							$("#helptitle").text(attrs.helptitle);					            								getsubFile(attrs.helpfile, function(xfle){
+				                scope.loadhelp = $sce.trustAsHtml(xfle);
+				                scope.$apply(scope);
+				            });
+				    	}
+
+						scope.helpCancel = function(){
+					    		$location.replace();
+					            $location.path(attrs.back);
+					    	}
+
+						sethelp();
+					 }
+		        }
+		    }
+		        
+		]);
+		if (rtnfnc !== null) rtnfnc();
+	},
 	
 }

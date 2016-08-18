@@ -4,7 +4,7 @@ angular.module("Menu", ['ngRoute'])
 
 .config(function($routeProvider){
     $routeProvider.when("/login", {
-        templateUrl: "login.html",
+        templateUrl: "login.html"
     }).when("/download", {
         templateUrl: "download.html",
 		controller: "DownloadController"
@@ -12,8 +12,7 @@ angular.module("Menu", ['ngRoute'])
         templateUrl: "upload.html",
 		controller: "UploadController"
 	}).when("/help", {
-            templateUrl: "help_menu.html",
-    		controller: "HelpController"
+            templateUrl: "help_viewer.html"
     }).otherwise( {
         templateUrl: "main.html",
 		controller: "MenuController"
@@ -254,27 +253,5 @@ angular.module("Menu", ['ngRoute'])
 	
 	setDirectory("restore");
 	
-}])
-
-/**************************************/
-.controller("HelpController", ['$scope', 'utility', '$location', '$sce',
-	function($scope, utility, $location, $sce){
-
-	$scope.loadhelp = null;
-
-		function sethelp(){
-            getsubFile("help_server.html", function(xfle){
-                $scope.loadhelp = $sce.trustAsHtml(xfle);
-                utility.testApply($scope);
-            });
-
-    	}
-
-	$scope.helpCancel = function(){
-    		$location.replace();
-            $location.path('/');
-    	}
-
-	sethelp();
 }]);
 
