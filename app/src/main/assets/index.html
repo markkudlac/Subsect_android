@@ -7,6 +7,9 @@
 
     <script src="file:///android_asset/peer.0.3.13.js"></script>
 
+    <script src="file:///android_asset/jquery-2.1.3.min.js"></script>
+    <script src="file:///android_asset/bootstrap_3.3.6.min.js"></script>
+    <link rel="stylesheet" href="file:///android_asset/bootstrap_3.3.6.min.css">
 
     <script type='text/javascript'>
 
@@ -24,6 +27,7 @@
     var sublochost = getParam("fullhost");
     console.log("PATH : " + sublochost);
 
+/*  This was removed as Chrome sees this as cross site moved to assets
     document.writeln('<scr' +'ipt src="http://' + sublochost +
             '/sys/lib/jquery-2.1.3.min.js"></scr'+'ipt>');
 
@@ -32,6 +36,7 @@
 
     document.writeln('<link rel="stylesheet" href="http://' + sublochost +
         '/sys/lib/bootstrap_3.3.6.min.css">');
+ */
     </script>
 </head>
 
@@ -132,34 +137,53 @@ function peerServerOn() {
 	// Call XirSys ICE servers
 
     $.ajax({
+
+/*
+    //  V2
       type: "POST",
-      url: "https://service.xirsys.com/ice",
+      url: "https://global.xirsys.net/ice",
       dataType: "json",
       data: {
-/*
-        ident: "markkudlac",
-        secret: "10633c0a-fb06-4502-a834-de7d1990c3e6",
-        domain: "subsect.net",
-        application: "subserver",
-        room: "default",
-
-        */
-
         ident: "rosemaryp",
         secret: "787c7224-0406-11e6-a067-a950f66e883a",
         domain: "adladl.com",
         application: "subserver",
         room: "default",
-     /***   */
         secure: 1,
         timeout: 600
       },
+*/
+
+
+      // V3
+       url: "https://global.xirsys.net/_turn/adladl.com/",
+       type: "PUT",
+        headers: {
+               "Authorization": "Basic " + btoa("rosemaryp:787c7224-0406-11e6-a067-a950f66e883a")
+             },
+
+        //V3
+      success: function (data) {
+        if (data.s == "ok"){
+            messout("XirSys ok");
+            setPeer(data.v);
+        } else {
+            console.log("Xirsys error : " + data.v)
+            peerReStart();
+	    }
+       // console.log("ICE List: "+JSON.stringify(data.v));
+      },
+
+/*
+    //V2
       success: function (data, dstatus) {
-        messout("XirSys : " + data.d.iceServers[0].url + "  status : " + dstatus);
+        messout("XirSys status : " + dstatus);
         setPeer(data.d);
       },
+*/
+
       error: function() {
-            messout("ERROR XirSys reset");
+            messout("Xirsys AJAX error");
             peerReStart();
       }
     });
@@ -267,7 +291,8 @@ function getappfile(rcv, xconn){
             delete blobbuff[rcv.rcvkey];
      //       console.log("cleaned buffer : " + rcv.rcvkey);
         }
-        xconn.send({uri: rcv.file, blobtype: tblob.type, blob: tblob, cnt: xcnt, rcvkey: rcv.rcvkey});
+        xconn.send({uri: rcv.file, blobtype: tblob.type, blob: tblob, cnt: xcnt, rcvkey: rcv.rcvkey,
+                status: 200});
         return;
     }
 
@@ -285,13 +310,17 @@ function getappfile(rcv, xconn){
                 }
 
                 xconn.send({uri: rcv.file, blobtype: this.response.type, blob: yblob,
-                    cnt: 1, rcvkey: rcv.rcvkey});
+                    cnt: 1, rcvkey: rcv.rcvkey, status: this.status});
 
             } else {
                 xconn.send({uri: rcv.file, blobtype: this.response.type, blob: this.response,
-                    cnt: 0, rcvkey: rcv.rcvkey});
+                    cnt: 0, rcvkey: rcv.rcvkey, status: this.status});
             }
+		 } else if (this.readyState == 4) {
 
+		    console.log("Server ERROR : " + this.status);
+		    xconn.send({uri: rcv.file, blobtype: "null", blob: "null",
+                    cnt: 0, rcvkey: rcv.rcvkey, status: this.status});
 		 }
 	}
 

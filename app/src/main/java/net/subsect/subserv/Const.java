@@ -3,6 +3,8 @@ package net.subsect.subserv;
 /**
  * Created by markkudlac on 2015-02-16.
  */
+
+
 import android.provider.BaseColumns;
 
 public interface Const extends BaseColumns {
@@ -12,6 +14,7 @@ public interface Const extends BaseColumns {
     public static final String SOURCE_ADDRESS = "www.subsect.net";
    // public static final String ALT_ADDRESS = "192.168.1.xxx";
    //public static final int ALT_PORT = 3000;
+
     public static final int INTERNAL_PORT = 8080;
     public static final String DEMO_NAME = "demo";
     public static final String HOSTAVAILABLE = "hostavailable";

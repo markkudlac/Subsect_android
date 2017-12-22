@@ -571,7 +571,13 @@ Negotiator._setupListeners = function(connection, pc, pc_id) {
 
   // MEDIACONNECTION.
   util.log('Listening for remote stream');
-  pc.onaddstream = function(evt) {
+
+  /*
+  Mozilla complains onaddstream is depricated use ontrack instead
+    pc.onaddstream = function(evt) {
+
+  */
+    pc.ontrack = function(evt) {			//MK update this is used in video
     util.log('Received remote stream');
     var stream = evt.stream;
     var connection = provider.getConnection(peerId, connectionId);
@@ -1415,6 +1421,13 @@ Socket.prototype.close = function() {
 module.exports = Socket;
 
 },{"./util":8,"eventemitter3":9}],8:[function(require,module,exports){
+
+/*
+	Mozilla complains this is depricated use 'urls' instead
+	var defaultConfig = {'iceServers': [{ 'url': 'stun:stun.l.google.com:19302' }]};
+	-not updated as Xirsys uses 'url'
+	*/
+
 var defaultConfig = {'iceServers': [{ 'url': 'stun:stun.l.google.com:19302' }]};
 var dataCount = 1;
 
