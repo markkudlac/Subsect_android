@@ -5,7 +5,12 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <script src="file:///android_asset/adapter_no_edge.js"></script>
+    <script src="file:///android_asset/peer16na.js"></script>
+
+    <!--
     <script src="file:///android_asset/peer.0.3.13.js"></script>
+    -->
 
     <script src="file:///android_asset/jquery-2.1.3.min.js"></script>
     <script src="file:///android_asset/bootstrap_3.3.6.min.js"></script>
@@ -27,16 +32,6 @@
     var sublochost = getParam("fullhost");
     console.log("PATH : " + sublochost);
 
-/*  This was removed as Chrome sees this as cross site moved to assets
-    document.writeln('<scr' +'ipt src="http://' + sublochost +
-            '/sys/lib/jquery-2.1.3.min.js"></scr'+'ipt>');
-
-    document.writeln('<scr' +'ipt src="http://' + sublochost +
-    '/sys/lib/bootstrap_3.3.6.min.js"></scr'+'ipt>');
-
-    document.writeln('<link rel="stylesheet" href="http://' + sublochost +
-        '/sys/lib/bootstrap_3.3.6.min.css">');
- */
     </script>
 </head>
 
@@ -116,7 +111,11 @@ var connectmax = 0;
 var connecttot = 0;
 
 var timer = null;
-var cycletime = 60000 * 4;
+// Peerjs Cloud was longer
+//var cycletime = 60000 * 4;
+
+// Heroku
+var cycletime = 12500;
 
 var restarttimer = null;
 var restartcnt = 0;
@@ -125,7 +124,7 @@ var splitsz = 65536 * 2;
 
 	$(document).ready(function(){
 		messout("localhost : " + getParam("fullhost"));
-	//	messout("passwd : " + getParam("passwd"));
+
 		initall();
 		peerServerOn();
 	})
@@ -137,32 +136,12 @@ function peerServerOn() {
 	// Call XirSys ICE servers
 
     $.ajax({
-
-/*
-    //  V2
-      type: "POST",
-      url: "https://global.xirsys.net/ice",
-      dataType: "json",
-      data: {
-        ident: "rosemaryp",
-        secret: "787c7224-0406-11e6-a067-a950f66e883a",
-        domain: "adladl.com",
-        application: "subserver",
-        room: "default",
-        secure: 1,
-        timeout: 600
-      },
-*/
-
-
-      // V3
        url: "https://global.xirsys.net/_turn/adladl.com/",
        type: "PUT",
         headers: {
                "Authorization": "Basic " + btoa("rosemaryp:787c7224-0406-11e6-a067-a950f66e883a")
              },
 
-        //V3
       success: function (data) {
         if (data.s == "ok"){
             messout("XirSys ok");
@@ -173,14 +152,6 @@ function peerServerOn() {
 	    }
        // console.log("ICE List: "+JSON.stringify(data.v));
       },
-
-/*
-    //V2
-      success: function (data, dstatus) {
-        messout("XirSys status : " + dstatus);
-        setPeer(data.d);
-      },
-*/
 
       error: function() {
             messout("Xirsys AJAX error");
@@ -194,9 +165,13 @@ function setPeer(customConfig){
 
      connectcnt = 0;
 
-    var opts  = {key: 'wcf528rijzx8byb9',
-	//	debug: 3
-		};
+    var opts = {
+                host: 'subpeersrv.herokuapp.com',
+         //       host: '192.168.1.5',
+                port: 80
+                };
+
+
 
 	if (customConfig !== null) opts.config = customConfig;
 	peer = new Peer(opts);
@@ -213,9 +188,11 @@ function setPeer(customConfig){
 	  messout(" Name server : "+ getParam("subnamesrv"));
 	  messout('My  subHostname is: ' + getParam("subhost"));
 
-      timer = setInterval(function(){
-       // messout("sent PING");
-			peer.socket.send({type: "PING", payload: {}});}, cycletime);
+      if (timer == null) {
+        timer = setInterval(function(){
+      //  messout("sent PING");
+		peer.socket.send({type: "PING", payload: {}});}, cycletime);
+       }
 
 	  $.getJSON("http://"+getParam("subnamesrv")+"/api/setrtcid/"+ getParam("subhost") +
 	            "/" + getParam("passwd") + "/" + id,
@@ -247,6 +224,8 @@ function setPeer(customConfig){
 		  // Receive messages
             updateStats(1);
 		     messout('Data Connection openned cnt : ' + connectcnt);
+
+		    // conn.send({status: 12345});   Mark testing
 		});
 
         conn.on('close', function() {
@@ -291,6 +270,7 @@ function getappfile(rcv, xconn){
             delete blobbuff[rcv.rcvkey];
      //       console.log("cleaned buffer : " + rcv.rcvkey);
         }
+        console.log("sending 0 : " + rcv.rcvkey);
         xconn.send({uri: rcv.file, blobtype: tblob.type, blob: tblob, cnt: xcnt, rcvkey: rcv.rcvkey,
                 status: 200});
         return;
@@ -308,11 +288,12 @@ function getappfile(rcv, xconn){
                     blobbuff[rcv.rcvkey] = this.response.slice(splitsz,
                         this.response.size, this.response.type);
                 }
-
+console.log("sending 1 : " + rcv.rcvkey);
                 xconn.send({uri: rcv.file, blobtype: this.response.type, blob: yblob,
                     cnt: 1, rcvkey: rcv.rcvkey, status: this.status});
 
             } else {
+            console.log("sending 2 : " + rcv.rcvkey);
                 xconn.send({uri: rcv.file, blobtype: this.response.type, blob: this.response,
                     cnt: 0, rcvkey: rcv.rcvkey, status: this.status});
             }
